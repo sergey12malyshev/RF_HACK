@@ -22,6 +22,7 @@
 #include "spi.h"
 #include "usart.h"
 #include "gpio.h"
+#include "cli_driver.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -104,6 +105,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
    heartbeatLedToggle();
+   debugPrintf("Test string"CLI_NEW_LINE);
    HAL_Delay(250);
   }
   /* USER CODE END 3 */
