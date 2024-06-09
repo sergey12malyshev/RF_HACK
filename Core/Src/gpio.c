@@ -22,6 +22,11 @@
 
 /* USER CODE BEGIN 0 */
 
+void heartbeatLedToggle(void)
+{
+  LL_GPIO_TogglePin(GPIOC, LL_GPIO_PIN_13);
+}
+
 /* USER CODE END 0 */
 
 /*----------------------------------------------------------------------------*/
@@ -64,8 +69,7 @@ void MX_GPIO_Init(void)
 
   /**/
   GPIO_InitStruct.Pin = LL_GPIO_PIN_0|LL_GPIO_PIN_1|LL_GPIO_PIN_4|LL_GPIO_PIN_8
-                          |LL_GPIO_PIN_11|LL_GPIO_PIN_12|LL_GPIO_PIN_13|LL_GPIO_PIN_14
-                          |LL_GPIO_PIN_15;
+                          |LL_GPIO_PIN_11|LL_GPIO_PIN_12|LL_GPIO_PIN_15;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
