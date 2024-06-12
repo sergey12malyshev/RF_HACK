@@ -35,7 +35,7 @@ typedef enum
   INFO
 }Command;
 
-static uint8_t mon_comand[] = "Enter monitor command:\r\n\
+static char mon_comand[] = "Enter monitor command:\r\n\
 HELP - see existing commands\r\n\
 RST - restart\r\n\
 R - restart using WDT\r\n\
@@ -45,10 +45,10 @@ INFO - read about project\r\n\
 >";
 
 uint8_t input_mon[1] = {0};
-#define SIZE_BUFF  12u
+
+#define SIZE_BUFF  12U
 char input_mon_buff[SIZE_BUFF] = {0};
 
-static uint8_t str[50] = {0};
 
 /* queue UART */
 QUEUE queue1 = {0};
@@ -81,8 +81,6 @@ void uart_receve_IT(void)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 
 {
-  debugPrintf("ok\r\n");
-
   if(HAL_UART_Receive_IT(&huart1, (uint8_t*)&input_mon, 1U) == HAL_OK)
   {
     cli_enque(&queue1,(MESSAGE*)&input_mon); // Запишем в очередь 
@@ -101,16 +99,7 @@ static void debugPrintf_symbolTerm(void)
 
 static void sendSNversion(void)
 {
-/*
-  sprintf((char *)str, "Version: %d", VERSION_MAJOR);
-  debugPrintf(str);
-  debugPrintf(".");
-  sprintf((char *)str, "%d", VERSION_MINOR);
-  debugPrintf(str);
-  debugPrintf(".");
-  sprintf((char *)str, "%d"CLI_NEW_LINE, VERSION_PATCH);
-  debugPrintf(str);
-*/
+ //debugPrintf("Version: %d.%d.%d"CLI_NEW_LINE, VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
 }
 
 void debugPrintf_hello(void)
@@ -200,13 +189,12 @@ static void monitorParser(void)
       else if (mon_strcmp(input_mon_buff, "INFO"))
       {
         debugPrintf_OK();
-        debugPrintf("https://github.com/sergey12malyshev/Smart-power-supply-350W.git"CLI_NEW_LINE);
+        debugPrintf("https://github.com/sergey12malyshev/RF_HACK.git"CLI_NEW_LINE);
         debugPrintf("FreeRTOS: ");
         debugPrintf(tskKERNEL_VERSION_NUMBER);
         debugPrintf_r_n();
         debugPrintf("HAL: ");
-        sprintf((char *)str, "%d", HAL_GetHalVersion());
-        debugPrintf(str);
+        debugPrintf("%d", HAL_GetHalVersion());
         debugPrintf_r_n();
         debugPrintf("Data build: "__DATE__ CLI_NEW_LINE);
         debugPrintf("Time build: "__TIME__ CLI_NEW_LINE ">");
