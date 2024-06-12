@@ -44,10 +44,10 @@ ADC - show ADC chanel\r\n\
 INFO - read about project\r\n\
 >";
 
-uint8_t input_mon[1] = {0};
+static uint8_t input_mon[1] = {0};
 
 #define SIZE_BUFF  12U
-char input_mon_buff[SIZE_BUFF] = {0};
+static char input_mon_buff[SIZE_BUFF] = {0};
 
 
 /* queue UART */
@@ -55,26 +55,26 @@ QUEUE queue1 = {0};
 uint8_t queueOutMsg[1] = {0};
 
 /* Test API */
-Command monitorTest = NONE;
+static Command monitorTest = NONE;
 
-void resetTest(void)
+static void resetTest(void)
 {
   monitorTest = NONE;
 }
 
-void setTest(Command c)
+static void setTest(Command c)
 {
   monitorTest = c;
 }
 
-//-------------- UART -------------------//
+//-------------- UART RX start ------------------
 
 static void uart_clear_buff(void)
 {
   memset(input_mon_buff, 0, sizeof(input_mon_buff));
 }
 
-void uart_receve_IT(void)
+static void uart_receve_IT(void)
 {
   HAL_UART_Receive_IT(&huart1, (uint8_t *)input_mon, 1);
 }
@@ -90,7 +90,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   }
 }
 
-//---------------------------------------//
+//---------------------------------------
 
 static void debugPrintf_symbolTerm(void)
 {
@@ -104,7 +104,7 @@ static void sendSNversion(void)
 
 void debugPrintf_hello(void)
 {
-  debugPrintf("Controller Power Supply"CLI_NEW_LINE);
+  debugPrintf("RF_HACK"CLI_NEW_LINE);
   sendSNversion();
   debugPrintf("Enter HELP"CLI_NEW_LINE);
   debugPrintf_symbolTerm();
@@ -137,7 +137,7 @@ static void sendBackspaceStr(void)
 
 static void convertToUppercase(void)
 {
-  static char *copy_ptr;
+  static char *copy_ptr = NULL;
 
   copy_ptr = input_mon_buff;
   while (*copy_ptr != 0)
@@ -155,7 +155,7 @@ static void monitorParser(void)
   const uint8_t backspacePuTTY = 127U;
 
 #if LOCAL_ECHO_EN
-    HAL_UART_Transmit(&huart1, input_mon, 1, 50); // Local echo
+    HAL_UART_Transmit(&huart1, input_mon, 1, 25); // Local echo
 #endif
     if (input_mon[0] == enter)
     {
@@ -259,6 +259,7 @@ static void monitor_out_test(void)
       break;
     case TEST:
       debugPrintf("Test OK");
+      resetTest();
       break;
     default:
       break;
@@ -274,6 +275,7 @@ void StartCLI_Task(void *argument)
   uart_receve_IT();
   cli_init_queue(&queue1);
   resetTest();
+  debugPrintf_hello();
 
   for(;;)
   {
