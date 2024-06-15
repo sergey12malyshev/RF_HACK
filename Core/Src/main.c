@@ -59,11 +59,11 @@ static void MX_TIM3_Init(void);
 /*
 static void convert64bit_to_hex(uint8_t *v, char *b)
 {
-	 b[0] = 0;
-	 sprintf(&b[strlen(b)], "0x");
-	 for (int i = 0; i < 8; i++) {
-		 sprintf(&b[strlen(b)], "%02x", v[7 - i]);
-	 }
+   b[0] = 0;
+  sprintf(&b[strlen(b)], "0x");
+   for (int i = 0; i < 8; i++) {
+     sprintf(&b[strlen(b)], "%02x", v[7 - i]);
+   }
 }
 */
 
@@ -82,17 +82,17 @@ int main(void)
   /* USER CODE BEGIN 1 */
 /* Включаем кэширование инструкций */
 #if (INSTRUCTION_CACHE_ENABLE != 0U)
-	((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (9U));
+  ((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (9U));
 #endif
 
 /* Включаем кэширование данных */
 #if (DATA_CACHE_ENABLE != 0U)
-	((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (10U));
+  ((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (10U));
 #endif
 
 /* Включаем систему предварительной выборки инструкций */
 #if (PREFETCH_ENABLE != 0U)
-	((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (8U));
+  ((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (8U));
 #endif
   /* USER CODE END 1 */
 
@@ -130,25 +130,25 @@ int main(void)
 
   /* -------------------------------------- Настройка дисплея ------------------------------------------*/
   //Данные DMA
-  LCD_DMA_TypeDef dma_tx = { .dma    = DMA2,				//Контроллер DMA
-    		  	  	  	  	 .stream = LL_DMA_STREAM_3 };	//Поток контроллера DMA
+  LCD_DMA_TypeDef dma_tx = { .dma    = DMA2,        //Контроллер DMA
+                         .stream = LL_DMA_STREAM_3 };  //Поток контроллера DMA
 
   //Данные подсветки
-  LCD_BackLight_data bkl_data = { .htim_bk 		   = TIM3,				 //Таймер - для подсветки с PWM (изменение яркости подсветки)
-    		  	  	  	  	  	  .channel_htim_bk = LL_TIM_CHANNEL_CH1, //Канал таймера - для подсветки с PWM (изменение яркости подсветки)
-								  .blk_port 	   = 0,					 //Порт gpio - подсветка по типу вкл./выкл.
-								  .blk_pin 		   = 0,					 //Вывод порта - подсветка по типу вкл./выкл.
-								  .bk_percent	   = 60  };				 //Яркость подсветки, в %
+  LCD_BackLight_data bkl_data = { .htim_bk        = TIM3,         //Таймер - для подсветки с PWM (изменение яркости подсветки)
+                              .channel_htim_bk = LL_TIM_CHANNEL_CH1, //Канал таймера - для подсветки с PWM (изменение яркости подсветки)
+                  .blk_port      = 0,           //Порт gpio - подсветка по типу вкл./выкл.
+                  .blk_pin        = 0,           //Вывод порта - подсветка по типу вкл./выкл.
+                  .bk_percent     = 60  };         //Яркость подсветки, в %
 
   //Данные подключения
-  LCD_SPI_Connected_data spi_con = { .spi 		 = SPI1,				//�?спользуемый spi
-    		  	  	  	  	  	  	 .dma_tx 	 = dma_tx,				//Данные DMA
-									 .reset_port = LCD_RESET_GPIO_Port,	//Порт вывода RES
-									 .reset_pin  = LCD_RESET_Pin,		//Пин вывода RES
-									 .dc_port 	 = LCD_DC_GPIO_Port,	//Порт вывода DC
-									 .dc_pin 	 = LCD_DC_Pin,			//Пин вывода DC
-									 .cs_port	 = LCD_CS_GPIO_Port,	//Порт вывода CS
-									 .cs_pin	 = LCD_CS_Pin         };//Пин вывода CS
+  LCD_SPI_Connected_data spi_con = { .spi      = SPI1,        //�?спользуемый spi
+                                 .dma_tx    = dma_tx,        //Данные DMA
+                   .reset_port = LCD_RESET_GPIO_Port,  //Порт вывода RES
+                   .reset_pin  = LCD_RESET_Pin,    //Пин вывода RES
+                   .dc_port    = LCD_DC_GPIO_Port,  //Порт вывода DC
+                   .dc_pin    = LCD_DC_Pin,      //Пин вывода DC
+                   .cs_port   = LCD_CS_GPIO_Port,  //Порт вывода CS
+                   .cs_pin   = LCD_CS_Pin         };//Пин вывода CS
 
 #ifndef  LCD_DYNAMIC_MEM
   LCD_Handler lcd1;
@@ -156,60 +156,62 @@ int main(void)
    //создаем обработчик дисплея ILI9341
    LCD = LCD_DisplayAdd( LCD,
 #ifndef  LCD_DYNAMIC_MEM
-		   	   	   	   	 &lcd1,
+                         &lcd1,
 #endif
-		   	   	   	   	 240,
-						 320,
-						 ILI9341_CONTROLLER_WIDTH,
-						 ILI9341_CONTROLLER_HEIGHT,
-						 //Задаем смещение по ширине и высоте для нестандартных или бракованных дисплеев:
-						 0,		//смещение по ширине дисплейной матрицы
-						 0,		//смещение по высоте дисплейной матрицы
-						 PAGE_ORIENTATION_PORTRAIT_MIRROR,
-						 ILI9341_Init,
-						 ILI9341_SetWindow,
-						 ILI9341_SleepIn,
-						 ILI9341_SleepOut,
-						 &spi_con,
-						 LCD_DATA_16BIT_BUS,
-						 bkl_data				   );
+                         240,
+             320,
+             ILI9341_CONTROLLER_WIDTH,
+             ILI9341_CONTROLLER_HEIGHT,
+             //Задаем смещение по ширине и высоте для нестандартных или бракованных дисплеев:
+             0,    //смещение по ширине дисплейной матрицы
+             0,    //смещение по высоте дисплейной матрицы
+             PAGE_ORIENTATION_PORTRAIT_MIRROR,
+             ILI9341_Init,
+             ILI9341_SetWindow,
+             ILI9341_SleepIn,
+             ILI9341_SleepOut,
+             &spi_con,
+             LCD_DATA_16BIT_BUS,
+             bkl_data           );
 
-  LCD_Handler *lcd = LCD; 		//Указатель на первый дисплей в списке
-  LCD_Init(lcd); 				//�?нициализация дисплея
-  LCD_Fill(lcd, COLOR_RED);		//Заливка дисплея
+  LCD_Handler *lcd = LCD;     //Указатель на первый дисплей в списке
+  LCD_Init(lcd);         //�?нициализация дисплея
+  LCD_Fill(lcd, COLOR_RED);    //Заливка дисплея
   /*---------------------------------------------------------------------------------------------------*/
 
   /* ----------------------------------- Настройка тачскрина ------------------------------------------*/
   //Будем обмениваться данными с XPT2046 на скорости 2.625 Мбит/с (по спецификации максимум 2.0 Мбит/с).
-  XPT2046_ConnectionData cnt_touch = { .spi 	 = SPI1,			//�?спользуемый spi
-		  	  	  	  	  	  	  	   .speed 	 = 4,				//Скорость spi 0...7 (0 - clk/2, 1 - clk/4, ..., 7 - clk/256)
-									   .cs_port  = T_CS_GPIO_Port,	//Порт для управления T_CS
-									   .cs_pin 	 = T_CS_Pin,		//Вывод порта для управления T_CS
-									   .irq_port = T_IRQ_GPIO_Port,	//Порт для управления T_IRQ
-									   .irq_pin  = T_IRQ_Pin,		//Вывод порта для управления T_IRQ
-									   .exti_irq = T_IRQ_EXTI_IRQn  //Канал внешнего прерывания
-  	  	  	  	  	  	  	  	  	 };
+  XPT2046_ConnectionData cnt_touch = { .spi    = SPI1,      //�?спользуемый spi
+                                   .speed    = 4,        //Скорость spi 0...7 (0 - clk/2, 1 - clk/4, ..., 7 - clk/256)
+                     .cs_port  = T_CS_GPIO_Port,  //Порт для управления T_CS
+                     .cs_pin    = T_CS_Pin,    //Вывод порта для управления T_CS
+                     .irq_port = T_IRQ_GPIO_Port,  //Порт для управления T_IRQ
+                     .irq_pin  = T_IRQ_Pin,    //Вывод порта для управления T_IRQ
+                     .exti_irq = T_IRQ_EXTI_IRQn  //Канал внешнего прерывания
+                                     };
   //�?нициализация обработчика XPT2046
   XPT2046_Handler touch1;
   XPT2046_InitTouch(&touch1, 20, &cnt_touch);
+
 /* Самый простой вариант хранения в программе
  * коэффициентов калибровки. Строку XPT2046_CalibrateTouch
  * надо будет закомментировать */
-/*
+#define CALIBRATE_EN    false
+#if !CALIBRATE_EN
   tCoef coef = {.D   = 0x00022b4253626d37,
-  	  	  	  	.Dx1 = 0xffffd9e9e85d81b6,
-  	  	  	  	.Dx2 = 0x0000005a555c98ab,
-  	  	  	  	.Dx3 = 0x022dd7f0419e66b7,
-  	  	  	  	.Dy1 = 0xffffff6065e10c98,
-  	  	  	    .Dy2 = 0x0000343b820dc8bf,
-  	  	  	  	.Dy3 = 0xff9cc25725238e55 };
+                .Dx1 = 0xffffd9e9e85d81b6,
+                .Dx2 = 0x0000005a555c98ab,
+                .Dx3 = 0x022dd7f0419e66b7,
+                .Dy1 = 0xffffff6065e10c98,
+                .Dy2 = 0x0000343b820dc8bf,
+                .Dy3 = 0xff9cc25725238e55 };
   touch1.coef = coef;
-*/
+#else
   /* Калибровка тачскрина
    * Если коэффициенты калибровки выше определены, то эту строку надо
    * закомментировать */
-  //XPT2046_CalibrateTouch(&touch1, lcd); //Запускаем процедуру калибровки
-
+  XPT2046_CalibrateTouch(&touch1, lcd); //Запускаем процедуру калибровки
+#endif
   /* Вывод на дисплей 64 битных коэффициентов калибровки для тех,
    * кто не умеет пользоваться отладчиком или для тех,
    * у кого он не работает. До использования не забудьте раскомментировать
@@ -237,10 +239,10 @@ while(1) { }
   /* --------------------------------------------------------------------------------------------------*/
 
   //----------------------------------------- Запуск демок --------------------------------------------*/
-	LCD_Fill(lcd, COLOR_WHITE); //Закрашиваем экран белым цветом
-	LCD_Fill(lcd, COLOR_BLACK); 
-  		LCD_WriteString(lcd, 0, 0, "Test Start",
-						&Font_12x20, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+  LCD_Fill(lcd, COLOR_WHITE); //Закрашиваем экран белым цветом
+  LCD_Fill(lcd, COLOR_BLACK); 
+      LCD_WriteString(lcd, 0, 0, "Test Start",
+            &Font_12x20, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
   LL_mDelay(5000);
   //Демка для рисования на экране с помощью тачскрина.
