@@ -7,13 +7,12 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2024 STMicroelectronics.
-  * All rights reserved.</center></h2>
+  * Copyright (c) 2022 STMicroelectronics.
+  * All rights reserved.
   *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
   *
   ******************************************************************************
   */
@@ -28,8 +27,7 @@ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f4xx_hal.h"
-
+#include "stm32f4xx_ll_dma.h"
 #include "stm32f4xx_ll_rcc.h"
 #include "stm32f4xx_ll_bus.h"
 #include "stm32f4xx_ll_system.h"
@@ -37,8 +35,13 @@ extern "C" {
 #include "stm32f4xx_ll_cortex.h"
 #include "stm32f4xx_ll_utils.h"
 #include "stm32f4xx_ll_pwr.h"
-#include "stm32f4xx_ll_dma.h"
+#include "stm32f4xx_ll_spi.h"
+#include "stm32f4xx_ll_tim.h"
 #include "stm32f4xx_ll_gpio.h"
+
+#if defined(USE_FULL_ASSERT)
+#include "stm32_assert.h"
+#endif /* USE_FULL_ASSERT */
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -68,6 +71,37 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define LCD_DC_Pin LL_GPIO_PIN_2
+#define LCD_DC_GPIO_Port GPIOA
+#define LCD_RESET_Pin LL_GPIO_PIN_3
+#define LCD_RESET_GPIO_Port GPIOA
+#define LCD_CS_Pin LL_GPIO_PIN_4
+#define LCD_CS_GPIO_Port GPIOA
+#define LCD_SCK_Pin LL_GPIO_PIN_5
+#define LCD_SCK_GPIO_Port GPIOA
+#define LCD_LED_Pin LL_GPIO_PIN_6
+#define LCD_LED_GPIO_Port GPIOA
+#define LCD_SDI_Pin LL_GPIO_PIN_7
+#define LCD_SDI_GPIO_Port GPIOA
+#define T_IRQ_Pin LL_GPIO_PIN_0
+#define T_IRQ_GPIO_Port GPIOB
+#define T_IRQ_EXTI_IRQn EXTI0_IRQn
+#define T_CS_Pin LL_GPIO_PIN_1
+#define T_CS_GPIO_Port GPIOB
+#define T_OUT_Pin LL_GPIO_PIN_4
+#define T_OUT_GPIO_Port GPIOB
+#ifndef NVIC_PRIORITYGROUP_0
+#define NVIC_PRIORITYGROUP_0         ((uint32_t)0x00000007) /*!< 0 bit  for pre-emption priority,
+                                                                 4 bits for subpriority */
+#define NVIC_PRIORITYGROUP_1         ((uint32_t)0x00000006) /*!< 1 bit  for pre-emption priority,
+                                                                 3 bits for subpriority */
+#define NVIC_PRIORITYGROUP_2         ((uint32_t)0x00000005) /*!< 2 bits for pre-emption priority,
+                                                                 2 bits for subpriority */
+#define NVIC_PRIORITYGROUP_3         ((uint32_t)0x00000004) /*!< 3 bits for pre-emption priority,
+                                                                 1 bit  for subpriority */
+#define NVIC_PRIORITYGROUP_4         ((uint32_t)0x00000003) /*!< 4 bits for pre-emption priority,
+                                                                 0 bit  for subpriority */
+#endif
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
