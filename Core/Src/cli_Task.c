@@ -283,7 +283,7 @@ void StartCLI_Task(void *argument)
     }
     monitor_out_test();
 
-    LL_mDelay(25);
+    return;
     //vTaskDelayUntil(&xLastWakeTime, xPeriod_ms);
   }
 }
