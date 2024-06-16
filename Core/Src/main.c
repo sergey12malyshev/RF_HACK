@@ -14,6 +14,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "cmsis_os.h"
 #include "dma.h"
 #include "spi.h"
 #include "tim.h"
@@ -40,6 +41,8 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 uint32_t millis = 0;
+
+LCD_Handler *lcd = NULL;     //Указатель на первый дисплей в списке
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -58,6 +61,7 @@ uint32_t millis = 0;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* Для тех, кто не умеет пользоваться отладчиком или
@@ -173,7 +177,7 @@ int main(void)
              LCD_DATA_16BIT_BUS,
              bkl_data           );
 
-  LCD_Handler *lcd = LCD;     //Указатель на первый дисплей в списке
+  lcd = LCD;     //Указатель на первый дисплей в списке
   LCD_Init(lcd);         //�?нициализация дисплея
   LCD_Fill(lcd, COLOR_RED);    //Заливка дисплея
   /*---------------------------------------------------------------------------------------------------*/
@@ -256,6 +260,13 @@ while(1) { }
   LCD_Fill(lcd, COLOR_BLACK); 
   /* USER CODE END 2 */
 
+  /* Init scheduler */
+  osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
+  MX_FREERTOS_Init();
+  /* Start scheduler */
+  osKernelStart();
+
+  /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -263,13 +274,6 @@ while(1) { }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    char str[100] = "   N = ";
-    static uint16_t i;
-    utoa(i++, &str[7], 10);
-    strcat(str, " count    ");
-    LCD_WriteString(lcd, 0, 0, str, &Font_8x13, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
-
-    StartCLI_Task(NULL);
   }
   /* USER CODE END 3 */
 }
@@ -324,6 +328,27 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM1 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM1) {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.
