@@ -261,6 +261,7 @@ while(1) { }
   while (1)
   {
     /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
     char str[100] = "   N = ";
     static uint16_t i;

@@ -29,6 +29,11 @@
 /*----------------------------------------------------------------------------*/
 /* USER CODE BEGIN 1 */
 
+void heartbeatLedToggle(void)
+{
+  LL_GPIO_TogglePin(GPIOC, LL_GPIO_PIN_13);
+}
+
 /* USER CODE END 1 */
 
 /** Configure pins as
@@ -53,13 +58,24 @@ void MX_GPIO_Init(void)
   LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOB);
 
   /**/
+  LL_GPIO_ResetOutputPin(RED_LED_GPIO_Port, RED_LED_Pin);
+
+  /**/
   LL_GPIO_SetOutputPin(GPIOA, LCD_DC_Pin|LCD_RESET_Pin|LCD_CS_Pin);
 
   /**/
   LL_GPIO_SetOutputPin(T_CS_GPIO_Port, T_CS_Pin);
 
   /**/
-  GPIO_InitStruct.Pin = LL_GPIO_PIN_13|LL_GPIO_PIN_14|LL_GPIO_PIN_15;
+  GPIO_InitStruct.Pin = RED_LED_Pin;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  LL_GPIO_Init(RED_LED_GPIO_Port, &GPIO_InitStruct);
+
+  /**/
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_14|LL_GPIO_PIN_15;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   LL_GPIO_Init(GPIOC, &GPIO_InitStruct);
