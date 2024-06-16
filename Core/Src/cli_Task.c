@@ -4,9 +4,9 @@
 #include <stdbool.h>
 #include <stdarg.h>
 
-#include "cmsis_os.h"
-#include "FreeRTOS.h"
-#include "task.h"
+//#include "cmsis_os.h"
+//#include "FreeRTOS.h"
+//#include "task.h"
 
 #include "main.h"
 #include "cli_task.h"
@@ -44,11 +44,8 @@ ADC - show ADC chanel\r\n\
 INFO - read about project\r\n\
 >";
 
-static uint8_t input_mon[1] = {0};
-
 #define SIZE_BUFF  12U
 static char input_mon_buff[SIZE_BUFF] = {0};
-
 
 /* queue UART */
 QUEUE queue1 = {0};
@@ -68,6 +65,7 @@ static void setTest(Command c)
 }
 
 //-------------- UART RX start ------------------
+static uint8_t input_mon[1] = {0};
 
 static void uart_clear_buff(void)
 {
@@ -155,9 +153,9 @@ static void monitorParser(void)
   const uint8_t backspacePuTTY = 127U;
 
 #if LOCAL_ECHO_EN
-    HAL_UART_Transmit(&huart1, input_mon, 1, 25); // Local echo
+    HAL_UART_Transmit(&huart1, queueOutMsg, 1, 25); // Local echo
 #endif
-    if (input_mon[0] == enter)
+    if (queueOutMsg[0] == enter)
     {
       convertToUppercase();
       debugPrintf_r_n();
@@ -178,7 +176,7 @@ static void monitorParser(void)
       else if (mon_strcmp(input_mon_buff, "RST"))
       { // enter RST
         debugPrintf_OK();
-        vTaskSuspendAll();
+        //vTaskSuspendAll();
         while (1);
       }
       else if ((input_mon_buff[0] == 'R')&&(input_mon_buff[1] == 0))
@@ -191,7 +189,7 @@ static void monitorParser(void)
         debugPrintf_OK();
         debugPrintf("https://github.com/sergey12malyshev/RF_HACK.git"CLI_NEW_LINE);
         debugPrintf("FreeRTOS: ");
-        debugPrintf(tskKERNEL_VERSION_NUMBER);
+        //debugPrintf(tskKERNEL_VERSION_NUMBER);
         debugPrintf_r_n();
         debugPrintf("HAL: ");
         debugPrintf("%d", HAL_GetHalVersion());
@@ -219,7 +217,7 @@ static void monitorParser(void)
     }
     else
     {
-      if ((input_mon[0] == backspace)||(queueOutMsg[0] == backspacePuTTY))
+      if ((queueOutMsg[0] == backspace)||(queueOutMsg[0] == backspacePuTTY))
       {
         if (rec_len != 0)
         {
@@ -232,9 +230,9 @@ static void monitorParser(void)
       {
         if (rec_len < SIZE_BUFF)
         {
-          if((input_mon[0] > 0) &&  (input_mon[0] <= 127))// ASCIi check
+          if((queueOutMsg[0] > 0) &&  (queueOutMsg[0] <= 127))// ASCIi check
           {
-            input_mon_buff[rec_len++] = input_mon[0]; // load char do string
+            input_mon_buff[rec_len++] = queueOutMsg[0]; // load char do string
           }
           else
           {
@@ -268,8 +266,8 @@ static void monitor_out_test(void)
 
 void StartCLI_Task(void *argument)
 {
-  const TickType_t xPeriod_ms = 35u / portTICK_PERIOD_MS;
-  TickType_t xLastWakeTime = xTaskGetTickCount();
+  //const TickType_t xPeriod_ms = 35u / portTICK_PERIOD_MS;
+  //TickType_t xLastWakeTime = xTaskGetTickCount();
   
   uart_clear_buff();
   uart_receve_IT();
@@ -285,6 +283,7 @@ void StartCLI_Task(void *argument)
     }
     monitor_out_test();
 
-    vTaskDelayUntil(&xLastWakeTime, xPeriod_ms);
+    LL_mDelay(25);
+    //vTaskDelayUntil(&xLastWakeTime, xPeriod_ms);
   }
 }

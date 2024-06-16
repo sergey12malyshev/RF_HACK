@@ -33,6 +33,7 @@
 #include "demo.h"
 
 #include "cli_driver.h"
+#include "cli_task.h"
 
 /* USER CODE END Includes */
 
@@ -104,15 +105,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-
-  LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SYSCFG);
-  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_PWR);
-
-  NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
-
-  /* System interrupt init*/
-  /* SysTick_IRQn interrupt configuration */
-  NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),15, 0));
+  HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -250,7 +243,7 @@ while(1) { }
   LCD_WriteString(lcd, 0, 0, "Test Start",
             &Font_12x20, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
-  LL_mDelay(5000);
+  //LL_mDelay(5000);
   //Демка для рисования на экране с помощью тачскрина.
   //Draw_TouchPenDemo(&touch1, lcd);
 
@@ -270,6 +263,7 @@ while(1) { }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    StartCLI_Task(NULL);
   }
   /* USER CODE END 3 */
 }
@@ -311,8 +305,13 @@ void SystemClock_Config(void)
   {
 
   }
-  LL_Init1msTick(84000000);
   LL_SetSystemCoreClock(84000000);
+
+   /* Update the time base */
+  if (HAL_InitTick (TICK_INT_PRIORITY) != HAL_OK)
+  {
+    Error_Handler();
+  }
   LL_RCC_SetTIMPrescaler(LL_RCC_TIM_PRESCALER_TWICE);
 }
 
