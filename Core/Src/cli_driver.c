@@ -22,7 +22,7 @@ int debugPrintf(const char *serial_data, ...)
   va_end(arg);
 
   const uint8_t block_timeout_ms = 40u;
-  HAL_UART_Transmit(&huart1, (uint8_t *)printBufer, len, block_timeout_ms);
+  //HAL_UART_Transmit(&huart1, (uint8_t *)printBufer, len, block_timeout_ms);
 
   return len;
 }
