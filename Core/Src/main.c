@@ -76,7 +76,6 @@ static void convert64bit_to_hex(uint8_t *v, char *b)
    }
 }
 */
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -251,13 +250,7 @@ while(1) { }
   //RoadCircleDemo(&touch1, lcd);
 
   /* --------------------------------------------------------------------------------------------------*/
-
-  LCD_Fill(lcd, COLOR_BLACK); 
-  LCD_WriteString(lcd, 0, 0, "LCD TEST",
-            &Font_12x20, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
-
-  LL_mDelay(2000);
-  LCD_Fill(lcd, COLOR_BLACK); 
+  LCD_Fill(lcd, COLOR_BLACK);
   /* USER CODE END 2 */
 
   /* Init scheduler */

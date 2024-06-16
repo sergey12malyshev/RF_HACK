@@ -173,13 +173,13 @@ static void monitorParser(void)
         setTest(ADC_T);
         debugPrintf_OK();
       }
-      else if (mon_strcmp(input_mon_buff, "RST"))
+      else if ((input_mon_buff[0] == 'R')&&(input_mon_buff[1] == 0))
       { // enter RST
         debugPrintf_OK();
-        //vTaskSuspendAll();
+        vTaskSuspendAll();
         while (1);
       }
-      else if ((input_mon_buff[0] == 'R')&&(input_mon_buff[1] == 0))
+      else if (mon_strcmp(input_mon_buff, "RST"))
       {
         debugPrintf_OK();
         HAL_NVIC_SystemReset();
@@ -189,7 +189,7 @@ static void monitorParser(void)
         debugPrintf_OK();
         debugPrintf("https://github.com/sergey12malyshev/RF_HACK.git"CLI_NEW_LINE);
         debugPrintf("FreeRTOS: ");
-        //debugPrintf(tskKERNEL_VERSION_NUMBER);
+        debugPrintf(tskKERNEL_VERSION_NUMBER);
         debugPrintf_r_n();
         debugPrintf("HAL: ");
         debugPrintf("%d", HAL_GetHalVersion());

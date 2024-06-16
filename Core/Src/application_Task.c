@@ -1,4 +1,8 @@
 #include <stdbool.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
 
 #include "cmsis_os.h"
 #include "FreeRTOS.h"
@@ -16,7 +20,35 @@
 #include "demo.h"
 
 
+
 extern LCD_Handler *lcd;     //Указатель на первый дисплей в списке
+
+static void bootingScreen(void)
+{
+  char str[100] = {0};
+  uint16_t y = 0;
+  const uint8_t shift = 25;
+
+  LCD_Fill(lcd, COLOR_BLACK);
+
+  LCD_WriteString(lcd, 0, y+=shift, "LCD TEST",
+            &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+ 
+  sprintf(str, "FreeRTOS: %d", tskKERNEL_VERSION_NUMBER);
+  LCD_WriteString(lcd, 0, y+=shift, str,
+            &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+  
+  sprintf(str, "HAL: %d", HAL_GetHalVersion());
+  LCD_WriteString(lcd, 0, y+=shift, str,
+            &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
+  LCD_WriteString(lcd, 0, y+=shift, "Data build: "__DATE__,
+            &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
+  LCD_WriteString(lcd, 0, y+=shift, "Time build: "__TIME__,
+            &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
+}
 
 void StartApplicationTask(void *argument)
 {
@@ -25,6 +57,11 @@ void StartApplicationTask(void *argument)
 
   TickType_t xLastWakeTime = xTaskGetTickCount();
   /* Infinite loop */
+  bootingScreen();
+
+  osDelay(1800);
+  LCD_Fill(lcd, COLOR_BLACK);
+
   for(;;)
   {
     heartbeatLedToggle();
