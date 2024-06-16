@@ -66,7 +66,7 @@ const osThreadAttr_t CLI_Task_attributes = {
 osThreadId_t ApplicationTaskHandle;
 const osThreadAttr_t ApplicationTask_attributes = {
   .name = "ApplicationTask",
-  .stack_size = 128 * 4,
+  .stack_size = 384 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 

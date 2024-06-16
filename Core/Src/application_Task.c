@@ -34,11 +34,10 @@ static void bootingScreen(void)
   LCD_WriteString(lcd, 0, y+=shift, "LCD TEST",
             &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
  
-  sprintf(str, "FreeRTOS: %d", tskKERNEL_VERSION_NUMBER);
-  LCD_WriteString(lcd, 0, y+=shift, str,
+  LCD_WriteString(lcd, 0, y+=shift, "FreeRTOS: "tskKERNEL_VERSION_NUMBER,
             &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
   
-  sprintf(str, "HAL: %d", HAL_GetHalVersion());
+  sprintf(str, "HAL: %lu", HAL_GetHalVersion());
   LCD_WriteString(lcd, 0, y+=shift, str,
             &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
@@ -59,7 +58,7 @@ void StartApplicationTask(void *argument)
   /* Infinite loop */
   bootingScreen();
 
-  osDelay(1800);
+  osDelay(3200);
   LCD_Fill(lcd, COLOR_BLACK);
 
   for(;;)
