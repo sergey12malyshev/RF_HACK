@@ -268,12 +268,17 @@ void StartCLI_Task(void *argument)
 {
   //const TickType_t xPeriod_ms = 35u / portTICK_PERIOD_MS;
   //TickType_t xLastWakeTime = xTaskGetTickCount();
-  
+  static uint8_t s = 0;
+  if (!s)
+  {
+  s = 1;
   uart_clear_buff();
   uart_receve_IT();
   cli_init_queue(&queue1);
   resetTest();
   debugPrintf_hello();
+  }
+
 
   for(;;)
   {

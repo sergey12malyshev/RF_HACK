@@ -164,7 +164,7 @@ int main(void)
              //Задаем смещение по ширине и высоте для нестандартных или бракованных дисплеев:
              0,    //смещение по ширине дисплейной матрицы
              0,    //смещение по высоте дисплейной матрицы
-             PAGE_ORIENTATION_PORTRAIT_MIRROR,
+             PAGE_ORIENTATION_PORTRAIT,
              ILI9341_Init,
              ILI9341_SetWindow,
              ILI9341_SleepIn,
@@ -239,11 +239,6 @@ while(1) { }
 
   //----------------------------------------- Запуск демок --------------------------------------------*/
   LCD_Fill(lcd, COLOR_WHITE); //Закрашиваем экран белым цветом
-  LCD_Fill(lcd, COLOR_BLACK); 
-  LCD_WriteString(lcd, 0, 0, "Test Start",
-            &Font_12x20, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
-
-  //LL_mDelay(5000);
   //Демка для рисования на экране с помощью тачскрина.
   //Draw_TouchPenDemo(&touch1, lcd);
 
@@ -253,7 +248,12 @@ while(1) { }
 
   /* --------------------------------------------------------------------------------------------------*/
 
+  LCD_Fill(lcd, COLOR_BLACK); 
+  LCD_WriteString(lcd, 0, 0, "LCD TEST",
+            &Font_12x20, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
+  LL_mDelay(2000);
+  LCD_Fill(lcd, COLOR_BLACK); 
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -261,8 +261,13 @@ while(1) { }
   while (1)
   {
     /* USER CODE END WHILE */
-
     /* USER CODE BEGIN 3 */
+    char str[100] = "   N = ";
+    static uint16_t i;
+    utoa(i++, &str[7], 10);
+    strcat(str, " count    ");
+    LCD_WriteString(lcd, 0, 0, str, &Font_8x13, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
+
     StartCLI_Task(NULL);
   }
   /* USER CODE END 3 */
