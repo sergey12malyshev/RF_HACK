@@ -33,6 +33,8 @@
 #include "calibrate_touch.h"
 #include "demo.h"
 
+#include "gps.h"
+
 #include "cli_driver.h"
 #include "cli_task.h"
 
@@ -128,9 +130,12 @@ int main(void)
   MX_SPI1_Init();
   MX_TIM3_Init();
   MX_USART1_UART_Init();
+  MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  /* -------------------------------------- Настройка дисплея ------------------------------------------*/
+  GPS_Init();
+
+  /* Настройка дисплея */
   //Данные DMA
   LCD_DMA_TypeDef dma_tx = { .dma    = DMA2,        //Контроллер DMA
                          .stream = LL_DMA_STREAM_3 };  //Поток контроллера DMA

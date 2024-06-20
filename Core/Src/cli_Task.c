@@ -13,6 +13,8 @@
 #include "cli_driver.h"
 #include "cli_queue.h"
 
+#include "gps.h"
+
 /*
   UART CLI 115200 Baud
   PA10 - RX
@@ -23,7 +25,8 @@
 
 #define mon_strcmp(ptr, cmd) (!strcmp(ptr, cmd))
 
-extern UART_HandleTypeDef huart1;
+extern UART_HandleTypeDef huart1, huart6;
+extern GPS_t GPS;
 
 typedef enum
 {
@@ -32,6 +35,7 @@ typedef enum
   R,
   TEST,
   ADC_T,
+  GPS_C,
   INFO
 }Command;
 
@@ -41,6 +45,7 @@ RST - restart\r\n\
 R - restart using WDT\r\n\
 TEST - switch test\r\n\
 ADC - show ADC chanel\r\n\
+GPS - show data gps\r\n\
 INFO - read about project\r\n\
 >";
 
@@ -79,12 +84,20 @@ static void uart_receve_IT(void)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 
 {
-  if(HAL_UART_Receive_IT(&huart1, (uint8_t*)&input_mon, 1U) == HAL_OK)
+  if(huart == &huart1) 
   {
-    cli_enque(&queue1,(MESSAGE*)&input_mon); // Запишем в очередь 
+    if(HAL_UART_Receive_IT(&huart1, (uint8_t*)&input_mon, 1U) == HAL_OK)
+    {
+      cli_enque(&queue1,(MESSAGE*)&input_mon); // Запишем в очередь 
 #if DEBUG_QUEUE
-    debugPrintf("e_ l:%d e:%d b:%d\r\n", queue1.current_load, queue1.begin, queue1.end);
+      debugPrintf("e_ l:%d e:%d b:%d\r\n", queue1.current_load, queue1.begin, queue1.end);
 #endif
+    }
+  }
+
+  if(huart == &huart6) 
+  {
+    GPS_UART_CallBack();
   }
 }
 
@@ -170,8 +183,8 @@ static void monitorParser(void)
       }
        else if (mon_strcmp(input_mon_buff, "ADC"))
       { // enter ADC
-        setTest(ADC_T);
         debugPrintf_OK();
+        setTest(ADC_T);
       }
       else if ((input_mon_buff[0] == 'R')&&(input_mon_buff[1] == 0))
       { // enter RST
@@ -183,6 +196,11 @@ static void monitorParser(void)
       {
         debugPrintf_OK();
         HAL_NVIC_SystemReset();
+      }
+      else if (mon_strcmp(input_mon_buff, "GPS"))
+      {
+        debugPrintf_OK();
+        setTest(GPS_C);
       }
       else if (mon_strcmp(input_mon_buff, "INFO"))
       {
@@ -248,12 +266,21 @@ static void monitorParser(void)
     }
 }
 
+static void GPSTest(void)
+{
+  debugPrintf("time:%f"CLI_NEW_LINE, GPS.utc_time );
+  
+}
+
 static void monitor_out_test(void)
 {
   switch (monitorTest)
   {
     case ADC_T:
       resetTest();
+      break;
+    case GPS_C:
+      GPSTest();
       break;
     case TEST:
       debugPrintf("Test OK");
