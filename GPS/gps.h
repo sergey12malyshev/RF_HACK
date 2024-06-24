@@ -46,9 +46,6 @@ typedef struct{
     char speed_km_unit;
 } GPS_t;
 
-#if (GPS_DEBUG == 1)
-void GPS_print(char *data);
-#endif
 
 void GPS_Init();
 void GSP_USBPrint(char *data);
