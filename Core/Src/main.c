@@ -133,8 +133,6 @@ int main(void)
   MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  GPS_Init();
-
   /* Настройка дисплея */
   //Данные DMA
   LCD_DMA_TypeDef dma_tx = { .dma    = DMA2,        //Контроллер DMA

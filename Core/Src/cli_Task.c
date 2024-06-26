@@ -268,8 +268,7 @@ static void monitorParser(void)
 
 static void GPSTest(void)
 {
-  debugPrintf("time:%f"CLI_NEW_LINE, GPS.utc_time );
-  
+  debugPrintf("time:%d"CLI_NEW_LINE, GPS.utc_time * 1000); 
 }
 
 static void monitor_out_test(void)
@@ -293,7 +292,7 @@ static void monitor_out_test(void)
 
 void StartCLI_Task(void *argument)
 {
-  const TickType_t xPeriod_ms = 35u / portTICK_PERIOD_MS;
+  const TickType_t xPeriod_ms = 125u / portTICK_PERIOD_MS;
   TickType_t xLastWakeTime = xTaskGetTickCount();
 
   uart_clear_buff();
@@ -301,6 +300,7 @@ void StartCLI_Task(void *argument)
   cli_init_queue(&queue1);
   resetTest();
   debugPrintf_hello();
+
 
   for(;;)
   {

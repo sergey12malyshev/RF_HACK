@@ -52,15 +52,15 @@ static void bootingScreen(void)
 void StartApplicationTask(void *argument)
 {
   /* USER CODE BEGIN StartApplicationTask */
-  const TickType_t xPeriod_ms = 250 / portTICK_PERIOD_MS;
+  const TickType_t xPeriod_ms = 450 / portTICK_PERIOD_MS;
 
   TickType_t xLastWakeTime = xTaskGetTickCount();
   /* Infinite loop */
   bootingScreen();
-
-  osDelay(3200);
+  vTaskDelayUntil(&xLastWakeTime, 1000);
   LCD_Fill(lcd, COLOR_BLACK);
-
+  vTaskDelayUntil(&xLastWakeTime, 100);
+  GPS_Init();
   for(;;)
   {
     heartbeatLedToggle();
@@ -69,7 +69,10 @@ void StartApplicationTask(void *argument)
     static uint16_t i;
     utoa(i++, &str[7], 10);
     strcat(str, " count    ");
+
+    __disable_irq();
     LCD_WriteString(lcd, 0, 0, str, &Font_8x13, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
+    __enable_irq();
 
     vTaskDelayUntil(&xLastWakeTime, xPeriod_ms);
   }
