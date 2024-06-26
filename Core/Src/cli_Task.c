@@ -313,3 +313,42 @@ void StartCLI_Task(void *argument)
     vTaskDelayUntil(&xLastWakeTime, xPeriod_ms);
   }
 }
+
+
+
+
+
+  /*
+ * Протопоток StartCLI_Thread
+ *
+ * 
+ */
+PT_THREAD(StartCLI_Thread(struct pt *pt))
+{
+  
+  static uint32_t timeCount = 0;
+
+  PT_BEGIN(pt);
+  
+  uart_clear_buff();
+  uart_receve_IT();
+  cli_init_queue(&queue1);
+  resetTest();
+  debugPrintf_hello();
+
+  while (1)
+  {
+    PT_WAIT_UNTIL(pt, (HAL_GetTick() - timeCount) > 45U); // Запускаем преобразования ~ раз в 50 мс
+    timeCount = HAL_GetTick();	
+    
+
+    if(cli_deque(&queue1, (MESSAGE*)&queueOutMsg)) // чтение из очереди
+    {
+      monitorParser();
+    }
+    monitor_out_test();
+    PT_YIELD(pt);
+  }
+
+  PT_END(pt);
+}

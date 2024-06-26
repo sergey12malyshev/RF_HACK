@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#define LC_INCLUDE "lc-addrlabels.h"
+#include "pt.h"
 
 #include "cmsis_os.h"
 #include "FreeRTOS.h"
@@ -74,7 +76,47 @@ void StartApplicationTask(void *argument)
     LCD_WriteString(lcd, 0, 0, str, &Font_8x13, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
     __enable_irq();
 
-    vTaskDelayUntil(&xLastWakeTime, xPeriod_ms);
+    HAL_Delay(450);
   }
-  /* USER CODE END StartApplicationTask */
+}
+  /*
+ * Протопоток StartApplication_Thread
+ *
+ * 
+ */
+PT_THREAD(StartApplication_Thread(struct pt *pt))
+{
+  static uint32_t timeCount = 0;
+
+  PT_BEGIN(pt);
+  
+  bootingScreen();
+
+  PT_WAIT_UNTIL(pt, (HAL_GetTick() - timeCount) > 500U);
+  timeCount = HAL_GetTick();
+
+  LCD_Fill(lcd, COLOR_BLACK);
+  GPS_Init();
+
+  while (1)
+  {
+    PT_WAIT_UNTIL(pt, (HAL_GetTick() - timeCount) > 450U); // Запускаем преобразования ~ раз в 50 мс
+    timeCount = HAL_GetTick();	
+    
+
+    heartbeatLedToggle();
+
+    char str[100] = "   N = ";
+    static uint16_t i;
+    utoa(i++, &str[7], 10);
+    strcat(str, " count    ");
+
+    __disable_irq();
+    LCD_WriteString(lcd, 0, 0, str, &Font_8x13, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
+    __enable_irq();
+
+    PT_YIELD(pt);
+  }
+
+  PT_END(pt);
 }

@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <string.h>
 
+
 #include "display.h"
 #include "ili9341.h"
 #include "xpt2046.h"
@@ -38,10 +39,16 @@
 #include "cli_driver.h"
 #include "cli_task.h"
 
+#define LC_INCLUDE "lc-addrlabels.h"
+#include "pt.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+static struct pt application_pt;
+static struct pt cli_pt;
+
 uint32_t millis = 0;
 
 LCD_Handler *lcd = NULL;     //Указатель на первый дисплей в списке
@@ -82,6 +89,11 @@ static void convert64bit_to_hex(uint8_t *v, char *b)
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void initProtothreads(void)
+{
+  PT_INIT(&application_pt);
+  PT_INIT(&cli_pt);
+}
 /* USER CODE END 0 */
 
 /**
@@ -257,19 +269,23 @@ while(1) { }
   /* USER CODE END 2 */
 
   /* Init scheduler */
-  osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
-  MX_FREERTOS_Init();
+ // osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
+ // MX_FREERTOS_Init();
   /* Start scheduler */
-  osKernelStart();
+ // osKernelStart();
 
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  initProtothreads();
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    StartApplication_Thread(&application_pt);
+    StartCLI_Thread(&cli_pt);
   }
   /* USER CODE END 3 */
 }
