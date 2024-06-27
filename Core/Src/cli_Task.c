@@ -268,7 +268,7 @@ static void monitorParser(void)
 
 static void GPSTest(void)
 {
-  debugPrintf("time:%d"CLI_NEW_LINE, GPS.utc_time * 1000); 
+  debugPrintf("UTC time:%f"CLI_NEW_LINE, GPS.utc_time); 
 }
 
 static void monitor_out_test(void)

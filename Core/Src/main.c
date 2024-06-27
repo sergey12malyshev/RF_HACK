@@ -46,8 +46,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-static struct pt application_pt;
-static struct pt cli_pt;
+static struct pt application_pt, cli_pt;
 
 uint32_t millis = 0;
 
