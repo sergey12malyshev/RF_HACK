@@ -82,30 +82,33 @@ void StartApplicationTask(void *argument)
     HAL_Delay(450);
   }
 }
-  /*
+
+#include "time.h"
+
+/*
  * Протопоток StartApplication_Thread
  *
  * 
  */
 PT_THREAD(StartApplication_Thread(struct pt *pt))
 {
-  static uint32_t timeCount;
+  static uint32_t timer1;
 
   PT_BEGIN(pt);
   
   bootingScreen();
 
-  timeCount = HAL_GetTick();
-  PT_WAIT_UNTIL(pt, (HAL_GetTick() - timeCount) > 500U);
-  timeCount = HAL_GetTick();
+
+  PT_DELAY_MS(pt, &timer1, 1800);
 
   LCD_Fill(lcd, COLOR_BLACK);
   GPS_Init();
 
+  setTime(&timer1);
+
   while (1)
   {
-    PT_WAIT_UNTIL(pt, (HAL_GetTick() - timeCount) > 450U); // Запускаем преобразования ~ раз в 50 мс
-    timeCount = HAL_GetTick();	
+    PT_WAIT_UNTIL(pt, timer(&timer1, 450)); // Запускаем преобразования ~ раз в 4s50 мс
     
 
     heartbeatLedToggle();
@@ -127,7 +130,7 @@ PT_THREAD(StartApplication_Thread(struct pt *pt))
       sprintf(str, "latitude: %.4f", GPS.dec_latitude);
     LCD_WriteString(lcd, 0, 30, str, &Font_8x13, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
 
-      sprintf(str, "altitude_ft: %.4f", GPS.msl_altitude);
+      sprintf(str, "altitude_ft: %.4f",  GPS.msl_altitude);
     LCD_WriteString(lcd, 0, 45, str, &Font_8x13, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
     
 

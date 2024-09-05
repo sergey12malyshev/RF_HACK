@@ -317,16 +317,15 @@ void StartCLI_Task(void *argument)
 
 
 
+#include "time.h"
 
-  /*
+/*
  * Протопоток StartCLI_Thread
  *
- * 
  */
 PT_THREAD(StartCLI_Thread(struct pt *pt))
 {
-  
-  static uint32_t timeCount = 0;
+  static uint32_t timer1;
 
   PT_BEGIN(pt);
   
@@ -338,9 +337,7 @@ PT_THREAD(StartCLI_Thread(struct pt *pt))
 
   while (1)
   {
-    PT_WAIT_UNTIL(pt, (HAL_GetTick() - timeCount) > 45U); // Запускаем преобразования ~ раз в 50 мс
-    timeCount = HAL_GetTick();	
-    
+    PT_WAIT_UNTIL(pt, timer(&timer1, 50)); // Запускаем преобразования ~ раз в 50 мс
 
     if(cli_deque(&queue1, (MESSAGE*)&queueOutMsg)) // чтение из очереди
     {
