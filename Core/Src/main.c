@@ -14,7 +14,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "cmsis_os.h"
 #include "dma.h"
 #include "spi.h"
 #include "tim.h"
@@ -69,7 +68,6 @@ LCD_Handler *lcd = NULL;     //Указатель на первый диспле
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* Для тех, кто не умеет пользоваться отладчиком или
@@ -267,13 +265,6 @@ while(1) { }
   LCD_Fill(lcd, COLOR_BLACK);
   /* USER CODE END 2 */
 
-  /* Init scheduler */
- // osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
- // MX_FREERTOS_Init();
-  /* Start scheduler */
- // osKernelStart();
-
-  /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 

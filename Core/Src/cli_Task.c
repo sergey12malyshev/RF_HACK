@@ -4,16 +4,13 @@
 #include <stdbool.h>
 #include <stdarg.h>
 
-#include "cmsis_os.h"
-#include "FreeRTOS.h"
-#include "task.h"
-
 #include "main.h"
 #include "cli_task.h"
 #include "cli_driver.h"
 #include "cli_queue.h"
 
 #include "gps.h"
+#include "time.h"
 
 /*
   UART CLI 115200 Baud
@@ -189,7 +186,6 @@ static void monitorParser(void)
       else if ((input_mon_buff[0] == 'R')&&(input_mon_buff[1] == 0))
       { // enter RST
         debugPrintf_OK();
-        vTaskSuspendAll();
         while (1);
       }
       else if (mon_strcmp(input_mon_buff, "RST"))
@@ -206,8 +202,6 @@ static void monitorParser(void)
       {
         debugPrintf_OK();
         debugPrintf("https://github.com/sergey12malyshev/RF_HACK.git"CLI_NEW_LINE);
-        debugPrintf("FreeRTOS: ");
-        debugPrintf(tskKERNEL_VERSION_NUMBER);
         debugPrintf_r_n();
         debugPrintf("HAL: ");
         debugPrintf("%d", HAL_GetHalVersion());
@@ -289,35 +283,6 @@ static void monitor_out_test(void)
       break;
   }
 }
-
-void StartCLI_Task(void *argument)
-{
-  const TickType_t xPeriod_ms = 125u / portTICK_PERIOD_MS;
-  TickType_t xLastWakeTime = xTaskGetTickCount();
-
-  uart_clear_buff();
-  uart_receve_IT();
-  cli_init_queue(&queue1);
-  resetTest();
-  debugPrintf_hello();
-
-
-  for(;;)
-  {
-    if(cli_deque(&queue1, (MESSAGE*)&queueOutMsg)) // чтение из очереди
-    {
-      monitorParser();
-    }
-    monitor_out_test();
-
-    vTaskDelayUntil(&xLastWakeTime, xPeriod_ms);
-  }
-}
-
-
-
-
-#include "time.h"
 
 /*
  * Протопоток StartCLI_Thread
