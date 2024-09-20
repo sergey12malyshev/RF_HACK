@@ -144,25 +144,34 @@ int main(void)
 
   /* Настройка дисплея */
   //Данные DMA
-  LCD_DMA_TypeDef dma_tx = { .dma    = DMA2,        //Контроллер DMA
-                         .stream = LL_DMA_STREAM_3 };  //Поток контроллера DMA
+  LCD_DMA_TypeDef dma_tx = 
+  { 
+    .dma    = DMA2,           // Контроллер DMA
+    .stream = LL_DMA_STREAM_3 // Поток контроллера DMA
+  };  
 
   //Данные подсветки
-  LCD_BackLight_data bkl_data = { .htim_bk        = TIM3,         //Таймер - для подсветки с PWM (изменение яркости подсветки)
-                              .channel_htim_bk = LL_TIM_CHANNEL_CH1, //Канал таймера - для подсветки с PWM (изменение яркости подсветки)
-                  .blk_port      = 0,           //Порт gpio - подсветка по типу вкл./выкл.
-                  .blk_pin        = 0,           //Вывод порта - подсветка по типу вкл./выкл.
-                  .bk_percent     = 60  };         //Яркость подсветки, в %
+  LCD_BackLight_data bkl_data = 
+  {
+    .htim_bk        = TIM3,       // Таймер - для подсветки с PWM (изменение яркости подсветки)
+    .channel_htim_bk = LL_TIM_CHANNEL_CH1, // Канал таймера - для подсветки с PWM (изменение яркости подсветки)
+    .blk_port       = 0,          // Порт gpio - подсветка по типу вкл./выкл.
+    .blk_pin        = 0,          // Вывод порта - подсветка по типу вкл./выкл.
+    .bk_percent     = 60          // Яркость подсветки, в %
+  };     
 
   //Данные подключения
-  LCD_SPI_Connected_data spi_con = { .spi      = SPI1,        //�?спользуемый spi
-                                 .dma_tx    = dma_tx,        //Данные DMA
-                   .reset_port = LCD_RESET_GPIO_Port,  //Порт вывода RES
-                   .reset_pin  = LCD_RESET_Pin,    //Пин вывода RES
-                   .dc_port    = LCD_DC_GPIO_Port,  //Порт вывода DC
-                   .dc_pin    = LCD_DC_Pin,      //Пин вывода DC
-                   .cs_port   = LCD_CS_GPIO_Port,  //Порт вывода CS
-                   .cs_pin   = LCD_CS_Pin         };//Пин вывода CS
+  LCD_SPI_Connected_data spi_con = 
+  { 
+    .spi        = SPI1,          // Используемый spi
+    .dma_tx     = dma_tx,        // Данные DMA
+    .reset_port = LCD_RESET_GPIO_Port,  // Порт вывода RES
+    .reset_pin  = LCD_RESET_Pin,     // Пин вывода RES
+    .dc_port    = LCD_DC_GPIO_Port,  // Порт вывода DC
+    .dc_pin     = LCD_DC_Pin,        // Пин вывода DC
+    .cs_port    = LCD_CS_GPIO_Port,  // Порт вывода CS
+    .cs_pin     = LCD_CS_Pin         // Пин вывода CS 
+  };
 
 #ifndef  LCD_DYNAMIC_MEM
   LCD_Handler lcd1;
