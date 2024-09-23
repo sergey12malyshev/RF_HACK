@@ -16,12 +16,15 @@
 #include "xpt2046.h"
 #include "calibrate_touch.h"
 #include "demo.h"
+#include "RF_Thread.h"
 
 #include "gps.h"
 #include "time.h"
 
 extern LCD_Handler *lcd;
 extern GPS_t GPS;
+extern RF_t CC1101;
+
 
 static void bootingScreen(void)
 {
@@ -31,7 +34,7 @@ static void bootingScreen(void)
 
   LCD_Fill(lcd, COLOR_BLACK);
 
-  LCD_WriteString(lcd, 0, y+=shift, "LCD TEST",
+  LCD_WriteString(lcd, 0, y+=shift, "RF HACK",
             &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
  
   LCD_WriteString(lcd, 0, y+=shift, "Prototreads ",
@@ -73,6 +76,27 @@ static void GPS_DataScreen(void)
   LCD_WriteString(lcd, start_x, offset_y*5 + start_y, str, &Font_8x13, COLOR_YELLOW, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 }
 
+static void CC1101_DataScreen(void)
+{
+  uint16_t start_x = 10;
+  uint16_t start_y = 110;
+
+  uint16_t offset_y = 16;
+
+  char str[100] = "";
+  sprintf(str, "Count mesage: %d", CC1101.countMessage);
+  LCD_WriteString(lcd, start_x, offset_y + start_y, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
+  sprintf(str, "Count error: %d", CC1101.countError);
+  LCD_WriteString(lcd, start_x, offset_y*2 + start_y, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
+  sprintf(str, "RCCI: %d dBm", CC1101.RSSI);
+  LCD_WriteString(lcd, start_x, offset_y*3 + start_y, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
+  //sprintf(str, "Message: %s",  CC1101.dataString);
+  //LCD_WriteString(lcd, start_x, offset_y*4 + start_y, str, &Font_8x13, COLOR_YELLOW, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+}
+
 /*
  * Протопоток StartApplication_Thread
  *
@@ -93,11 +117,12 @@ PT_THREAD(StartApplication_Thread(struct pt *pt))
   LCD_Fill(lcd, COLOR_BLACK);
   GPS_Init();
   LCD_WriteString(lcd, 0, 0, "GPS Data:", &Font_8x13, COLOR_YELLOW, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+  LCD_WriteString(lcd, 0, 110, "CC1101 Data:", &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
   setTime(&timer1);
 
   while (1)
   {
-    PT_WAIT_UNTIL(pt, timer(&timer1, 450)); // Запускаем преобразования ~ раз в 4s50 мс
+    PT_WAIT_UNTIL(pt, timer(&timer1, 250));
     
     heartbeatLedToggle();
 
@@ -110,6 +135,7 @@ PT_THREAD(StartApplication_Thread(struct pt *pt))
     LCD_WriteString(lcd, 15, 15, str, &Font_8x13, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
 #endif
     GPS_DataScreen();
+    CC1101_DataScreen();
 
     PT_YIELD(pt);
   }
