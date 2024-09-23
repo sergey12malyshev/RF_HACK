@@ -127,6 +127,7 @@ PT_THREAD(RF_Thread(struct pt *pt))
             status = TI_read_status(CCxxx0_PKTSTATUS); // if it isnt, check pktstatus // değilse, paket durumunu control_str eder
             GDO0_FLAG = 0;
             debugPrintf(CLI_ERROR "CRC" CLI_NEW_LINE);
+            counter_Error++;
         }
 
             CC1101.countMessage = counter_RX;
