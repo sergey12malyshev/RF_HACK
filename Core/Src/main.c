@@ -198,21 +198,20 @@ int main(void)
              bkl_data           );
 
   lcd = LCD;     //Указатель на первый дисплей в списке
-  LCD_Init(lcd);         //�?нициализация дисплея
-  LCD_Fill(lcd, COLOR_RED);    //Заливка дисплея
-  /*---------------------------------------------------------------------------------------------------*/
+  LCD_Init(lcd);
+  LCD_Fill(lcd, COLOR_RED);
 
   /* ----------------------------------- Настройка тачскрина ------------------------------------------*/
   //Будем обмениваться данными с XPT2046 на скорости 2.625 Мбит/с (по спецификации максимум 2.0 Мбит/с).
-  XPT2046_ConnectionData cnt_touch = { .spi    = SPI1,      //�?спользуемый spi
+  XPT2046_ConnectionData cnt_touch = { .spi    = SPI1,   //используемый spi
                                    .speed    = 4,        //Скорость spi 0...7 (0 - clk/2, 1 - clk/4, ..., 7 - clk/256)
                      .cs_port  = T_CS_GPIO_Port,  //Порт для управления T_CS
-                     .cs_pin    = T_CS_Pin,    //Вывод порта для управления T_CS
-                     .irq_port = T_IRQ_GPIO_Port,  //Порт для управления T_IRQ
-                     .irq_pin  = T_IRQ_Pin,    //Вывод порта для управления T_IRQ
+                     .cs_pin    = T_CS_Pin,       //Вывод порта для управления T_CS
+                     .irq_port = T_IRQ_GPIO_Port, //Порт для управления T_IRQ
+                     .irq_pin  = T_IRQ_Pin,       //Вывод порта для управления T_IRQ
                      .exti_irq = T_IRQ_EXTI_IRQn  //Канал внешнего прерывания
                                      };
-  //�?нициализация обработчика XPT2046
+  //инициализация обработчика XPT2046
   XPT2046_Handler touch1;
   XPT2046_InitTouch(&touch1, 20, &cnt_touch);
 

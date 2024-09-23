@@ -49,6 +49,27 @@ static void bootingScreen(void)
 
 }
 
+static void GPS_DataScreen(void)
+{
+  uint16_t start_x = 10;
+  uint16_t start_y = 0;
+
+  uint16_t offset_y = 14;
+
+  char str[100] = "";
+  sprintf(str, "Utc time: %.2f", GPS.utc_time);
+  LCD_WriteString(lcd, start_x, offset_y + start_y, str, &Font_8x13, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
+
+  sprintf(str, "longitude: %.4f", GPS.dec_longitude);
+  LCD_WriteString(lcd, start_x, offset_y*2 + start_y, str, &Font_8x13, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
+
+  sprintf(str, "latitude: %.4f", GPS.dec_latitude);
+  LCD_WriteString(lcd, start_x, offset_y*3 + start_y, str, &Font_8x13, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
+
+  sprintf(str, "altitude_ft: %.4f",  GPS.msl_altitude);
+  LCD_WriteString(lcd, start_x, offset_y*4 + start_y, str, &Font_8x13, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
+}
+
 /*
  * Протопоток StartApplication_Thread
  *
@@ -68,7 +89,7 @@ PT_THREAD(StartApplication_Thread(struct pt *pt))
 
   LCD_Fill(lcd, COLOR_BLACK);
   GPS_Init();
-
+  LCD_WriteString(lcd, 0, 0, "GPS Data", &Font_8x13, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
   setTime(&timer1);
 
   while (1)
@@ -77,25 +98,15 @@ PT_THREAD(StartApplication_Thread(struct pt *pt))
     
     heartbeatLedToggle();
 
-#if 0
+#define TEST_COUNT   false
+#if TEST_COUNT
     char str[100] = "   N = ";
     static uint16_t i;
     utoa(i++, &str[7], 10);
     strcat(str, " count    ");
+    LCD_WriteString(lcd, 15, 15, str, &Font_8x13, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
 #endif
-    char str[100] = "";
-      sprintf(str, "Utc time: %.2f", GPS.utc_time);
-    LCD_WriteString(lcd, 0, 0, str, &Font_8x13, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
-
-      sprintf(str, "longitude: %.4f", GPS.dec_longitude);
-    LCD_WriteString(lcd, 0, 15, str, &Font_8x13, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
-
-      sprintf(str, "latitude: %.4f", GPS.dec_latitude);
-    LCD_WriteString(lcd, 0, 30, str, &Font_8x13, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
-
-      sprintf(str, "altitude_ft: %.4f",  GPS.msl_altitude);
-    LCD_WriteString(lcd, 0, 45, str, &Font_8x13, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
-    
+    GPS_DataScreen();
 
     PT_YIELD(pt);
   }
