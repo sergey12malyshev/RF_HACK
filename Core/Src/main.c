@@ -41,6 +41,8 @@
 #define LC_INCLUDE "lc-addrlabels.h"
 #include "pt.h"
 
+
+#include "cc1101.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,6 +50,8 @@
 static struct pt application_pt, cli_pt;
 
 uint32_t millis = 0;
+
+volatile uint8_t GDO0_FLAG;
 
 LCD_Handler *lcd = NULL;     //Указатель на первый дисплей в списке
 /* USER CODE END PTD */
@@ -82,6 +86,26 @@ static void convert64bit_to_hex(uint8_t *v, char *b)
    }
 }
 */
+#include <stdbool.h>
+bool transmittRF(char* packet, uint8_t len)
+{
+	uint8_t status = TI_read_status(CCxxx0_VERSION); // it is for checking only //it must be 0x14 
+	status = TI_read_status(CCxxx0_TXBYTES); // it is too
+	TI_strobe(CCxxx0_SFTX); // flush the buffer
+	//userLEDShow();
+	TI_send_packet((uint8_t*)packet, len); //the function is sending the data
+
+	while(HAL_GPIO_ReadPin(CC_GDO_GPIO_Port, CC_GDO_Pin));
+	while(!HAL_GPIO_ReadPin(CC_GDO_GPIO_Port, CC_GDO_Pin));
+	  //if the pass to this function, the data was sent.
+
+	status = TI_read_status(CCxxx0_TXBYTES); // it is checking to send the data
+   
+  debugPrintf("%d"CLI_NEW_LINE, status);
+	//userLEDHide();
+
+  return true;
+}
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -140,6 +164,7 @@ int main(void)
   MX_TIM3_Init();
   MX_USART1_UART_Init();
   MX_USART6_UART_Init();
+  MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
 
   /* Настройка дисплея */
@@ -163,7 +188,7 @@ int main(void)
   //Данные подключения
   LCD_SPI_Connected_data spi_con = 
   { 
-    .spi        = SPI1,          // Используемый spi
+    .spi        = SPI1,          // �?спользуемый spi
     .dma_tx     = dma_tx,        // Данные DMA
     .reset_port = LCD_RESET_GPIO_Port,  // Порт вывода RES
     .reset_pin  = LCD_RESET_Pin,     // Пин вывода RES
@@ -276,6 +301,9 @@ while(1) { }
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
+  TI_init(&hspi2, NSS_CS_GPIO_Port, NSS_CS_Pin); // CS
+
+  
   initProtothreads();
   while (1)
   {
@@ -284,6 +312,21 @@ while(1) { }
     /* USER CODE BEGIN 3 */
     StartApplication_Thread(&application_pt);
     StartCLI_Thread(&cli_pt);
+
+
+    //DEBUG_PRINT(CLI_TX"%s"CLI_NEW_LINE, packet);
+  static uint32_t timeCount = 0;
+  
+   if((HAL_GetTick() - timeCount) > 450U)
+   {
+         timeCount = HAL_GetTick();
+        char packet[7]; // Резерв одного символа под нуль-терминатор!!
+    sprintf(packet, "TST %02d", 4);
+
+	  transmittRF(packet, sizeof(packet)); //the function is sending the data
+   }
+	
+
   }
   /* USER CODE END 3 */
 }
