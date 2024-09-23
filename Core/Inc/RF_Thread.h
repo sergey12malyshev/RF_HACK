@@ -11,7 +11,7 @@ typedef struct
   uint16_t countMessage;
   uint16_t countError;
   int16_t RSSI;
-  uint8_t *dataString;
+  uint8_t dataString[8];
 } RF_t;
 
 #endif /*__RF_TREAD_H__ */

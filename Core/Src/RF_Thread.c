@@ -55,8 +55,8 @@ PT_THREAD(RF_Thread(struct pt *pt))
 {
     PT_BEGIN(pt);
 
-    char buffer[64];
-    char massage[7];
+    static char buffer[64];
+    char massage[7] ="";
     static const char control_str[7] = {'T', 'S', 'T', ' ', 'X', 'X', '0'};
     uint8_t length;
     static uint8_t counter_RX, counter_Error = 0;
@@ -65,9 +65,6 @@ PT_THREAD(RF_Thread(struct pt *pt))
 
     //__HAL_GPIO_EXTI_CLEAR_IT(CC_GDO_Pin);
     //HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
-
-    // printRSSImessage_OLED(0);
-    // printRXcountOLED(counter_RX);
 
     while (1)
     {
@@ -96,7 +93,8 @@ PT_THREAD(RF_Thread(struct pt *pt))
 
             for (uint8_t i = 0; i < 7; i++) // copy
             {
-                massage[i] = buffer[i];
+              massage[i] = buffer[i];
+              CC1101.dataString[i] = buffer[i];
             }
 
             for (uint8_t i = 0; i < 4; i++) // to check for receiving data
