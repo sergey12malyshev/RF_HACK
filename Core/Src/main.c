@@ -42,11 +42,12 @@
 #include "pt.h"
 
 #include "RF_Thread.h"
+#include "subGHz_TX_Thread.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-static struct pt application_pt, cli_pt, rf_pt;
+static struct pt application_pt, cli_pt, rf_pt, sub_tx_pt;
 
 uint32_t millis = 0;
 
@@ -96,6 +97,7 @@ void initProtothreads(void)
   PT_INIT(&application_pt);
   PT_INIT(&cli_pt);
   PT_INIT(&rf_pt);
+  PT_INIT(&sub_tx_pt);
 }
 /* USER CODE END 0 */
 
@@ -293,7 +295,35 @@ while(1) { }
     /* USER CODE BEGIN 3 */
     StartApplication_Thread(&application_pt);
     StartCLI_Thread(&cli_pt);
-    RF_Thread(&rf_pt);
+
+    typedef enum 
+    {
+      RX = 0, 
+      TX,
+      NUMBER_STATE
+    }Work_state;
+
+    static Work_state mainState;
+
+  
+    if(getTxButtonState())
+    {
+      if(mainState != TX)
+      {
+        PT_INIT(&sub_tx_pt);
+        mainState = TX;
+      }
+      subGHz_TX_Thread(&sub_tx_pt);
+    }
+    else
+    {
+      if(mainState != RX)
+      {
+        PT_INIT(&rf_pt);
+        mainState = RX;
+      }
+      RF_Thread(&rf_pt);
+    }
   }
   /* USER CODE END 3 */
 }

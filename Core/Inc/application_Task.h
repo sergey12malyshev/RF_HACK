@@ -6,4 +6,6 @@
 
 PT_THREAD(StartApplication_Thread(struct pt *pt));
 
+bool getTxButtonState(void);
+
 #endif /*__APPL_TASK_H__ */

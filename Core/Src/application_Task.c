@@ -26,6 +26,12 @@ extern XPT2046_Handler touch1;
 extern GPS_t GPS;
 extern RF_t CC1101;
 
+bool TxButton = false;
+
+bool getTxButtonState(void)
+{
+  return TxButton;
+}
 
 static void bootingScreen(void)
 {
@@ -113,7 +119,7 @@ static void tx_logo(uint32_t color)
 	LCD_WriteString(lcd, x + 10, y + 15, "TX", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
 }
 
-static bool getStateTX_button(XPT2046_Handler *t)
+static bool TX_buttonHandler(XPT2046_Handler *t)
 {
   int x = 0, y = 0;
   	tPoint point_d;
@@ -130,14 +136,12 @@ static bool getStateTX_button(XPT2046_Handler *t)
 			if (x >= lcd->Width) x = lcd->Width - 1;	//выход за допустимые
 			if (y >= lcd->Height) y = lcd->Height - 1;	//границы
 
-      debugPrintf("%d, %d"CLI_NEW_LINE, x, y);	
+      //debugPrintf("%d, %d"CLI_NEW_LINE, x, y);	
       int hw = LCD_GetHeight(lcd) / 8; //Сторона квадрата с цветом пера
 
 			if (x >= BUTTON_TX_X && x < (hw + BUTTON_TX_X) && y >= BUTTON_TX_Y && y < (hw + BUTTON_TX_Y)) 
       {
          //debugPrintf("@@@@@");
-		     tx_logo(COLOR_WHITE);
-			   LL_mDelay(10);
 				return true;
 			}
 	  }
@@ -155,7 +159,25 @@ PT_THREAD(StartApplication_Thread(struct pt *pt))
 {
   static uint32_t timer1;
 
-  getStateTX_button(&touch1);
+  static bool TxButton_tmp;
+  TxButton = TX_buttonHandler(&touch1);
+  
+  if (TxButton != TxButton_tmp)
+  {
+    TxButton_tmp = TxButton;
+    debugPrintf("%d"CLI_NEW_LINE, TxButton_tmp);
+
+    if(TxButton)
+    {
+ 		  tx_logo(COLOR_RED);
+    }
+    else
+    {
+      tx_logo(COLOR_WHITE);
+    }
+		LL_mDelay(10);
+  }
+
 
   PT_BEGIN(pt);
   
@@ -168,7 +190,7 @@ PT_THREAD(StartApplication_Thread(struct pt *pt))
   GPS_Init();
   LCD_WriteString(lcd, 0, 0, "GPS Data:", &Font_8x13, COLOR_YELLOW, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
   LCD_WriteString(lcd, 0, 110, "CC1101 Data:", &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
-  tx_logo(COLOR_GREEN);
+  tx_logo(COLOR_WHITE);
   setTime(&timer1);
 
   while (1)
