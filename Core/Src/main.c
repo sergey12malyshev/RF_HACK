@@ -53,6 +53,7 @@ uint32_t millis = 0;
 volatile uint8_t GDO0_FLAG;
 
 LCD_Handler *lcd = NULL;     //Указатель на первый дисплей в списке
+XPT2046_Handler touch1;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -218,7 +219,6 @@ int main(void)
                      .exti_irq = T_IRQ_EXTI_IRQn  //Канал внешнего прерывания
                                      };
   //инициализация обработчика XPT2046
-  XPT2046_Handler touch1;
   XPT2046_InitTouch(&touch1, 20, &cnt_touch);
 
 /* Самый простой вариант хранения в программе
@@ -294,7 +294,6 @@ while(1) { }
     StartApplication_Thread(&application_pt);
     StartCLI_Thread(&cli_pt);
     RF_Thread(&rf_pt);
-
   }
   /* USER CODE END 3 */
 }

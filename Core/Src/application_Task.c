@@ -22,6 +22,7 @@
 #include "time.h"
 
 extern LCD_Handler *lcd;
+extern XPT2046_Handler touch1;
 extern GPS_t GPS;
 extern RF_t CC1101;
 
@@ -97,6 +98,53 @@ static void CC1101_DataScreen(void)
   LCD_WriteString(lcd, start_x, offset_y*4 + start_y, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 }
 
+#define BUTTON_TX_X 5
+#define BUTTON_TX_Y 270
+
+static void tx_logo(uint32_t color)
+{
+  int x = BUTTON_TX_X, y = BUTTON_TX_Y;
+	tPoint point_d;
+	int hw = LCD_GetHeight(lcd) / 8; //Сторона квадрата с цветом пера
+
+	LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE); //Черный контур вокруг текущего цвета
+	LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); //Квадрат, залитый текущим цветом
+	//Кнопка "Exit" в квадрате с белым цветом
+	LCD_WriteString(lcd, x + 10, y + 15, "TX", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
+}
+
+static bool getStateTX_button(XPT2046_Handler *t)
+{
+  int x = 0, y = 0;
+  	tPoint point_d;
+  
+		(void)XPT2046_GetTouch(t); //Опрос тачскрина (на всякий случай, вдруг запрещено опрашивать тачскрин в прерывании)
+		
+    if (t->click)       						 //Есть касание тачскрина
+    {			
+			XPT2046_ConvertPoint(&point_d, &t->point, &t->coef); //Преобразуем координаты тачскрина в дисплейные
+			x = point_d.x; 			//Получаем значения дисплейных
+			y = point_d.y; 			//координат
+			if (x < 0) x = 0; 							//Проверяем координаты
+			if (y < 0) y = 0;							//на
+			if (x >= lcd->Width) x = lcd->Width - 1;	//выход за допустимые
+			if (y >= lcd->Height) y = lcd->Height - 1;	//границы
+
+      debugPrintf("%d, %d"CLI_NEW_LINE, x, y);	
+      int hw = LCD_GetHeight(lcd) / 8; //Сторона квадрата с цветом пера
+
+			if (x >= BUTTON_TX_X && x < (hw + BUTTON_TX_X) && y >= BUTTON_TX_Y && y < (hw + BUTTON_TX_Y)) 
+      {
+         //debugPrintf("@@@@@");
+		     tx_logo(COLOR_WHITE);
+			   LL_mDelay(10);
+				return true;
+			}
+	  }
+
+  return false;
+}
+
 /*
  * Протопоток StartApplication_Thread
  *
@@ -106,6 +154,8 @@ static void CC1101_DataScreen(void)
 PT_THREAD(StartApplication_Thread(struct pt *pt))
 {
   static uint32_t timer1;
+
+  getStateTX_button(&touch1);
 
   PT_BEGIN(pt);
   
@@ -118,6 +168,7 @@ PT_THREAD(StartApplication_Thread(struct pt *pt))
   GPS_Init();
   LCD_WriteString(lcd, 0, 0, "GPS Data:", &Font_8x13, COLOR_YELLOW, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
   LCD_WriteString(lcd, 0, 110, "CC1101 Data:", &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+  tx_logo(COLOR_GREEN);
   setTime(&timer1);
 
   while (1)
