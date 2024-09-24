@@ -102,6 +102,9 @@ static void CC1101_DataScreen(void)
 
   sprintf(str, "Message: %s", CC1101.dataString);
   LCD_WriteString(lcd, start_x, offset_y*4 + start_y, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
+  sprintf(str, "RSSI M: %ld dBm", CC1101.RSSI_main);
+  LCD_WriteString(lcd, start_x, offset_y*5 + start_y, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 }
 
 #define BUTTON_TX_X 5

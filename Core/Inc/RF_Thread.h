@@ -11,6 +11,7 @@ typedef struct
   uint16_t countMessage;
   uint16_t countError;
   int16_t RSSI;
+  int32_t RSSI_main;
   uint8_t dataString[8];
 } RF_t;
 
