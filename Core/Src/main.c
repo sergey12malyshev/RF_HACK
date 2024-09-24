@@ -1,14 +1,6 @@
 /* USER CODE BEGIN Header */
 /*
- * Демонстрация работы с сенсорным экраном (тачскрином) на базе контроллера XPT2046 (HR2046 и т.п.)
- * и дисплеем на базе контроллера ILI9341 (spi)
- *
- * Copyright (C) 2022, VadRov, all right reserved.
- *
- * https://www.youtube.com/@VadRov
- * https://dzen.ru/vadrov
- * https://vk.com/vadrov
- * https://t.me/vadrov_channel
+ * RF_HACK 2024
  *
  */
 /* USER CODE END Header */
@@ -25,6 +17,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 
 #include "display.h"
@@ -41,8 +34,11 @@
 #define LC_INCLUDE "lc-addrlabels.h"
 #include "pt.h"
 
+#include "application_task.h"
+
 #include "RF_Thread.h"
 #include "subGHz_TX_Thread.h"
+#include "cc1101.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -286,8 +282,8 @@ while(1) { }
 
   TI_init(&hspi2, NSS_CS_GPIO_Port, NSS_CS_Pin); // CS
 
-  
   initProtothreads();
+
   while (1)
   {
     /* USER CODE END WHILE */
