@@ -105,18 +105,19 @@ static void CC1101_DataScreen(void)
 }
 
 #define BUTTON_TX_X 5
-#define BUTTON_TX_Y 270
+#define BUTTON_TX_Y 260
+#define BUTTON_H 6
 
-static void tx_logo(uint32_t color)
+static void buttonTx_logo(uint32_t color)
 {
   int x = BUTTON_TX_X, y = BUTTON_TX_Y;
 	tPoint point_d;
-	int hw = LCD_GetHeight(lcd) / 8; //Сторона квадрата с цветом пера
+	int hw = LCD_GetHeight(lcd) / BUTTON_H; //Сторона квадрата с цветом пера
 
 	LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE); //Черный контур вокруг текущего цвета
 	LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); //Квадрат, залитый текущим цветом
 	//Кнопка "Exit" в квадрате с белым цветом
-	LCD_WriteString(lcd, x + 10, y + 15, "TX", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
+	LCD_WriteString(lcd, x + hw/2 - 10, y + hw/2 - 5, "TX", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
 }
 
 static bool TX_buttonHandler(XPT2046_Handler *t)
@@ -137,7 +138,7 @@ static bool TX_buttonHandler(XPT2046_Handler *t)
 			if (y >= lcd->Height) y = lcd->Height - 1;	//границы
 
       //debugPrintf("%d, %d"CLI_NEW_LINE, x, y);	
-      int hw = LCD_GetHeight(lcd) / 8; //Сторона квадрата с цветом пера
+      int hw = LCD_GetHeight(lcd) / BUTTON_H; //Сторона квадрата с цветом пера
 
 			if (x >= BUTTON_TX_X && x < (hw + BUTTON_TX_X) && y >= BUTTON_TX_Y && y < (hw + BUTTON_TX_Y)) 
       {
@@ -169,11 +170,11 @@ PT_THREAD(StartApplication_Thread(struct pt *pt))
 
     if(TxButton)
     {
- 		  tx_logo(COLOR_RED);
+ 		  buttonTx_logo(COLOR_RED);
     }
     else
     {
-      tx_logo(COLOR_WHITE);
+      buttonTx_logo(COLOR_WHITE);
     }
 		LL_mDelay(10);
   }
@@ -190,7 +191,7 @@ PT_THREAD(StartApplication_Thread(struct pt *pt))
   GPS_Init();
   LCD_WriteString(lcd, 0, 0, "GPS Data:", &Font_8x13, COLOR_YELLOW, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
   LCD_WriteString(lcd, 0, 110, "CC1101 Data:", &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
-  tx_logo(COLOR_WHITE);
+  buttonTx_logo(COLOR_WHITE);
   setTime(&timer1);
 
   while (1)

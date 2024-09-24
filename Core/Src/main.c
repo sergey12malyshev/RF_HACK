@@ -168,7 +168,7 @@ int main(void)
   //Данные подключения
   LCD_SPI_Connected_data spi_con = 
   { 
-    .spi        = SPI1,          // �?спользуемый spi
+    .spi        = SPI1,          // Используемый spi
     .dma_tx     = dma_tx,        // Данные DMA
     .reset_port = LCD_RESET_GPIO_Port,  // Порт вывода RES
     .reset_pin  = LCD_RESET_Pin,     // Пин вывода RES
