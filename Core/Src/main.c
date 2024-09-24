@@ -284,8 +284,6 @@ while(1) { }
   customSetCSpin(&hspi2, NSS_CS_GPIO_Port, NSS_CS_Pin);
   Power_up_reset();
 
-
-
 #define CUSTOM_OLD_CONFIG 0
 #if CUSTOM_OLD_CONFIG
   TI_setCarrierFreq(CFREQ_433);

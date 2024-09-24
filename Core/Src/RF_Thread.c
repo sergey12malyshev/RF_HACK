@@ -108,11 +108,11 @@ extern LCD_Handler *lcd;
 void spectumDraw(void)
 {
   const uint16_t start_y = 310;
-  const uint16_t offset_y = 90;
+  const uint16_t offset_x = 90;
 
   for(uint8_t i = 0; i < 128; i++) // clear
   {
-    LCD_DrawLine(lcd, offset_y+i, 210, offset_y+i, start_y, COLOR_BLACK);
+    LCD_DrawLine(lcd, offset_x+i, 210, offset_x+i, start_y, COLOR_BLACK);
   }
 
   for(uint8_t i = 0; i < 128; i++)
@@ -123,7 +123,16 @@ void spectumDraw(void)
     {
       y2 = 210;
     }
-    LCD_DrawLine(lcd, offset_y+i, y2, offset_y+i, start_y, COLOR_BLUE);
+
+    if(y2 > 260)
+    {
+      LCD_DrawLine(lcd, offset_x+i, y2, offset_x+i, start_y, COLOR_BLUE);
+    }
+    else
+    {
+      LCD_DrawLine(lcd, offset_x+i, y2, offset_x+i, start_y, COLOR_PURPLE);
+    }
+
   }
 
 }
@@ -168,6 +177,12 @@ PT_THREAD(RF_Thread(struct pt *pt))
 
     //__HAL_GPIO_EXTI_CLEAR_IT(CC_GDO_Pin);
     //HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+    static uint32_t timer1;
+    PT_DELAY_MS(pt, &timer1, 1900);
+    char str[25] = {0};
+    sprintf(str, "%.3f-%.3f", startFreq, startFreq + freqStep*128);
+    LCD_WriteString(lcd, 90, 195, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
 
     while (1)
     {

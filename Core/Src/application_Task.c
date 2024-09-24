@@ -41,7 +41,7 @@ static void bootingScreen(void)
 
   LCD_Fill(lcd, COLOR_BLACK);
 
-  LCD_WriteString(lcd, 0, y+=shift, "RF HACK",
+  LCD_WriteString(lcd, 0, y+=shift, "RF HACK 2024",
             &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
  
   LCD_WriteString(lcd, 0, y+=shift, "Prototreads ",
@@ -86,7 +86,7 @@ static void GPS_DataScreen(void)
 static void CC1101_DataScreen(void)
 {
   uint16_t start_x = 10;
-  uint16_t start_y = 110;
+  uint16_t start_y = 100;
 
   uint16_t offset_y = 16;
 
@@ -192,7 +192,7 @@ PT_THREAD(StartApplication_Thread(struct pt *pt))
   LCD_Fill(lcd, COLOR_BLACK);
   GPS_Init();
   LCD_WriteString(lcd, 0, 0, "GPS Data:", &Font_8x13, COLOR_YELLOW, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
-  LCD_WriteString(lcd, 0, 110, "CC1101 Data:", &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+  LCD_WriteString(lcd, 0, 100, "CC1101 Data:", &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
   buttonTx_logo(COLOR_WHITE);
   setTime(&timer1);
 
