@@ -44,6 +44,8 @@ PT_THREAD(subGHz_TX_Thread(struct pt *pt))
 {
     static uint32_t timer1;
 
+    static char packet[7]; // Резерв одного символа под нуль-терминатор!!
+
     PT_BEGIN(pt);
 
     PT_DELAY_MS(pt, &timer1, 100);
@@ -52,10 +54,15 @@ PT_THREAD(subGHz_TX_Thread(struct pt *pt))
 
     while (1)
     {
-        PT_WAIT_UNTIL(pt, timer(&timer1, 450));
+        PT_WAIT_UNTIL(pt, timer(&timer1, 750));
 
+        static uint8_t count_tx = 0;
+        if(count_tx >= 99)
+        {
+          count_tx = 0;
+        }
         char packet[7]; // Резерв одного символа под нуль-терминатор!!
-        sprintf(packet, "TST %02d", 4);
+        sprintf(packet, "TST %02d", count_tx++);
         transmittRF(packet, sizeof(packet)); // the function is sending the data
 
         PT_YIELD(pt);

@@ -279,8 +279,20 @@ while(1) { }
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  HAL_Delay(5);
 
+  customSetCSpin(&hspi2, NSS_CS_GPIO_Port, NSS_CS_Pin);
+  Power_up_reset();
+
+
+
+#define CUSTOM_OLD_CONFIG 0
+#if CUSTOM_OLD_CONFIG
+  TI_setCarrierFreq(CFREQ_433);
+  TI_setDevAddress(1); 
+#endif
   TI_init(&hspi2, NSS_CS_GPIO_Port, NSS_CS_Pin); // CS
+
 
   initProtothreads();
 
@@ -301,8 +313,9 @@ while(1) { }
 
     static Work_state mainState;
 
-  
-    if(getTxButtonState())
+ #define TX_MODE false
+
+    if(getTxButtonState() || TX_MODE)
     {
       if(mainState != TX)
       {

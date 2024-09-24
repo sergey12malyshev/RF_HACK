@@ -111,7 +111,6 @@ static void CC1101_DataScreen(void)
 static void buttonTx_logo(uint32_t color)
 {
   int x = BUTTON_TX_X, y = BUTTON_TX_Y;
-	tPoint point_d;
 	int hw = LCD_GetHeight(lcd) / BUTTON_H; //Сторона квадрата с цветом пера
 
 	LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE); //Черный контур вокруг текущего цвета
