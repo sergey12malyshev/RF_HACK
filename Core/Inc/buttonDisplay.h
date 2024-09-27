@@ -2,7 +2,8 @@
 #define DISPLAY_INIT_H__
 
 bool getTxButtonState(void);
-void buttonTx_logo(uint32_t color);
+bool getScanButtonState(void);
+
 
 #define LC_INCLUDE "lc-addrlabels.h"
 #include "pt.h"

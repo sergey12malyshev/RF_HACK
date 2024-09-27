@@ -27,11 +27,16 @@
 extern LCD_Handler *lcd;
 extern XPT2046_Handler touch1;
 
-static bool TxButton = false;
+static bool TxButton, scanButton;
 
 bool getTxButtonState(void)
 {
     return TxButton;
+}
+
+bool getScanButtonState(void)
+{
+    return scanButton;
 }
 
 void buttonTx_logo(uint32_t color)
@@ -56,10 +61,13 @@ void buttonScan_logo(uint32_t color)
     LCD_WriteString(lcd, x + hw / 2 - 10, y + hw / 2 - 5, "SCAN", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
 }
 
-static bool TX_buttonHandler(XPT2046_Handler *t)
+
+static bool buttonHandler(XPT2046_Handler *t)
 {
     int x = 0, y = 0;
     tPoint point_d;
+
+    static bool noClick;
 
     (void)XPT2046_GetTouch(t); // Опрос тачскрина (на всякий случай, вдруг запрещено опрашивать тачскрин в прерывании)
 
@@ -79,12 +87,49 @@ static bool TX_buttonHandler(XPT2046_Handler *t)
 
         // debugPrintf("%d, %d"CLI_NEW_LINE, x, y);
         int hw = LCD_GetHeight(lcd) / BUTTON_H; // Сторона квадрата с цветом пера
+        
+
 
         if (x >= BUTTON_TX_X && x < (hw + BUTTON_TX_X) && y >= BUTTON_TX_Y && y < (hw + BUTTON_TX_Y))
         {
-            // debugPrintf("@@@@@");
-            return true;
+            if(!TxButton)
+            {
+              buttonTx_logo(COLOR_RED);
+              TxButton = true;
+            }
+            else
+            {
+              if(noClick)
+              {
+                buttonTx_logo(COLOR_WHITE);
+                TxButton = false;
+              }
+            }
+
         }
+        if (x >= BUTTON_SCAN_X && x < (hw + BUTTON_SCAN_X) && y >= BUTTON_SCAN_Y && y < (hw + BUTTON_SCAN_Y))
+        {
+            if(!scanButton)
+            {
+              buttonScan_logo(COLOR_GREEN);
+              scanButton = true;
+            }
+            else
+            {
+              if(noClick)
+              {
+                buttonScan_logo(COLOR_WHITE);
+                scanButton = false;
+              }
+            }
+
+        }
+
+        noClick = false;
+    }
+    else
+    {
+      noClick = true;
     }
 
     return false;
@@ -111,24 +156,10 @@ PT_THREAD(Display_Thread(struct pt *pt))
 
     while (1)
     {
+        PT_WAIT_UNTIL(pt, timer(&timer1, 50));
+        buttonHandler(&touch1);
 
-        TxButton = TX_buttonHandler(&touch1);
-
-        if (TxButton != TxButton_tmp)
-        {
-            TxButton_tmp = TxButton;
-            debugPrintf("%d" CLI_NEW_LINE, TxButton_tmp);
-
-            if (TxButton)
-            {
-                buttonTx_logo(COLOR_RED);
-            }
-            else
-            {
-                buttonTx_logo(COLOR_WHITE);
-            }
-            LL_mDelay(10);
-        }
+        //debugPrintf("%d" CLI_NEW_LINE, TxButton_tmp);
 
         PT_YIELD(pt);
     }
