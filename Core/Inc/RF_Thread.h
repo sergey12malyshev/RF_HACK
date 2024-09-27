@@ -15,4 +15,6 @@ typedef struct
   uint8_t dataString[8];
 } RF_t;
 
+int RSSIconvert(char raw_rssi);
+
 #endif /*__RF_TREAD_H__ */

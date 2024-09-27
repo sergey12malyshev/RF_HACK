@@ -16,7 +16,7 @@ extern volatile uint8_t GDO0_FLAG;
 
 RF_t CC1101 = {0};
 
-static int RSSIconvert(char raw_rssi)
+int RSSIconvert(char raw_rssi)
 {
   const uint8_t rssi_offset = 74;
 
@@ -46,131 +46,12 @@ static uint16_t autoCalibrate(void)
   return accumulatedOffset;
 }
 
-/****************************************************************
- *FUNCTION NAME:Frequency Calculator
- *FUNCTION     :Calculate the basic frequency.
- *INPUT        :none
- *OUTPUT       :none
- ****************************************************************/
-void CC1101_setMHZ(float mhz)
-{
-  uint8_t freq2 = 0;
-  uint8_t freq1 = 0;
-  uint8_t freq0 = 0;
-
-  // MHz = mhz;
-
-  for (bool i = 0; i == 0;)
-  {
-    if (mhz >= 26)
-    {
-      mhz -= 26;
-      freq2 += 1;
-    }
-    else if (mhz >= 0.1015625)
-    {
-      mhz -= 0.1015625;
-      freq1 += 1;
-    }
-    else if (mhz >= 0.00039675)
-    {
-      mhz -= 0.00039675;
-      freq0 += 1;
-    }
-    else
-    {
-      i = 1;
-    }
-  }
-  if (freq0 > 255)
-  {
-    freq1 += 1;
-    freq0 -= 256;
-  }
-
-  TI_write_reg(CCxxx0_FREQ2, freq2);
-  TI_write_reg(CCxxx0_FREQ1, freq1);
-  TI_write_reg(CCxxx0_FREQ0, freq0);
-  // Calibrate();
-}
-
-int8_t scanDat[128];
-float freqStep = 0.01;
-float startFreq = 432.7;
-
-void scanRSSI(float freqSet)
-{
-  for (uint8_t i = 0; i < 128; i++)
-  {
-    CC1101_setMHZ(freqSet);
-    uint8_t rssi_raw = TI_read_status(CCxxx0_RSSI);
-    scanDat[i] = RSSIconvert(rssi_raw);
-    freqSet += freqStep;
-  }
-}
-
-#include "display.h"
-#include "ili9341.h"
-#include "xpt2046.h"
-
-extern LCD_Handler *lcd;
-void spectumDraw(void)
-{
-  const uint16_t start_y = 310;
-  const uint16_t offset_x = 90;
-
-  for (uint8_t i = 0; i < 128; i++) // clear
-  {
-    LCD_DrawLine(lcd, offset_x + i, 210, offset_x + i, start_y, COLOR_BLACK);
-  }
-
-  for (uint8_t i = 0; i < 128; i++)
-  {
-    const int16_t min_RSSI = 138;
-    uint16_t y2 = start_y - (min_RSSI + scanDat[i]);
-    if (y2 < 210)
-    {
-      y2 = 210;
-    }
-
-    if (y2 > 260)
-    {
-      LCD_DrawLine(lcd, offset_x + i, y2, offset_x + i, start_y, COLOR_BLUE);
-    }
-    else
-    {
-      LCD_DrawLine(lcd, offset_x + i, y2, offset_x + i, start_y, COLOR_PURPLE);
-    }
-  }
-}
 /*
  * Протопоток RX_Thread
  *
  */
 PT_THREAD(RF_Thread(struct pt *pt))
 {
-
-#define SPECTRUM_EN true
-#if SPECTRUM_EN
-  static uint32_t timeCount;
-  if ((HAL_GetTick() - timeCount) > 300u)
-  {
-    timeCount = HAL_GetTick();
-
-    uint8_t rssi_raw = TI_read_status(CCxxx0_RSSI);
-    CC1101.RSSI_main = RSSIconvert(rssi_raw);
-
-    scanRSSI(startFreq);
-    // debugPrintf("%f "CLI_NEW_LINE);
-    // for(uint8_t i = 0; i < 128; i++)
-    //{
-    //  debugPrintf("%d ",scanDat[i]);
-    // }
-    // debugPrintf("%f "CLI_NEW_LINE, startFreq + 128*freqStep);
-    CC1101_setMHZ(422.999817);
-    spectumDraw();
-  }
-#endif
 
   PT_BEGIN(pt);
 
@@ -186,9 +67,6 @@ PT_THREAD(RF_Thread(struct pt *pt))
   // HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
   static uint32_t timer1;
   PT_DELAY_MS(pt, &timer1, 1900);
-  char str[25] = {0};
-  sprintf(str, "%.3f-%.3f", startFreq, startFreq + freqStep * 128);
-  LCD_WriteString(lcd, 90, 195, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
   while (1)
   {

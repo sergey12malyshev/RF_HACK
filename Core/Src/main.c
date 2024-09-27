@@ -40,12 +40,13 @@
 #include "buttonDisplay.h"
 #include "RF_Thread.h"
 #include "subGHz_TX_Thread.h"
+#include "spectrumScan.h"
 
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-static struct pt application_pt, cli_pt, rf_pt, sub_tx_pt, button_pt;
+static struct pt application_pt, cli_pt, rf_pt, sub_tx_pt, button_pt, specrum_pt;
 
 uint32_t millis = 0;
 
@@ -97,6 +98,7 @@ void initProtothreads(void)
   PT_INIT(&rf_pt);
   PT_INIT(&sub_tx_pt);
   PT_INIT(&button_pt);
+  PT_INIT(&specrum_pt);
 }
 /* USER CODE END 0 */
 
@@ -305,6 +307,8 @@ while(1) { }
     StartApplication_Thread(&application_pt);
     StartCLI_Thread(&cli_pt);
     Display_Thread(&button_pt);
+
+    specrumScan_Thread(&specrum_pt);
 
     typedef enum 
     {
