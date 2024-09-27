@@ -47,11 +47,12 @@ static uint16_t autoCalibrate(void)
 }
 
 /*
- * Протопоток RX_Thread
+ * Протопоток RF_Thread
  *
  */
 PT_THREAD(RF_Thread(struct pt *pt))
 {
+  static uint32_t timer1;
 
   PT_BEGIN(pt);
 
@@ -61,12 +62,12 @@ PT_THREAD(RF_Thread(struct pt *pt))
   uint8_t length;
   static uint8_t counter_RX, counter_Error = 0;
 
-  TI_write_reg(CCxxx0_IOCFG0, 0x06);
-
   //__HAL_GPIO_EXTI_CLEAR_IT(CC_GDO_Pin);
   // HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
-  static uint32_t timer1;
-  PT_DELAY_MS(pt, &timer1, 1900);
+
+  PT_DELAY_MS(pt, &timer1, 900);
+
+  TI_write_reg(CCxxx0_IOCFG0, 0x06);
 
   while (1)
   {

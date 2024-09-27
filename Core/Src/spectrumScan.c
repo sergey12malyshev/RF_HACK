@@ -119,10 +119,10 @@ void spectumDraw(void)
   }
 }
 /*
- * Протопоток specrumScan_Thread
+ * Протопоток spectrumScan_Thread
  *
  */
-PT_THREAD(specrumScan_Thread(struct pt *pt))
+PT_THREAD(spectrumScan_Thread(struct pt *pt))
 {
   static uint32_t timer1;
 
@@ -132,7 +132,7 @@ PT_THREAD(specrumScan_Thread(struct pt *pt))
 
   char str[25] = {0};
   sprintf(str, "%.3f-%.3f", startFreq, startFreq + freqStep * 128);
-  LCD_WriteString(lcd, 90, 195, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+  LCD_WriteString(lcd, 90, 195, str, &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
   while (1)
   {

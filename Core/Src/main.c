@@ -304,9 +304,9 @@ while(1) { }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    StartApplication_Thread(&application_pt);
-    StartCLI_Thread(&cli_pt);
-    Display_Thread(&button_pt);
+    //StartApplication_Thread(&application_pt);
+    //StartCLI_Thread(&cli_pt);
+   // Display_Thread(&button_pt);
 
     typedef enum 
     {
@@ -318,7 +318,7 @@ while(1) { }
 
     static Work_state mainState;
 
- #define TX_MODE false
+ #define TX_MODE true
 
     if(getTxButtonState() || TX_MODE)
     {
@@ -340,7 +340,7 @@ while(1) { }
           mainState = SCAN;
           debugPrintf("SCAN Mode"CLI_NEW_LINE);
         }
-        specrumScan_Thread(&specrum_pt);
+        spectrumScan_Thread(&specrum_pt);
       }
       else
       {
