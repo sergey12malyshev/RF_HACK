@@ -26,7 +26,9 @@
 #include "calibrate_touch.h"
 #include "demo.h"
 
+
 #include "gps.h"
+#include "cc1101.h"
 
 #include "cli_driver.h"
 #include "cli_task.h"
@@ -35,15 +37,15 @@
 #include "pt.h"
 
 #include "application_task.h"
-
+#include "buttonDisplay.h"
 #include "RF_Thread.h"
 #include "subGHz_TX_Thread.h"
-#include "cc1101.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-static struct pt application_pt, cli_pt, rf_pt, sub_tx_pt;
+static struct pt application_pt, cli_pt, rf_pt, sub_tx_pt, button_pt;
 
 uint32_t millis = 0;
 
@@ -94,6 +96,7 @@ void initProtothreads(void)
   PT_INIT(&cli_pt);
   PT_INIT(&rf_pt);
   PT_INIT(&sub_tx_pt);
+  PT_INIT(&button_pt);
 }
 /* USER CODE END 0 */
 
@@ -301,6 +304,7 @@ while(1) { }
     /* USER CODE BEGIN 3 */
     StartApplication_Thread(&application_pt);
     StartCLI_Thread(&cli_pt);
+    Display_Thread(&button_pt);
 
     typedef enum 
     {
