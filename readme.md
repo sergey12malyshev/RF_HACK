@@ -1,7 +1,7 @@
 ### RF_HACK
 
 ### MCU
-High-performance access line, Arm Cortex-M4 core with DSP and FPU, 256 Kbytes of Flash memory, 84 MHz CPU, ART Accelerator
+STM32F401CC, High-performance access line, Arm Cortex-M4 core with DSP and FPU, 256 Kbytes of Flash memory, 84 MHz CPU, ART Accelerator
 
 Batch Runner - для запуска из VScode
 

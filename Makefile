@@ -20,10 +20,21 @@ TARGET = RF_HACK
 # building variables
 ######################################
 # debug build?
-DEBUG = 1
+DEBUG = 0
 # optimization
 OPT = -Og
 
+######################################
+# C defines - debug or release build
+######################################
+ifeq "$(MAKECMDGOALS)" "debug"
+C_DEFS += -DDEBUG_MAIN 
+C_DEFS += -DUSE_FULL_ASSERT
+# set debug build
+DEBUG = 1
+OPT = -Og
+$(info ************  DEBUG VERSION ************)
+endif
 
 #######################################
 # paths
