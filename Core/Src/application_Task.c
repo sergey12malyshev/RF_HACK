@@ -70,16 +70,16 @@ static void GPS_DataScreen(void)
   sprintf(str, "Utc time: %.2f", GPS.utc_time);
   LCD_WriteString(lcd, start_x, offset_y + start_y, str, &Font_8x13, COLOR_YELLOW, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
-  sprintf(str, "longitude: %.4f", GPS.dec_longitude);
+  sprintf(str, "Longitude: %.4f", GPS.dec_longitude);
   LCD_WriteString(lcd, start_x, offset_y*2 + start_y, str, &Font_8x13, COLOR_YELLOW, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
-  sprintf(str, "latitude: %.4f", GPS.dec_latitude);
+  sprintf(str, "Latitude: %.4f", GPS.dec_latitude);
   LCD_WriteString(lcd, start_x, offset_y*3 + start_y, str, &Font_8x13, COLOR_YELLOW, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
-  sprintf(str, "altitude_ft: %.4f",  GPS.msl_altitude);
+  sprintf(str, "Altitude_ft: %.4f",  GPS.msl_altitude);
   LCD_WriteString(lcd, start_x, offset_y*4 + start_y, str, &Font_8x13, COLOR_YELLOW, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
   
-  sprintf(str, "satelites: %d",  GPS.satelites);
+  sprintf(str, "Satelites: %d",  GPS.satelites);
   LCD_WriteString(lcd, start_x, offset_y*5 + start_y, str, &Font_8x13, COLOR_YELLOW, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 }
 
