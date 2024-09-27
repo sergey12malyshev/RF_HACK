@@ -15,9 +15,14 @@
 #include "calibrate_touch.h"
 #include "demo.h"
 
+#include "time.h"
+
 #define BUTTON_TX_X 5
-#define BUTTON_TX_Y 260
+#define BUTTON_TX_Y 265
 #define BUTTON_H 6
+
+#define BUTTON_SCAN_X 5
+#define BUTTON_SCAN_Y 205
 
 extern LCD_Handler *lcd;
 extern XPT2046_Handler touch1;
@@ -36,8 +41,19 @@ void buttonTx_logo(uint32_t color)
 
     LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE);         // Черный контур вокруг текущего цвета
     LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); // Квадрат, залитый текущим цветом
-    // Кнопка "Exit" в квадрате с белым цветом
+    // Кнопка "TX" в квадрате с белым цветом
     LCD_WriteString(lcd, x + hw / 2 - 10, y + hw / 2 - 5, "TX", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
+}
+
+void buttonScan_logo(uint32_t color)
+{
+    int x = BUTTON_SCAN_X, y = BUTTON_SCAN_Y;
+    int hw = LCD_GetHeight(lcd) / BUTTON_H; // Сторона квадрата с цветом пера
+
+    LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE);         // Черный контур вокруг текущего цвета
+    LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); // Квадрат, залитый текущим цветом
+    // Кнопка "SCAN" в квадрате с белым цветом
+    LCD_WriteString(lcd, x + hw / 2 - 10, y + hw / 2 - 5, "SCAN", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
 }
 
 static bool TX_buttonHandler(XPT2046_Handler *t)
@@ -87,6 +103,11 @@ PT_THREAD(Display_Thread(struct pt *pt))
     static bool TxButton_tmp;
 
     PT_BEGIN(pt);
+
+    PT_DELAY_MS(pt, &timer1, 1800);
+
+    buttonTx_logo(COLOR_WHITE);
+    buttonScan_logo(COLOR_WHITE);
 
     while (1)
     {

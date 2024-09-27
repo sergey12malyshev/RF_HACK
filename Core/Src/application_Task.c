@@ -115,14 +115,13 @@ PT_THREAD(StartApplication_Thread(struct pt *pt))
   PT_BEGIN(pt);
   
   bootingScreen();
-  
+
   PT_DELAY_MS(pt, &timer1, 1800);
 
   LCD_Fill(lcd, COLOR_BLACK);
   GPS_Init();
   LCD_WriteString(lcd, 0, 0, "GPS Data:", &Font_8x13, COLOR_YELLOW, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
   LCD_WriteString(lcd, 0, 100, "CC1101 Data:", &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
-  buttonTx_logo(COLOR_WHITE);
   setTime(&timer1);
 
   while (1)
