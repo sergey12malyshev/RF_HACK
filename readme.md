@@ -7,3 +7,5 @@ Batch Runner - для запуска из VScode
 
 Как включить поддержку флоат для std вывода:
 https://stackoverflow.com/questions/54534700/enabling-floating-point-emulation-in-gcc-arm-none-eabi
+
+Частоту шины APB1 (SPI2) снизил в два раза, иначе были проблемы с передачей CC1101 (снижалась мощность передачи)
