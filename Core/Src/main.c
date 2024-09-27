@@ -308,12 +308,11 @@ while(1) { }
     StartCLI_Thread(&cli_pt);
     Display_Thread(&button_pt);
 
-    specrumScan_Thread(&specrum_pt);
-
     typedef enum 
     {
       RX = 0, 
       TX,
+      SCAN,
       NUMBER_STATE
     }Work_state;
 
@@ -327,18 +326,35 @@ while(1) { }
       {
         PT_INIT(&sub_tx_pt);
         mainState = TX;
+        debugPrintf("TX Mode"CLI_NEW_LINE);
       }
       subGHz_TX_Thread(&sub_tx_pt);
     }
     else
     {
-      if(mainState != RX)
+      if(getScanButtonState())
       {
-        PT_INIT(&rf_pt);
-        mainState = RX;
+        if(mainState != SCAN)
+        {
+          PT_INIT(&specrum_pt);
+          mainState = SCAN;
+          debugPrintf("SCAN Mode"CLI_NEW_LINE);
+        }
+        specrumScan_Thread(&specrum_pt);
       }
-      RF_Thread(&rf_pt);
+      else
+      {
+        if(mainState != RX)
+        {
+          PT_INIT(&rf_pt);
+          mainState = RX;
+          debugPrintf("RX Mode"CLI_NEW_LINE);
+        }
+        RF_Thread(&rf_pt);
+      }
     }
+
+
   }
   /* USER CODE END 3 */
 }

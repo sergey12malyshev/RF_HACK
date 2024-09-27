@@ -128,7 +128,7 @@ PT_THREAD(specrumScan_Thread(struct pt *pt))
 
   PT_BEGIN(pt);
 
-  PT_DELAY_MS(pt, &timer1, 1900);
+  PT_DELAY_MS(pt, &timer1, 200);
 
   char str[25] = {0};
   sprintf(str, "%.3f-%.3f", startFreq, startFreq + freqStep * 128);

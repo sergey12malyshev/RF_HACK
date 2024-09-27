@@ -58,7 +58,7 @@ void buttonScan_logo(uint32_t color)
     LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE);         // Черный контур вокруг текущего цвета
     LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); // Квадрат, залитый текущим цветом
     // Кнопка "SCAN" в квадрате с белым цветом
-    LCD_WriteString(lcd, x + hw / 2 - 10, y + hw / 2 - 5, "SCAN", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
+    LCD_WriteString(lcd, x + hw / 2 - 15, y + hw / 2 - 5, "SCAN", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
 }
 
 
@@ -156,7 +156,7 @@ PT_THREAD(Display_Thread(struct pt *pt))
 
     while (1)
     {
-        PT_WAIT_UNTIL(pt, timer(&timer1, 50));
+        PT_WAIT_UNTIL(pt, timer(&timer1, 150));
         buttonHandler(&touch1);
 
         //debugPrintf("%d" CLI_NEW_LINE, TxButton_tmp);
