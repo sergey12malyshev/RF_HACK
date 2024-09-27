@@ -114,6 +114,7 @@ void debugPrintf_hello(void)
 {
   debugPrintf("RF_HACK"CLI_NEW_LINE);
   sendSNversion();
+  debugPrintf(YEL_CLR"Debug Version"RST_CLR CLI_NEW_LINE);
   debugPrintf("Enter HELP"CLI_NEW_LINE);
   debugPrintf_symbolTerm();
 }
