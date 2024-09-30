@@ -36,21 +36,22 @@ GPIO_TypeDef* CS_GPIO_Port;
 #define RANDOM_MULTIPLIER       109
 #define RSSI_VALID_DELAY_US     1300
 
+#include "stm32f4xx_ll_gpio.h"
 #define PORT_MISO GPIOB
-#define PIN_MISO GPIO_PIN_14
+#define PIN_MISO LL_GPIO_PIN_14
 
 //static UINT8 rnd_seed = 0;
 
 HAL_StatusTypeDef __spi_write(uint8_t *addr, uint8_t *pData, uint16_t size){
 
 	HAL_StatusTypeDef status;
-	HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_RESET); //set Chip Select to Low
-	while(HAL_GPIO_ReadPin(PORT_MISO,PIN_MISO)); //CS pini LOW yaptığımızd MISO pini adres yazılmadan önce low da beklemeli
+	LL_GPIO_ResetOutputPin(CS_GPIO_Port, CS_Pin); //set Chip Select to Low
+	while(LL_GPIO_IsInputPinSet(PORT_MISO,PIN_MISO)); //CS pini LOW yaptığımızd MISO pini adres yazılmadan önce low da beklemeli
 
 	status = HAL_SPI_Transmit(hal_spi, addr, 1, 0xFFFF);
 	if(status==HAL_OK && pData!=NULL)
 		status = HAL_SPI_Transmit(hal_spi, pData, size, 0xFFFF);
-	HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_SET); //set Chip Select to High
+	LL_GPIO_SetOutputPin(CS_GPIO_Port, CS_Pin); //set Chip Select to High
 	return status;
 
 }
@@ -59,17 +60,17 @@ HAL_StatusTypeDef __spi_read(uint8_t *addr, uint8_t *pData, uint16_t size){
 
 	HAL_StatusTypeDef status;
 
-	HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_RESET); //set Chip Select to Low
+	LL_GPIO_ResetOutputPin(CS_GPIO_Port, CS_Pin); //set Chip Select to Low
 
-	while(HAL_GPIO_ReadPin(PORT_MISO,PIN_MISO)); //CS pini LOW yaptığımızd MISO pini adres yazılmadan önce low da beklemeli
+	while(LL_GPIO_IsInputPinSet(PORT_MISO,PIN_MISO)); //CS pini LOW yaptığımızd MISO pini adres yazılmadan önce low da beklemeli
 	//HAL_StatusTypeDef HAL_SPI_Transmit(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout)
 
 	status = HAL_SPI_Transmit(hal_spi, addr, 1, 0xFFFF);
 	status = HAL_SPI_Receive(hal_spi, pData, size, 0xFFFF);
 
-//	while(HAL_GPIO_ReadPin(PORT_MISO,PIN_MISO)); //CS pini LOW yaptığımızd MISO pini adres yazılmadan önce low da beklemeli
+//	while(LL_GPIO_IsInputPinSet(PORT_MISO,PIN_MISO)); //CS pini LOW yaptığımızd MISO pini adres yazılmadan önce low da beklemeli
 
-	HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_SET); //set Chip Select to High
+	LL_GPIO_SetOutputPin(CS_GPIO_Port, CS_Pin); //set Chip Select to High
 
 	return status;
 
@@ -171,7 +172,7 @@ void init_serial(UART_HandleTypeDef* huart){
 }
 
 
-void TI_send_packet(uint8_t* txBuffer, UINT8 size)
+void TI_send_packet(const uint8_t* txBuffer, UINT8 size)
 {
 	uint8_t status;
 
@@ -181,7 +182,7 @@ void TI_send_packet(uint8_t* txBuffer, UINT8 size)
 
 	status = TI_read_status(CCxxx0_TXBYTES);
 
-    TI_write_burst_reg(CCxxx0_TXFIFO, txBuffer, size);
+    TI_write_burst_reg(CCxxx0_TXFIFO, txBuffer, 7);
 
 	status = TI_read_status(CCxxx0_TXBYTES);
 
@@ -482,23 +483,23 @@ void Power_up_reset()
 	//Güç geldikten sonra CC1101 i Macro resetlemek için
 
 	DWT_Delay_Init();
-	HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_SET);
+	LL_GPIO_SetOutputPin(CS_GPIO_Port, CS_Pin);
 	DWT_Delay_us(1);
-	HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_RESET);
+	LL_GPIO_ResetOutputPin(CS_GPIO_Port, CS_Pin);
 	DWT_Delay_us(1);
-	HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_SET);
+	LL_GPIO_SetOutputPin(CS_GPIO_Port, CS_Pin);
 	DWT_Delay_us(41);
 
-	HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_RESET);
-	while(HAL_GPIO_ReadPin(PORT_MISO,PIN_MISO))
+	LL_GPIO_ResetOutputPin(CS_GPIO_Port, CS_Pin);
+	while(LL_GPIO_IsInputPinSet(PORT_MISO,PIN_MISO))
 	{
 	}; //CS pini LOW yaptığımızd MISO pini adres yazılmadan önce low da beklemeli
 	TI_strobe(CCxxx0_SRES);
-	HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_SET);
+	LL_GPIO_SetOutputPin(CS_GPIO_Port, CS_Pin);
 }
 
 
-void TI_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint16_t cs_pin)
+void TI_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t cs_pin)
 {
 	//UINT8 i;
 	//UINT16 delay;
@@ -508,22 +509,24 @@ void TI_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint16_t cs_pin)
 	CS_Pin = cs_pin;
 
 
-	for(int i=0; i<10; i++){
-	status = TI_read_status(CCxxx0_VERSION);
-		  if(status!=0x14)
-		  {
-		  }
+	for(int i = 0; i < 10; i++)
+	{
+	  status = TI_read_status(CCxxx0_VERSION);
+	  if(status != 0x14)
+	  {
+
+	  }
 	}
-	TI_strobe(CCxxx0_SFRX); //î÷èùàåì RX FIFO
-	TI_strobe(CCxxx0_SFTX); //î÷èùàåì TX FIFO
+	TI_strobe(CCxxx0_SFRX); //RX FIFO
+	TI_strobe(CCxxx0_SFTX); //TX FIFO
 	TI_write_settings();
 	TI_write_burst_reg(CCxxx0_PATABLE, paTable, 8);//is it true
 
 	TI_write_reg(CCxxx0_FIFOTHR, 0x07);
 
-	TI_strobe(CCxxx0_SIDLE); //ïåðåâîäèì ìîäåì â IDLE
-	TI_strobe(CCxxx0_SFRX); //î÷èùàåì RX FIFO
-	TI_strobe(CCxxx0_SFTX); //î÷èùàåì TX FIFO
+	TI_strobe(CCxxx0_SIDLE);
+	TI_strobe(CCxxx0_SFRX);
+	TI_strobe(CCxxx0_SFTX);
 
 	//TI_strobe(CCxxx0_SRX);
 

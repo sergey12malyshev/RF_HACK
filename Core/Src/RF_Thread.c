@@ -62,8 +62,9 @@ PT_THREAD(RF_Thread(struct pt *pt))
   uint8_t length;
   static uint8_t counter_RX, counter_Error = 0;
 
-  //__HAL_GPIO_EXTI_CLEAR_IT(CC_GDO_Pin);
-  // HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+  LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
+  NVIC_EnableIRQ(EXTI15_10_IRQn); //GDO
+  GDO0_FLAG = 0;
 
   PT_DELAY_MS(pt, &timer1, 900);
 
