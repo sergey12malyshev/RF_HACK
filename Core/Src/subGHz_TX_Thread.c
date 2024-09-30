@@ -58,11 +58,13 @@ PT_THREAD(subGHz_TX_Thread(struct pt *pt))
 
     PT_BEGIN(pt);
 
-    PT_DELAY_MS(pt, &timer1, 100);
+    PT_DELAY_MS(pt, &timer1, 250);
 
     LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
     NVIC_DisableIRQ(EXTI15_10_IRQn); //GDO
     GDO0_FLAG = 0;
+
+    CC1101_reinit();
 
     setTime(&timer1);
 

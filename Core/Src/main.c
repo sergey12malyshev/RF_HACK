@@ -100,6 +100,11 @@ void initProtothreads(void)
   PT_INIT(&button_pt);
   PT_INIT(&specrum_pt);
 }
+
+void CC1101_reinit(void)
+{
+  TI_init(&hspi2, NSS_CS_GPIO_Port, NSS_CS_Pin); // CS
+}
 /* USER CODE END 0 */
 
 /**
@@ -294,7 +299,7 @@ while(1) { }
   TI_setCarrierFreq(CFREQ_433);
   TI_setDevAddress(1); 
 #endif
-  TI_init(&hspi2, NSS_CS_GPIO_Port, NSS_CS_Pin); // CS
+  CC1101_reinit();
 
 
   initProtothreads();

@@ -54,19 +54,21 @@ PT_THREAD(RF_Thread(struct pt *pt))
 {
   static uint32_t timer1;
 
-  PT_BEGIN(pt);
-
   static char buffer[64];
   char massage[7] = "";
   static const char control_str[7] = {'T', 'S', 'T', ' ', 'X', 'X', '0'};
   uint8_t length;
   static uint8_t counter_RX, counter_Error = 0;
 
+  PT_BEGIN(pt);
+
+  PT_DELAY_MS(pt, &timer1, 250);
+
   LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
   NVIC_EnableIRQ(EXTI15_10_IRQn); //GDO
   GDO0_FLAG = 0;
 
-  PT_DELAY_MS(pt, &timer1, 900);
+  CC1101_reinit();
 
   TI_write_reg(CCxxx0_IOCFG0, 0x06);
 
