@@ -178,7 +178,7 @@ int main(void)
   //Данные подключения
   LCD_SPI_Connected_data spi_con = 
   { 
-    .spi        = SPI1,          // Используемый spi
+    .spi        = SPI1,          // �?спользуемый spi
     .dma_tx     = dma_tx,        // Данные DMA
     .reset_port = LCD_RESET_GPIO_Port,  // Порт вывода RES
     .reset_pin  = LCD_RESET_Pin,     // Пин вывода RES
@@ -407,7 +407,7 @@ void SystemClock_Config(void)
 
   }
   LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
-  LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_4);
+  LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_8);
   LL_RCC_SetAPB2Prescaler(LL_RCC_APB2_DIV_1);
   LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_PLL);
 
