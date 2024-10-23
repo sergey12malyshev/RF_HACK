@@ -6,6 +6,8 @@
  *      https://www.freelancer.com/u/ilynx?ref_project_id=24212020
  * 
  * Updated 2024 Malyshev Sergey
+ * 
+ * Внимание! Скорость шины spi не более 10 МГц!
  */
 
 #include"cc1101.h"
