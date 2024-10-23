@@ -309,9 +309,6 @@ while(1) { }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-      StartApplication_Thread(&application_pt);
-      StartCLI_Thread(&cli_pt);
-      Display_Thread(&button_pt);
 
     typedef enum 
     {
@@ -333,7 +330,6 @@ while(1) { }
         mainState = TX;
         debugPrintf("TX Mode"CLI_NEW_LINE);
       }
-      subGHz_TX_Thread(&sub_tx_pt);
     }
     else
     {
@@ -345,7 +341,6 @@ while(1) { }
           mainState = SCAN;
           debugPrintf("SCAN Mode"CLI_NEW_LINE);
         }
-        spectrumScan_Thread(&specrum_pt);
       }
       else
       {
@@ -355,10 +350,30 @@ while(1) { }
           mainState = RX;
           debugPrintf("RX Mode"CLI_NEW_LINE);
         }
-        RF_Thread(&rf_pt);
       }
     }
 
+    switch (mainState)
+    {
+      case TX:
+      subGHz_TX_Thread(&sub_tx_pt);
+      break;
+    
+     case RX:
+      RF_Thread(&rf_pt);
+      break;
+     
+     case SCAN:
+      spectrumScan_Thread(&specrum_pt);
+      break;
+    
+    default:
+      break;
+    }
+
+      StartApplication_Thread(&application_pt);
+      StartCLI_Thread(&cli_pt);
+      Display_Thread(&button_pt);
 
   }
   /* USER CODE END 3 */

@@ -126,7 +126,7 @@ PT_THREAD(StartApplication_Thread(struct pt *pt))
 
   while (1)
   {
-    PT_WAIT_UNTIL(pt, timer(&timer1, 250));
+    PT_WAIT_UNTIL(pt, timer(&timer1, 350));
     
     heartbeatLedToggle();
 

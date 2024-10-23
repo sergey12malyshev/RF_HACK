@@ -118,6 +118,9 @@ void spectumDraw(void)
     }
   }
 }
+
+
+
 /*
  * Протопоток spectrumScan_Thread
  *
@@ -141,9 +144,6 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
   while (1)
   {
 
-#define SPECTRUM_EN true
-#if SPECTRUM_EN
-
     PT_WAIT_UNTIL(pt, timer(&timer1, 250));
 
     uint8_t rssi_raw = TI_read_status(CCxxx0_RSSI);
@@ -160,7 +160,6 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
     //CC1101_setMHZ(422.999817);
     spectumDraw();
 
-#endif
 
     PT_YIELD(pt);
   }
