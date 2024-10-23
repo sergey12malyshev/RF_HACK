@@ -293,6 +293,9 @@ while(1) { }
   /* USER CODE BEGIN WHILE */
   HAL_Delay(5);
 
+  LCD_WriteString(lcd, 5, 25, "CC1101 int...",
+            &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
   customSetCSpin(&hspi2, NSS_CS_GPIO_Port, NSS_CS_Pin);
   Power_up_reset();
 
