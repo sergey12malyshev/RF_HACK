@@ -186,20 +186,20 @@ int main(void)
   //Данные подключения
   LCD_SPI_Connected_data spi_con = 
   { 
-    .spi        = SPI1,          // �?спользуемый spi
+    .spi        = SPI1,
     .dma_tx     = dma_tx,        // Данные DMA
-    .reset_port = LCD_RESET_GPIO_Port,  // Порт вывода RES
-    .reset_pin  = LCD_RESET_Pin,     // Пин вывода RES
-    .dc_port    = LCD_DC_GPIO_Port,  // Порт вывода DC
-    .dc_pin     = LCD_DC_Pin,        // Пин вывода DC
-    .cs_port    = LCD_CS_GPIO_Port,  // Порт вывода CS
-    .cs_pin     = LCD_CS_Pin         // Пин вывода CS 
+    .reset_port = LCD_RESET_GPIO_Port,
+    .reset_pin  = LCD_RESET_Pin,
+    .dc_port    = LCD_DC_GPIO_Port,
+    .dc_pin     = LCD_DC_Pin,
+    .cs_port    = LCD_CS_GPIO_Port,
+    .cs_pin     = LCD_CS_Pin
   };
 
 #ifndef  LCD_DYNAMIC_MEM
   LCD_Handler lcd1;
 #endif
-   //создаем обработчик дисплея ILI9341
+   //Cоздаем обработчик дисплея ILI9341
    LCD = LCD_DisplayAdd( LCD,
 #ifndef  LCD_DYNAMIC_MEM
                          &lcd1,
@@ -238,8 +238,7 @@ int main(void)
   XPT2046_InitTouch(&touch1, 20, &cnt_touch);
 
 /* Самый простой вариант хранения в программе
- * коэффициентов калибровки. Строку XPT2046_CalibrateTouch
- * надо будет закомментировать */
+ * коэффициентов калибровки*/
 #define CALIBRATE_EN    false
 #if !CALIBRATE_EN
   tCoef coef = {.D   = 0x00022b4253626d37,
@@ -251,13 +250,9 @@ int main(void)
                 .Dy3 = 0xff9cc25725238e55 };
   touch1.coef = coef;
 #else
-  /* Калибровка тачскрина
-   * Если коэффициенты калибровки выше определены, то эту строку надо
-   * закомментировать */
   XPT2046_CalibrateTouch(&touch1, lcd); //Запускаем процедуру калибровки
 #endif
-  /* Вывод на дисплей 64 битных коэффициентов калибровки. Не забудьте раскомментировать
-   * функцию convert64bit_to_hex */
+  /* Вывод на дисплей 64 битных коэффициентов калибровки. Не забудьте раскомментировать функцию convert64bit_to_hex */
   /*
   char b[100];
   convert64bit_to_hex((uint8_t*)(&touch1.coef.D), b);
@@ -277,7 +272,6 @@ int main(void)
 while(1) { }
   //После того, как перенесете параметры в coef это все "дело" закомментируйте
 */
-
   //----------------------------------------- Запуск демок --------------------------------------------*/
   //LCD_Fill(lcd, COLOR_WHITE); //Закрашиваем экран белым цветом
   //Демка для рисования на экране с помощью тачскрина.
@@ -368,7 +362,6 @@ while(1) { }
         assert_param(0U);
         break;
     }
-
 
     StartApplication_Thread(&application_pt);
     StartCLI_Thread(&cli_pt);

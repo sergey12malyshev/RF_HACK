@@ -33,7 +33,6 @@ static float startFreq = 433.075; // LPD 1 start
  *FUNCTION NAME:Frequency Calculator
  *FUNCTION     :Calculate the basic frequency.
  *INPUT        :Frequency
- *OUTPUT       :none
 */
 void CC1101_setMHZ(float mhz)
 {
