@@ -20,6 +20,8 @@
 #include <stdbool.h>
 
 
+#include "workStates.h"
+
 #include "display.h"
 #include "ili9341.h"
 #include "xpt2046.h"
@@ -315,24 +317,14 @@ while(1) { }
 
     /* USER CODE BEGIN 3 */
 
-    typedef enum 
-    {
-      RX = 0, 
-      TX,
-      SCAN,
-      NUMBER_STATE
-    }Work_state;
-
-    static Work_state mainState;
-
- #define TX_MODE false
+#define TX_MODE false
 
     if(getTxButtonState() || TX_MODE)
     {
-      if(mainState != TX)
+      if(getWorkState() != TX)
       {
         PT_INIT(&sub_tx_pt);
-        mainState = TX;
+        setWorkSate(TX);
         debugPrintf("TX Mode"CLI_NEW_LINE);
       }
     }
@@ -340,46 +332,47 @@ while(1) { }
     {
       if(getScanButtonState())
       {
-        if(mainState != SCAN)
+        if(getWorkState() != SCAN)
         {
           PT_INIT(&specrum_pt);
-          mainState = SCAN;
+          setWorkSate(SCAN);
           debugPrintf("SCAN Mode"CLI_NEW_LINE);
         }
       }
       else
       {
-        if(mainState != RX)
+        if(getWorkState() != RX)
         {
           PT_INIT(&rf_pt);
-          mainState = RX;
+          setWorkSate(RX);
           debugPrintf("RX Mode"CLI_NEW_LINE);
         }
       }
     }
 
-    switch (mainState)
+    switch (getWorkState())
     {
       case TX:
-      subGHz_TX_Thread(&sub_tx_pt);
-      break;
+        subGHz_TX_Thread(&sub_tx_pt);
+        break;
     
-     case RX:
-      RF_Thread(&rf_pt);
-      break;
-     
-     case SCAN:
-      spectrumScan_Thread(&specrum_pt);
-      break;
+      case RX:
+        RF_Thread(&rf_pt);
+        break;
+
+      case SCAN:
+        spectrumScan_Thread(&specrum_pt);
+        break;
     
-    default:
-      break;
+      default:
+        assert_param(0U);
+        break;
     }
 
-      StartApplication_Thread(&application_pt);
-      StartCLI_Thread(&cli_pt);
-      Display_Thread(&button_pt);
 
+    StartApplication_Thread(&application_pt);
+    StartCLI_Thread(&cli_pt);
+    Display_Thread(&button_pt);
   }
   /* USER CODE END 3 */
 }

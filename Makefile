@@ -74,6 +74,7 @@ Core/Src/RF_Thread.c \
 Core/Src/subGHz_TX_Thread.c \
 Core/Src/buttonDisplay.c \
 Core/Src/spectrumScan.c \
+Core/Src/workStates.c \
 Core/Src/stm32f4xx_hal_timebase_tim.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.c \
