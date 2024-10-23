@@ -8,6 +8,7 @@
 #include "cli_task.h"
 #include "cli_driver.h"
 #include "cli_queue.h"
+#include "runBootloader.h" 
 
 #include "gps.h"
 #include "time.h"
@@ -30,6 +31,7 @@ typedef enum
   NONE = 0,
   RST,
   R,
+  BOOT,
   TEST,
   ADC_T,
   GPS_C,
@@ -40,6 +42,7 @@ static char mon_comand[] = "Enter monitor command:\r\n\
 HELP - see existing commands\r\n\
 RST - restart\r\n\
 R - restart using WDT\r\n\
+BOOT - run bootloader\r\n\
 TEST - switch test\r\n\
 ADC - show ADC chanel\r\n\
 GPS - show data gps\r\n\
@@ -193,6 +196,11 @@ static void monitorParser(void)
       {
         debugPrintf_OK();
         HAL_NVIC_SystemReset();
+      }
+      else if (mon_strcmp(input_mon_buff, "BOOT"))
+      {
+        debugPrintf_OK();
+        runBootloader();
       }
       else if (mon_strcmp(input_mon_buff, "GPS"))
       {

@@ -46,3 +46,8 @@ To make the release project , run **makeProject.bat** (OR *make -j* cmd command)
 To make the debug project , run **makeProjectDebug.bat** (OR *make -j1 debug* cmd command)
 
 To clean the project, run **makeClean.bat** (OR *make clean*)
+
+
+## Обновление прошивки
+
+Возможно через UART CLI: по команде BOOT будет запущен системный бутлоадер
