@@ -1,7 +1,9 @@
+@echo off
 rem clean project
+CLS
 
 make clean
 
-echo "Clean Ok"
+echo "Clean Ok..."
 
-pause
+TIMEOUT /T 2
