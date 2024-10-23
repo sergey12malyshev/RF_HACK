@@ -94,6 +94,7 @@ PT_THREAD(RF_Thread(struct pt *pt))
 
       if (status == false)
       {
+        counter_Error++;
         debugPrintf(CLI_ERROR "status: %d, len: %d" CLI_NEW_LINE, status, length);
       }
 
@@ -108,7 +109,6 @@ PT_THREAD(RF_Thread(struct pt *pt))
         if (massage[i] != control_str[i])
         {
           errorData = 1;
-          counter_Error++;
           break;
         }
       }
