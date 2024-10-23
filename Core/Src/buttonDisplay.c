@@ -31,12 +31,12 @@ static bool TxButton, scanButton;
 
 bool getTxButtonState(void)
 {
-    return TxButton;
+  return TxButton;
 }
 
 bool getScanButtonState(void)
 {
-    return scanButton;
+  return scanButton;
 }
 
 void buttonTx_logo(uint32_t color)

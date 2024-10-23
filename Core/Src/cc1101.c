@@ -4,6 +4,8 @@
  *  Created on: Mar 11, 2020
  *      Author: suleyman.eskil but the library has Mr. Ilynx
  *      https://www.freelancer.com/u/ilynx?ref_project_id=24212020
+ * 
+ * Updated 2024 Malyshev Sergey
  */
 
 #include"cc1101.h"

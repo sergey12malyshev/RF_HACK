@@ -117,7 +117,6 @@ PT_THREAD(RF_Thread(struct pt *pt))
 
       debugPrintf("%s, RSSI: %d, offset: %d" CLI_NEW_LINE, massage, RSSIconvert(get_RSSI()), offset);
 
-      // printInputStringOLED(massage);
       if (++counter_RX > 99)
       {
         counter_RX = 0;
@@ -130,7 +129,7 @@ PT_THREAD(RF_Thread(struct pt *pt))
     }
     else
     {
-      status = TI_read_status(CCxxx0_PKTSTATUS); // if it isnt, check pktstatus // değilse, paket durumunu control_str eder
+      status = TI_read_status(CCxxx0_PKTSTATUS);
       GDO0_FLAG = 0;
       debugPrintf(CLI_ERROR "CRC" CLI_NEW_LINE);
       counter_Error++;

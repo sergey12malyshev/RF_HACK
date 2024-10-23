@@ -21,19 +21,19 @@ extern volatile uint8_t GDO0_FLAG;
 extern LCD_Handler *lcd;
 extern RF_t CC1101;
 
-/****************************************************************
+/*
+ Функция выдернута из arduino-библиотеки
+
  *FUNCTION NAME:Frequency Calculator
  *FUNCTION     :Calculate the basic frequency.
- *INPUT        :none
+ *INPUT        :Frequency
  *OUTPUT       :none
- ****************************************************************/
+*/
 void CC1101_setMHZ(float mhz)
 {
   uint8_t freq2 = 0;
   uint8_t freq1 = 0;
   uint8_t freq0 = 0;
-
-  // MHz = mhz;
 
   for (bool i = 0; i == 0;)
   {
@@ -84,11 +84,6 @@ void scanRSSI(float freqSet)
   }
 }
 
-#include "display.h"
-#include "ili9341.h"
-#include "xpt2046.h"
-
-extern LCD_Handler *lcd;
 void spectumDraw(void)
 {
   const uint16_t start_y = 310;
@@ -118,7 +113,6 @@ void spectumDraw(void)
     }
   }
 }
-
 
 
 /*
@@ -157,7 +151,6 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
     // }
     // debugPrintf("%f "CLI_NEW_LINE, startFreq + 128*freqStep);
 
-    //CC1101_setMHZ(422.999817);
     spectumDraw();
 
 
