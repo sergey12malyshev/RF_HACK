@@ -21,6 +21,12 @@ extern volatile uint8_t GDO0_FLAG;
 extern LCD_Handler *lcd;
 extern RF_t CC1101;
 
+
+static int8_t scanDat[128];
+
+static float freqStep = 0.025;
+static float startFreq = 433.075; // LPD 1 start
+
 /*
  Функция выдернута из arduino-библиотеки
 
@@ -68,10 +74,6 @@ void CC1101_setMHZ(float mhz)
   TI_write_reg(CCxxx0_FREQ0, freq0);
   // Calibrate();
 }
-
-int8_t scanDat[128];
-float freqStep = 0.01;
-float startFreq = 432.7;
 
 void scanRSSI(float freqSet)
 {
