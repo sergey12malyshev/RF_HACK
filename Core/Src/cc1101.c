@@ -172,9 +172,9 @@ void init_serial(UART_HandleTypeDef* huart){
 }
 
 
-void TI_send_packet(const uint8_t* txBuffer, UINT8 size)
+void TI_send_packet(uint8_t* txBuffer, UINT8 size)
 {
-	uint8_t status;
+	__attribute__((unused)) uint8_t status;
 
   	TI_strobe(CCxxx0_SIDLE); //ïåðåâîäèì ìîäåì â IDLE
 

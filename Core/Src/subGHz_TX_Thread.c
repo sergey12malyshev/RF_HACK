@@ -54,6 +54,7 @@ static uint8_t transmittRF(const char *packet_loc, uint8_t len)
 PT_THREAD(subGHz_TX_Thread(struct pt *pt))
 {
     static uint32_t timer1;
+    __attribute__((unused)) uint8_t s;
 
 
     PT_BEGIN(pt);
@@ -77,7 +78,8 @@ PT_THREAD(subGHz_TX_Thread(struct pt *pt))
         }
 
         sprintf(packet, "TST %02d", count_tx++);
-        uint8_t s = transmittRF(packet, sizeof(packet)); // the function is sending the data
+
+        s = transmittRF(packet, sizeof(packet)); // the function is sending the data
         
         PT_WAIT_UNTIL(pt, timer(&timer1, 750));
 

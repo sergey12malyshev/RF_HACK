@@ -145,7 +145,6 @@ PT_THREAD(Display_Thread(struct pt *pt))
 {
     static uint32_t timer1;
 
-    static bool TxButton_tmp;
 
     PT_BEGIN(pt);
 
@@ -158,8 +157,6 @@ PT_THREAD(Display_Thread(struct pt *pt))
     {
         PT_WAIT_UNTIL(pt, timer(&timer1, 150));
         buttonHandler(&touch1);
-
-        //debugPrintf("%d" CLI_NEW_LINE, TxButton_tmp);
 
         PT_YIELD(pt);
     }
