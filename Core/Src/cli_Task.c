@@ -4,16 +4,14 @@
 #include <stdbool.h>
 #include <stdarg.h>
 
-#include "cmsis_os.h"
-#include "FreeRTOS.h"
-#include "task.h"
-
 #include "main.h"
 #include "cli_task.h"
 #include "cli_driver.h"
 #include "cli_queue.h"
+#include "runBootloader.h" 
 
 #include "gps.h"
+#include "time.h"
 
 /*
   UART CLI 115200 Baud
@@ -33,6 +31,7 @@ typedef enum
   NONE = 0,
   RST,
   R,
+  BOOT,
   TEST,
   ADC_T,
   GPS_C,
@@ -43,6 +42,7 @@ static char mon_comand[] = "Enter monitor command:\r\n\
 HELP - see existing commands\r\n\
 RST - restart\r\n\
 R - restart using WDT\r\n\
+BOOT - run bootloader\r\n\
 TEST - switch test\r\n\
 ADC - show ADC chanel\r\n\
 GPS - show data gps\r\n\
@@ -117,6 +117,7 @@ void debugPrintf_hello(void)
 {
   debugPrintf("RF_HACK"CLI_NEW_LINE);
   sendSNversion();
+  debugPrintf(YEL_CLR"Debug Version"RST_CLR CLI_NEW_LINE);
   debugPrintf("Enter HELP"CLI_NEW_LINE);
   debugPrintf_symbolTerm();
 }
@@ -189,13 +190,17 @@ static void monitorParser(void)
       else if ((input_mon_buff[0] == 'R')&&(input_mon_buff[1] == 0))
       { // enter RST
         debugPrintf_OK();
-        vTaskSuspendAll();
         while (1);
       }
       else if (mon_strcmp(input_mon_buff, "RST"))
       {
         debugPrintf_OK();
         HAL_NVIC_SystemReset();
+      }
+      else if (mon_strcmp(input_mon_buff, "BOOT"))
+      {
+        debugPrintf_OK();
+        runBootloader();
       }
       else if (mon_strcmp(input_mon_buff, "GPS"))
       {
@@ -206,8 +211,6 @@ static void monitorParser(void)
       {
         debugPrintf_OK();
         debugPrintf("https://github.com/sergey12malyshev/RF_HACK.git"CLI_NEW_LINE);
-        debugPrintf("FreeRTOS: ");
-        debugPrintf(tskKERNEL_VERSION_NUMBER);
         debugPrintf_r_n();
         debugPrintf("HAL: ");
         debugPrintf("%d", HAL_GetHalVersion());
@@ -268,7 +271,7 @@ static void monitorParser(void)
 
 static void GPSTest(void)
 {
-  debugPrintf("time:%d"CLI_NEW_LINE, GPS.utc_time * 1000); 
+  debugPrintf("UTC time:%f"CLI_NEW_LINE, GPS.utc_time); 
 }
 
 static void monitor_out_test(void)
@@ -290,26 +293,33 @@ static void monitor_out_test(void)
   }
 }
 
-void StartCLI_Task(void *argument)
+/*
+ * Протопоток StartCLI_Thread
+ *
+ */
+PT_THREAD(StartCLI_Thread(struct pt *pt))
 {
-  const TickType_t xPeriod_ms = 125u / portTICK_PERIOD_MS;
-  TickType_t xLastWakeTime = xTaskGetTickCount();
+  static uint32_t timer1;
 
+  PT_BEGIN(pt);
+  
   uart_clear_buff();
   uart_receve_IT();
   cli_init_queue(&queue1);
   resetTest();
   debugPrintf_hello();
 
-
-  for(;;)
+  while (1)
   {
+    PT_WAIT_UNTIL(pt, timer(&timer1, 50)); // Запускаем преобразования ~ раз в 50 мс
+
     if(cli_deque(&queue1, (MESSAGE*)&queueOutMsg)) // чтение из очереди
     {
       monitorParser();
     }
     monitor_out_test();
-
-    vTaskDelayUntil(&xLastWakeTime, xPeriod_ms);
+    PT_YIELD(pt);
   }
+
+  PT_END(pt);
 }

@@ -1,5 +1,11 @@
+@echo off
 rem соборка проекта
+CLS
+
+echo Clean project...
 make clean
-make -j
+
+echo Build project...
+make -j1
 
 pause

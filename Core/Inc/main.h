@@ -65,7 +65,7 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+void CC1101_reinit(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
@@ -88,6 +88,11 @@ void Error_Handler(void);
 #define T_IRQ_EXTI_IRQn EXTI0_IRQn
 #define T_CS_Pin LL_GPIO_PIN_1
 #define T_CS_GPIO_Port GPIOB
+#define CC_GDO_Pin LL_GPIO_PIN_12
+#define CC_GDO_GPIO_Port GPIOB
+#define CC_GDO_EXTI_IRQn EXTI15_10_IRQn
+#define NSS_CS_Pin LL_GPIO_PIN_13
+#define NSS_CS_GPIO_Port GPIOB
 #define T_OUT_Pin LL_GPIO_PIN_4
 #define T_OUT_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
