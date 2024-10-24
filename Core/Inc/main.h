@@ -66,6 +66,8 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 void CC1101_reinit(void);
+
+void checkResetSourse(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

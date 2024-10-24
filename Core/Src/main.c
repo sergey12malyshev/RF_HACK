@@ -99,6 +99,28 @@ static void convert64bit_to_hex(uint8_t *v, char *b)
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+void checkResetSourse(void)
+{
+  if (__HAL_RCC_GET_FLAG(RCC_FLAG_PORRST) != RESET)
+  {    
+    DEBUG_PRINT(CLI_SYS"PORRST"CLI_NEW_LINE);
+  }   
+  else if (__HAL_RCC_GET_FLAG(RCC_FLAG_SFTRST) != RESET)    
+  {
+    DEBUG_PRINT(CLI_SYS"SFTRST"CLI_NEW_LINE);
+  } 
+  else if (__HAL_RCC_GET_FLAG(RCC_FLAG_IWDGRST) != RESET)    
+  {
+    DEBUG_PRINT(CLI_SYS"IWDGRST"CLI_NEW_LINE);
+  }  
+  else if (__HAL_RCC_GET_FLAG(RCC_FLAG_PINRST) != RESET)    
+  {
+    DEBUG_PRINT(CLI_SYS"PINRST"CLI_NEW_LINE);
+  }
+  __HAL_RCC_CLEAR_RESET_FLAGS();
+}
+
 void initProtothreads(void)
 {
   PT_INIT(&application_pt);
@@ -312,6 +334,11 @@ while(1) { }
     /* USER CODE BEGIN 3 */
 
 #define TX_MODE false
+
+    if(getTxButtonState())
+    {
+      
+    }
 
     if(getTxButtonState() || TX_MODE)
     {

@@ -119,6 +119,7 @@ void debugPrintf_hello(void)
   sendSNversion();
   DEBUG_PRINT(YEL_CLR"Debug Version"RST_CLR CLI_NEW_LINE);
   debugPrintf("Enter HELP"CLI_NEW_LINE);
+  checkResetSourse();
   debugPrintf_symbolTerm();
 }
 
