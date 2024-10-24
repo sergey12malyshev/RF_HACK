@@ -335,11 +335,6 @@ while(1) { }
 
 #define TX_MODE false
 
-    if(getTxButtonState())
-    {
-      
-    }
-
     if(getTxButtonState() || TX_MODE)
     {
       if(getWorkState() != TX)
