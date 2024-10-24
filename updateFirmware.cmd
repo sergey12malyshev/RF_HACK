@@ -4,7 +4,7 @@ CLS
 
 echo Upload project run...
 
-D:\CubeProgrammer\bin\STM32_Programmer_CLI.exe -c port=/COM4 br=115200 -w build\RF_HACK.hex --go
+D:\CubeProgrammer\bin\STM32_Programmer_CLI.exe -c port=COM11 br=115200 -w build\RF_HACK.hex --go
 
 
 pause

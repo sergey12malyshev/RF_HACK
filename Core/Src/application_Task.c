@@ -51,6 +51,9 @@ static void bootingScreen(void)
 
   LCD_WriteString(lcd, 0, y+=shift, "Time build: "__TIME__,
             &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+  
+  LCD_WriteString(lcd, 0, y+=shift, "Version SW:"quoting(SOFTWARE_VERSION_MAJOR)"."quoting(SOFTWARE_VERSION_MINOR)"."quoting(SOFTWARE_VERSION_PATCH),
+            &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
 }
 

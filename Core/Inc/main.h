@@ -97,6 +97,14 @@ void CC1101_reinit(void);
 #define T_OUT_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
+#define SOFTWARE_VERSION_MAJOR  0
+#define SOFTWARE_VERSION_MINOR  1
+#define SOFTWARE_VERSION_PATCH  0
+
+
+#define quoting(a) prequoting(a)
+#define prequoting(a) #a
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

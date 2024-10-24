@@ -110,14 +110,14 @@ static void debugPrintf_symbolTerm(void)
 
 static void sendSNversion(void)
 {
- //debugPrintf("Version: %d.%d.%d"CLI_NEW_LINE, VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
+ debugPrintf("Version SW: %d.%d.%d"CLI_NEW_LINE, SOFTWARE_VERSION_MAJOR, SOFTWARE_VERSION_MINOR, SOFTWARE_VERSION_PATCH);
 }
 
 void debugPrintf_hello(void)
 {
-  debugPrintf("RF_HACK"CLI_NEW_LINE);
+  debugPrintf("RF_HACK project start"CLI_NEW_LINE);
   sendSNversion();
-  debugPrintf(YEL_CLR"Debug Version"RST_CLR CLI_NEW_LINE);
+  DEBUG_PRINT(YEL_CLR"Debug Version"RST_CLR CLI_NEW_LINE);
   debugPrintf("Enter HELP"CLI_NEW_LINE);
   debugPrintf_symbolTerm();
 }
