@@ -1,39 +1,61 @@
 /* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2024 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
-  */
+/*
+ * RF_HACK 2024
+ *
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "cmsis_os.h"
+#include "dma.h"
 #include "spi.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include <stdbool.h>
 
+
+#include "workStates.h"
+
+#include "display.h"
+#include "ili9341.h"
+#include "xpt2046.h"
+#include "calibrate_touch.h"
+#include "demo.h"
+
+
+#include "gps.h"
+#include "cc1101.h"
+
 #include "cli_driver.h"
+#include "cli_task.h"
+
+#define LC_INCLUDE "lc-addrlabels.h"
+#include "pt.h"
+
+#include "application_task.h"
+#include "buttonDisplay.h"
+#include "RF_Thread.h"
+#include "subGHz_TX_Thread.h"
+#include "spectrumScan.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+static struct pt application_pt, cli_pt, rf_pt, sub_tx_pt, button_pt, specrum_pt;
 
+uint32_t millis = 0;
+
+volatile uint8_t GDO0_FLAG;
+
+LCD_Handler *lcd = NULL;     //Указатель на первый дисплей в списке
+XPT2046_Handler touch1;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -42,25 +64,43 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
+#define GCC_VERSION ((__GNUC__ * 100) + (__GNUC_MINOR__ * 10) + ( __GNUC_PATCHLEVEL__ ))
 
+// Firmware builds require at least GCC 5.4.1
+#if (GCC_VERSION < 541)
+	#error "GCC compiler >= 5.4.1 required"
+  #pragma message("GCC is " STR(__GNUC__)"."STR(__GNUC_MINOR__)"."STR(__GNUC_PATCHLEVEL__))
+#endif
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
+
+/* Для тех, кто не умеет пользоваться отладчиком или
+ * тех, у кого он не работает */
+/*
+static void convert64bit_to_hex(uint8_t *v, char *b)
+{
+   b[0] = 0;
+  sprintf(&b[strlen(b)], "0x");
+   for (int i = 0; i < 8; i++) {
+     sprintf(&b[strlen(b)], "%02x", v[7 - i]);
+   }
+}
+*/
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-static void checkResetSourse(void)
+
+void checkResetSourse(void)
 {
   if (__HAL_RCC_GET_FLAG(RCC_FLAG_PORRST) != RESET)
   {    
@@ -80,6 +120,21 @@ static void checkResetSourse(void)
   }
   __HAL_RCC_CLEAR_RESET_FLAGS();
 }
+
+void initProtothreads(void)
+{
+  PT_INIT(&application_pt);
+  PT_INIT(&cli_pt);
+  PT_INIT(&rf_pt);
+  PT_INIT(&sub_tx_pt);
+  PT_INIT(&button_pt);
+  PT_INIT(&specrum_pt);
+}
+
+void CC1101_reinit(void)
+{
+  TI_init(&hspi2, NSS_CS_GPIO_Port, NSS_CS_Pin); // CS
+}
 /* USER CODE END 0 */
 
 /**
@@ -89,7 +144,20 @@ static void checkResetSourse(void)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+/* Включаем кэширование инструкций */
+#if (INSTRUCTION_CACHE_ENABLE != 0U)
+  ((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (9U));
+#endif
 
+/* Включаем кэширование данных */
+#if (DATA_CACHE_ENABLE != 0U)
+  ((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (10U));
+#endif
+
+/* Включаем систему предварительной выборки инструкций */
+#if (PREFETCH_ENABLE != 0U)
+  ((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (8U));
+#endif
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -105,35 +173,221 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+  //Настраиваем системный таймер (прерывания 1000 раз в секунду)
+  SysTick_Config(SystemCoreClock/1000);
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_SPI1_Init();
-  MX_SPI2_Init();
-  MX_SPI3_Init();
+  MX_TIM3_Init();
   MX_USART1_UART_Init();
-  MX_USART2_UART_Init();
+  MX_USART6_UART_Init();
+  MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-  HAL_Delay(20);
-  checkResetSourse();
+
+  /* Настройка дисплея */
+  //Данные DMA
+  LCD_DMA_TypeDef dma_tx = 
+  { 
+    .dma    = DMA2,           // Контроллер DMA
+    .stream = LL_DMA_STREAM_3 // Поток контроллера DMA
+  };  
+
+  //Данные подсветки
+  LCD_BackLight_data bkl_data = 
+  {
+    .htim_bk        = TIM3,       // Таймер - для подсветки с PWM (изменение яркости подсветки)
+    .channel_htim_bk = LL_TIM_CHANNEL_CH1, // Канал таймера - для подсветки с PWM (изменение яркости подсветки)
+    .blk_port       = 0,          // Порт gpio - подсветка по типу вкл./выкл.
+    .blk_pin        = 0,          // Вывод порта - подсветка по типу вкл./выкл.
+    .bk_percent     = 60          // Яркость подсветки, в %
+  };     
+
+  //Данные подключения
+  LCD_SPI_Connected_data spi_con = 
+  { 
+    .spi        = SPI1,
+    .dma_tx     = dma_tx,        // Данные DMA
+    .reset_port = LCD_RESET_GPIO_Port,
+    .reset_pin  = LCD_RESET_Pin,
+    .dc_port    = LCD_DC_GPIO_Port,
+    .dc_pin     = LCD_DC_Pin,
+    .cs_port    = LCD_CS_GPIO_Port,
+    .cs_pin     = LCD_CS_Pin
+  };
+
+#ifndef  LCD_DYNAMIC_MEM
+  LCD_Handler lcd1;
+#endif
+   //Cоздаем обработчик дисплея ILI9341
+   LCD = LCD_DisplayAdd( LCD,
+#ifndef  LCD_DYNAMIC_MEM
+                         &lcd1,
+#endif
+                         240,
+             320,
+             ILI9341_CONTROLLER_WIDTH,
+             ILI9341_CONTROLLER_HEIGHT,
+             //Задаем смещение по ширине и высоте для нестандартных или бракованных дисплеев:
+             0,    //смещение по ширине дисплейной матрицы
+             0,    //смещение по высоте дисплейной матрицы
+             PAGE_ORIENTATION_PORTRAIT,
+             ILI9341_Init,
+             ILI9341_SetWindow,
+             ILI9341_SleepIn,
+             ILI9341_SleepOut,
+             &spi_con,
+             LCD_DATA_16BIT_BUS,
+             bkl_data           );
+
+  lcd = LCD;     //Указатель на первый дисплей в списке
+  LCD_Init(lcd);
+  LCD_Fill(lcd, COLOR_RED);
+
+  /* ----------------------------------- Настройка тачскрина ------------------------------------------*/
+  //Будем обмениваться данными с XPT2046 на скорости 2.625 Мбит/с (по спецификации максимум 2.0 Мбит/с).
+  XPT2046_ConnectionData cnt_touch = { .spi    = SPI1,   //используемый spi
+                                   .speed    = 4,        //Скорость spi 0...7 (0 - clk/2, 1 - clk/4, ..., 7 - clk/256)
+                     .cs_port  = T_CS_GPIO_Port,  //Порт для управления T_CS
+                     .cs_pin    = T_CS_Pin,       //Вывод порта для управления T_CS
+                     .irq_port = T_IRQ_GPIO_Port, //Порт для управления T_IRQ
+                     .irq_pin  = T_IRQ_Pin,       //Вывод порта для управления T_IRQ
+                     .exti_irq = T_IRQ_EXTI_IRQn  //Канал внешнего прерывания
+                                     };
+  //инициализация обработчика XPT2046
+  XPT2046_InitTouch(&touch1, 20, &cnt_touch);
+
+/* Самый простой вариант хранения в программе
+ * коэффициентов калибровки*/
+#define CALIBRATE_EN    false
+#if !CALIBRATE_EN
+  tCoef coef = {.D   = 0x00022b4253626d37,
+                .Dx1 = 0xffffd9e9e85d81b6,
+                .Dx2 = 0x0000005a555c98ab,
+                .Dx3 = 0x022dd7f0419e66b7,
+                .Dy1 = 0xffffff6065e10c98,
+                .Dy2 = 0x0000343b820dc8bf,
+                .Dy3 = 0xff9cc25725238e55 };
+  touch1.coef = coef;
+#else
+  XPT2046_CalibrateTouch(&touch1, lcd); //Запускаем процедуру калибровки
+#endif
+  /* Вывод на дисплей 64 битных коэффициентов калибровки. Не забудьте раскомментировать функцию convert64bit_to_hex */
+  /*
+  char b[100];
+  convert64bit_to_hex((uint8_t*)(&touch1.coef.D), b);
+  LCD_WriteString(lcd, 0, 0, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
+  convert64bit_to_hex((uint8_t*)(&touch1.coef.Dx1), b);
+  LCD_WriteString(lcd, 0, 20, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
+  convert64bit_to_hex((uint8_t*)(&touch1.coef.Dx2), b);
+  LCD_WriteString(lcd, 0, 40, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
+  convert64bit_to_hex((uint8_t*)(&touch1.coef.Dx3), b);
+  LCD_WriteString(lcd, 0, 60, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
+  convert64bit_to_hex((uint8_t*)(&touch1.coef.Dy1), b);
+  LCD_WriteString(lcd, 0, 80, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
+  convert64bit_to_hex((uint8_t*)(&touch1.coef.Dy2), b);
+  LCD_WriteString(lcd, 0, 100, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
+  convert64bit_to_hex((uint8_t*)(&touch1.coef.Dy3), b);
+  LCD_WriteString(lcd, 0, 120, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
+while(1) { }
+  //После того, как перенесете параметры в coef это все "дело" закомментируйте
+*/
+  //----------------------------------------- Запуск демок --------------------------------------------*/
+  //LCD_Fill(lcd, COLOR_WHITE); //Закрашиваем экран белым цветом
+  //Демка для рисования на экране с помощью тачскрина.
+  //Draw_TouchPenDemo(&touch1, lcd);
+
+  //Демка рисует примитивы, отображает температуру и позволяет перемещать круг по дисплею.
+  //При удержании касания окрашивает дисплей случайным цветом.
+  //RoadCircleDemo(&touch1, lcd);
+
+
+  LCD_Fill(lcd, COLOR_BLACK);
   /* USER CODE END 2 */
 
-  /* Init scheduler */
-  osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
-  MX_FREERTOS_Init();
-  /* Start scheduler */
-  osKernelStart();
-
-  /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  HAL_Delay(5);
+
+  LCD_WriteString(lcd, 5, 25, "CC1101 int...",
+            &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
+  customSetCSpin(&hspi2, NSS_CS_GPIO_Port, NSS_CS_Pin);
+  Power_up_reset();
+
+#define CUSTOM_OLD_CONFIG 0
+#if CUSTOM_OLD_CONFIG
+  TI_setCarrierFreq(CFREQ_433);
+  TI_setDevAddress(1); 
+#endif
+  CC1101_reinit();
+
+
+  initProtothreads();
+
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+#define TX_MODE false
+
+    if(getTxButtonState() || TX_MODE)
+    {
+      if(getWorkState() != TX)
+      {
+        PT_INIT(&sub_tx_pt);
+        setWorkSate(TX);
+        debugPrintf("TX Mode"CLI_NEW_LINE);
+      }
+    }
+    else
+    {
+      if(getScanButtonState())
+      {
+        if(getWorkState() != SCAN)
+        {
+          PT_INIT(&specrum_pt);
+          setWorkSate(SCAN);
+          debugPrintf("SCAN Mode"CLI_NEW_LINE);
+        }
+      }
+      else
+      {
+        if(getWorkState() != RX)
+        {
+          PT_INIT(&rf_pt);
+          setWorkSate(RX);
+          debugPrintf("RX Mode"CLI_NEW_LINE);
+        }
+      }
+    }
+
+    switch (getWorkState())
+    {
+      case TX:
+        subGHz_TX_Thread(&sub_tx_pt);
+        break;
+    
+      case RX:
+        RF_Thread(&rf_pt);
+        break;
+
+      case SCAN:
+        spectrumScan_Thread(&specrum_pt);
+        break;
+    
+      default:
+        assert_param(0U);
+        break;
+    }
+
+    StartApplication_Thread(&application_pt);
+    StartCLI_Thread(&cli_pt);
+    Display_Thread(&button_pt);
   }
   /* USER CODE END 3 */
 }
@@ -156,7 +410,8 @@ void SystemClock_Config(void)
   {
 
   }
-  LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSE, LL_RCC_PLLM_DIV_16, 192, LL_RCC_PLLP_DIV_4);
+  LL_RCC_HSE_EnableCSS();
+  LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSE, LL_RCC_PLLM_DIV_25, 168, LL_RCC_PLLP_DIV_2);
   LL_RCC_PLL_Enable();
 
    /* Wait till PLL is ready */
@@ -165,7 +420,7 @@ void SystemClock_Config(void)
 
   }
   LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
-  LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_2);
+  LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_8);
   LL_RCC_SetAPB2Prescaler(LL_RCC_APB2_DIV_1);
   LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_PLL);
 
@@ -174,7 +429,7 @@ void SystemClock_Config(void)
   {
 
   }
-  LL_SetSystemCoreClock(75000000);
+  LL_SetSystemCoreClock(84000000);
 
    /* Update the time base */
   if (HAL_InitTick (TICK_INT_PRIORITY) != HAL_OK)
@@ -218,6 +473,8 @@ void Error_Handler(void)
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
+
+  debugPrintf("HAL_ERROR!\r\n");
   while (1)
   {
   }
@@ -237,6 +494,8 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+  debugPrintf("Wrong parameters value: file %s on line %d\r\n", file, line);
+  while(1);
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
