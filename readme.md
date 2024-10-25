@@ -36,7 +36,7 @@ Performs:
 - передачу и прием в Sub-GHz диапазоне тестовой строки;
 - режим сканирования диапазона с выводом спектра
 
-### MCU
+## MCU
 STM32F401CC, High-performance access line, Arm Cortex-M4 core with DSP and FPU, 256 Kbytes of Flash memory, 84 MHz CPU, ART Accelerator
 
 Batch Runner - для запуска из VScode
@@ -52,7 +52,7 @@ https://stackoverflow.com/questions/54534700/enabling-floating-point-emulation-i
 ### Compiler
 *GCC* (gcc-arm-none-eabi) version 5.4.1 20160919
 
-### Setting up the build system in WINDOWS10 
+#### Setting up the build system in WINDOWS10 
 
 1. Download GNU Arm Embedded Toolchain 
 https://developer.arm.com/downloads/-/gnu-rm#:~:text=The%20GNU%20Arm%20Embedded%20Toolchain,Arm%20Cortex%2DR%20processor%20families
@@ -96,7 +96,7 @@ Terminal configuration file: utils\TERATERM.INI
 
 Enter *help* command
 
-### Static code analyzer
+## Static code analyzer
 Cppcheck 2.10 https://cppcheck.sourceforge.io/
 
 Run **RunStaticAnalysisCODE.cmd**
