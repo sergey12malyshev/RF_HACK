@@ -95,3 +95,34 @@ Connect ST-Link V2 to SWD connector. Run **programFlash.bat**
 ## Update firmware use system bootloader (DFU Mode)
 
 UART CLI-> BOOT command to launch the system bootloader. Connect to PC via USB Type C. Run **updateFirmware.cmd** or launch STM32CubeProgrammer (select the desired COM-port and download the firmware).
+
+## Command Line Interface
+
+USB-UART 115200 Baud rate
+
+Terminal configuration file: utils\TERATERM.INI
+
+Enter *help* command
+
+### Static code analyzer
+Cppcheck 2.10 https://cppcheck.sourceforge.io/
+
+Run **RunStaticAnalysisCODE.cmd**
+
+It is possible to output the analysis result to a file
+
+## Hardware
+- Black pill STM32F401CC
+- CC1101 module
+- GY-NEO-6M-V2 GPS module
+- 2.8 TFT SPI 240x320 display (ILI9341)
+- TP4056 charge module with protection
+- Battery 18650 li-ion
+- CH340N USB-UART module (Optional for updating firmware via USB Type-C and working with CLI)
+- P-MOSFET
+
+## About repo
+
+Work in the repository is carried out through the Git-flow branching model
+
+Run the **generateRelease.bat** to automatically generate an archive with the software 
