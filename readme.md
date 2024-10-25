@@ -1,5 +1,29 @@
 ### RF_HACK
 
+EN:
+
+A platform for testing wireless transmission and radio interfaces
+
+Currently supports:
+
+- Sub-GHz CC1101 TI transceiver
+
+- GPS module GY-NEO-6M-V2
+
+- 2.4GHz NRF24L01+ (under implementation)
+
+Interaction with the software takes place through the CLI and the ILI9341 display + xpt2046 touchscreen
+
+Performs:
+
+- reception with GPS coordinates display;
+
+- transmission and reception in the Sub-GHz range of the test string;
+
+- range scanning mode with spectrum output on the display
+
+РУС:
+
 Платформа для тестирования беспроводной передачи и радиоинтерфейсов
 
 На текущий момент поддерживает:
@@ -11,6 +35,14 @@
 - 2.4 ГГц nrf24l01+ (в процессе реализации)
 
 Взаимодействие с ПО происходит через CLI и дисплей ILI9341 + тачскрин xpt2046
+
+Осуществляет:
+
+- прием и отображение GPS-координат;
+
+- передачу и прием в Sub-GHz диапазоне тестовой строки;
+
+- режим сканирования диапазона с выводом спектра
 
 ### MCU
 STM32F401CC, High-performance access line, Arm Cortex-M4 core with DSP and FPU, 256 Kbytes of Flash memory, 84 MHz CPU, ART Accelerator
