@@ -7,9 +7,7 @@ A platform for testing wireless transmission and radio interfaces
 Currently supports:
 
 - Sub-GHz CC1101 TI transceiver
-
 - GPS module GY-NEO-6M-V2
-
 - 2.4GHz NRF24L01+ (under implementation)
 
 Interaction with the software takes place through the CLI and the ILI9341 display + xpt2046 touchscreen
@@ -17,9 +15,7 @@ Interaction with the software takes place through the CLI and the ILI9341 displa
 Performs:
 
 - reception with GPS coordinates display;
-
 - transmission and reception in the Sub-GHz range of the test string;
-
 - range scanning mode with spectrum output on the display
 
 РУС:
@@ -29,9 +25,7 @@ Performs:
 На текущий момент поддерживает:
 
 - Sub-GHz приёмопередатчик СС1101 TI
-
 - GPS модуль GY-NEO-6M-V2
-
 - 2.4 ГГц nrf24l01+ (в процессе реализации)
 
 Взаимодействие с ПО происходит через CLI и дисплей ILI9341 + тачскрин xpt2046
@@ -39,9 +33,7 @@ Performs:
 Осуществляет:
 
 - прием и отображение GPS-координат;
-
 - передачу и прием в Sub-GHz диапазоне тестовой строки;
-
 - режим сканирования диапазона с выводом спектра
 
 ### MCU
@@ -119,7 +111,7 @@ It is possible to output the analysis result to a file
 - TP4056 charge module with protection
 - Battery 18650 li-ion
 - CH340N USB-UART module (Optional for updating firmware via USB Type-C and working with CLI)
-- P-MOSFET
+- P-MOSFET for power switch
 
 ## About repo
 
