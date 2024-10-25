@@ -17,7 +17,7 @@
 #include "xpt2046.h"
 #include "calibrate_touch.h"
 #include "demo.h"
-#include "RF_Thread.h"
+#include "subGHz_RX_Thread.h"
 
 #include "gps.h"
 #include "time.h"

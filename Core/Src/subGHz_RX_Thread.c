@@ -7,7 +7,7 @@
 #include "pt.h"
 
 #include "main.h"
-#include "RF_Thread.h"
+#include "subGHz_RX_Thread.h"
 #include "cli_driver.h"
 #include "cc1101.h"
 #include "time.h"
@@ -47,10 +47,10 @@ static uint16_t autoCalibrate(void)
 }
 
 /*
- * Протопоток RF_Thread
+ * Протопоток subGHz_RX_Thread
  *
  */
-PT_THREAD(RF_Thread(struct pt *pt))
+PT_THREAD(subGHz_RX_Thread(struct pt *pt))
 {
   static uint32_t timer1;
 

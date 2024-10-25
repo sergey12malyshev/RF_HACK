@@ -4,7 +4,7 @@
 #define LC_INCLUDE "lc-addrlabels.h"
 #include "pt.h"
 
-PT_THREAD(RF_Thread(struct pt *pt));
+PT_THREAD(subGHz_RX_Thread(struct pt *pt));
 
 typedef struct
 {

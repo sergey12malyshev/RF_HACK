@@ -40,7 +40,7 @@
 
 #include "application_task.h"
 #include "buttonDisplay.h"
-#include "RF_Thread.h"
+#include "subGHz_RX_Thread.h"
 #include "subGHz_TX_Thread.h"
 #include "spectrumScan.h"
 
@@ -373,7 +373,7 @@ while(1) { }
         break;
     
       case RX:
-        RF_Thread(&rf_pt);
+        subGHz_RX_Thread(&rf_pt);
         break;
 
       case SCAN:

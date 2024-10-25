@@ -8,7 +8,7 @@
 
 #include "main.h"
 #include "spectrumScan.h"
-#include "RF_Thread.h"
+#include "subGHz_RX_Thread.h"
 #include "cli_driver.h"
 #include "cc1101.h"
 #include "time.h"

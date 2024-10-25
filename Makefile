@@ -70,7 +70,7 @@ Core/Src/cli_queue.c \
 GPS/gps.c \
 Core/Src/cc1101.c \
 Core/Src/dw_stm32_delay.c \
-Core/Src/RF_Thread.c \
+Core/Src/subGHz_RX_Thread.c \
 Core/Src/subGHz_TX_Thread.c \
 Core/Src/buttonDisplay.c \
 Core/Src/spectrumScan.c \
