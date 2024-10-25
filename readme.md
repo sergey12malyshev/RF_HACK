@@ -89,7 +89,9 @@ To make the debug project , run **makeProjectDebug.bat** (OR *make -j1 debug* cm
 
 To clean the project, run **makeClean.bat** (OR *make clean*)
 
+## Programm firmware
+Connect ST-Link V2 to SWD connector. Run **programFlash.bat**
 
-## Обновление прошивки
+## Update firmware use system bootloader (DFU Mode)
 
-Возможно через UART CLI: по команде BOOT будет запущен системный бутлоадер
+UART CLI-> BOOT command to launch the system bootloader. Connect to PC via USB Type C. Run **updateFirmware.cmd** or launch STM32CubeProgrammer (select the desired COM-port and download the firmware).
