@@ -16,7 +16,7 @@ extern volatile uint8_t GDO0_FLAG;
 
 static char packet[7] = "QWERTY";; // Резерв одного символа под нуль-терминатор!!
 
-static uint8_t transmittRF(const char *packet_loc, uint8_t len)
+uint8_t transmittRF(const char *packet_loc, uint8_t len)
 {
     uint8_t status = 0;
     

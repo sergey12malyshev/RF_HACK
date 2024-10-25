@@ -43,12 +43,13 @@
 #include "subGHz_RX_Thread.h"
 #include "subGHz_TX_Thread.h"
 #include "spectrumScan.h"
+#include "jammer.h"
 
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-static struct pt application_pt, cli_pt, rf_pt, sub_tx_pt, button_pt, specrum_pt;
+static struct pt application_pt, cli_pt, rf_pt, sub_tx_pt, button_pt, specrum_pt, jammer_pt;
 
 uint32_t millis = 0;
 
@@ -129,6 +130,7 @@ void initProtothreads(void)
   PT_INIT(&sub_tx_pt);
   PT_INIT(&button_pt);
   PT_INIT(&specrum_pt);
+  PT_INIT(&jammer_pt);
 }
 
 void CC1101_reinit(void)
@@ -344,9 +346,17 @@ while(1) { }
         debugPrintf("TX Mode"CLI_NEW_LINE);
       }
     }
-    else
-    {
-      if(getScanButtonState())
+    else if(getjammButtonState())
+      {
+        if(getWorkState() != JAMMER)
+        {
+          PT_INIT(&jammer_pt);
+          setWorkSate(JAMMER);
+          debugPrintf("JAMMER Mode"CLI_NEW_LINE);
+        }
+
+      }
+      else if(getScanButtonState())
       {
         if(getWorkState() != SCAN)
         {
@@ -364,7 +374,7 @@ while(1) { }
           debugPrintf("RX Mode"CLI_NEW_LINE);
         }
       }
-    }
+    
 
     switch (getWorkState())
     {
@@ -378,6 +388,10 @@ while(1) { }
 
       case SCAN:
         spectrumScan_Thread(&specrum_pt);
+        break;
+      
+      case JAMMER:
+        jammer_Thread(&jammer_pt);
         break;
     
       default:

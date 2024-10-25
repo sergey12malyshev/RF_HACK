@@ -6,6 +6,7 @@ typedef enum
   RX = 0, 
   TX,
   SCAN,
+  JAMMER,
   NUMBER_STATE
 }Work_state;
 

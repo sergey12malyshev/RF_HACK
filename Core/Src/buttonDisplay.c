@@ -24,10 +24,13 @@
 #define BUTTON_SCAN_X 5
 #define BUTTON_SCAN_Y 205
 
+#define BUTTON_JAMM_X 184
+#define BUTTON_JAMM_Y 105
+
 extern LCD_Handler *lcd;
 extern XPT2046_Handler touch1;
 
-static bool TxButton, scanButton;
+static bool TxButton, scanButton, jammButton;
 
 bool getTxButtonState(void)
 {
@@ -37,6 +40,11 @@ bool getTxButtonState(void)
 bool getScanButtonState(void)
 {
   return scanButton;
+}
+
+bool getjammButtonState(void)
+{
+  return jammButton;
 }
 
 void buttonTx_logo(uint32_t color)
@@ -59,6 +67,17 @@ void buttonScan_logo(uint32_t color)
     LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); // Квадрат, залитый текущим цветом
     // Кнопка "SCAN" в квадрате с белым цветом
     LCD_WriteString(lcd, x + hw / 2 - 15, y + hw / 2 - 5, "SCAN", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
+}
+
+void buttonJamm_logo(uint32_t color)
+{
+    int x = BUTTON_JAMM_X, y = BUTTON_JAMM_Y;
+    int hw = LCD_GetHeight(lcd) / BUTTON_H; // Сторона квадрата с цветом пера
+
+    LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE);         // Черный контур вокруг текущего цвета
+    LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); // Квадрат, залитый текущим цветом
+    // Кнопка "JAMM" в квадрате с белым цветом
+    LCD_WriteString(lcd, x + hw / 2 - 15, y + hw / 2 - 5, "JAMM", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
 }
 
 
@@ -107,6 +126,7 @@ static bool buttonHandler(XPT2046_Handler *t)
             }
 
         }
+
         if (x >= BUTTON_SCAN_X && x < (hw + BUTTON_SCAN_X) && y >= BUTTON_SCAN_Y && y < (hw + BUTTON_SCAN_Y))
         {
             if(!scanButton)
@@ -122,7 +142,23 @@ static bool buttonHandler(XPT2046_Handler *t)
                 scanButton = false;
               }
             }
+        }
 
+        if (x >= BUTTON_JAMM_X && x < (hw + BUTTON_JAMM_X) && y >= BUTTON_JAMM_Y && y < (hw + BUTTON_JAMM_Y))
+        {
+            if(!jammButton)
+            {
+              buttonJamm_logo(COLOR_RED);
+              jammButton = true;
+            }
+            else
+            {
+              if(noClick)
+              {
+                buttonJamm_logo(COLOR_WHITE);
+                jammButton = false;
+              }
+            }
         }
 
         noClick = false;
@@ -152,6 +188,7 @@ PT_THREAD(Display_Thread(struct pt *pt))
 
     buttonTx_logo(COLOR_WHITE);
     buttonScan_logo(COLOR_WHITE);
+    buttonJamm_logo(COLOR_WHITE);
 
     while (1)
     {

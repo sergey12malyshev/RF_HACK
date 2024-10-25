@@ -3,6 +3,7 @@
 
 bool getTxButtonState(void);
 bool getScanButtonState(void);
+bool getjammButtonState(void);
 
 
 #define LC_INCLUDE "lc-addrlabels.h"

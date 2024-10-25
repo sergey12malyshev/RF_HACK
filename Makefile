@@ -74,6 +74,7 @@ Core/Src/subGHz_RX_Thread.c \
 Core/Src/subGHz_TX_Thread.c \
 Core/Src/buttonDisplay.c \
 Core/Src/spectrumScan.c \
+Core/Src/jammer.c \
 Core/Src/workStates.c \
 Core/Src/runBootloader.c \
 Core/Src/stm32f4xx_hal_timebase_tim.c \
