@@ -1,6 +1,6 @@
 ### RF_HACK
 
-EN:
+(EN)
 
 A platform for testing wireless transmission and radio interfaces
 
@@ -18,7 +18,7 @@ Performs:
 - transmission and reception in the Sub-GHz range of the test string;
 - range scanning mode with spectrum output on the display
 
-РУС:
+(РУС)
 
 Платформа для тестирования беспроводной передачи и радиоинтерфейсов
 
