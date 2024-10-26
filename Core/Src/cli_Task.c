@@ -12,6 +12,7 @@
 
 #include "gps.h"
 #include "time.h"
+#include "adc.h"
 
 /*
   UART CLI 115200 Baud
@@ -38,16 +39,16 @@ typedef enum
   INFO
 }Command;
 
-static char mon_comand[] = "Enter monitor command:\r\n\
-HELP - see existing commands\r\n\
-RST - restart\r\n\
-R - restart using WDT\r\n\
-BOOT - run bootloader\r\n\
-TEST - switch test\r\n\
-ADC - show ADC chanel\r\n\
-GPS - show data gps\r\n\
-INFO - read about project\r\n\
->";
+static char mon_comand[] = "Enter monitor command:"CLI_NEW_LINE\
+"HELP - see existing commands"CLI_NEW_LINE\
+"RST - restart"CLI_NEW_LINE\
+"R - restart using WDT"CLI_NEW_LINE\
+"BOOT - run bootloader"CLI_NEW_LINE\
+"TEST - switch test"CLI_NEW_LINE\
+"ADC - show ADC chanel"CLI_NEW_LINE\
+"GPS - show data gps"CLI_NEW_LINE\
+"INFO - read about project"CLI_NEW_LINE\
+">";
 
 #define SIZE_BUFF  12U
 static char input_mon_buff[SIZE_BUFF] = {0};
@@ -118,7 +119,7 @@ void debugPrintf_hello(void)
   debugPrintf("RF_HACK project start"CLI_NEW_LINE);
   sendSNversion();
   DEBUG_PRINT(YEL_CLR"Debug Version"RST_CLR CLI_NEW_LINE);
-  debugPrintf("Enter HELP"CLI_NEW_LINE);
+  debugPrintf("Enter 'HELP' for list of commands...."CLI_NEW_LINE);
   checkResetSourse();
   debugPrintf_symbolTerm();
 }
@@ -280,6 +281,8 @@ static void monitor_out_test(void)
   switch (monitorTest)
   {
     case ADC_T:
+      debugPrintf("%ld"CLI_TAB, getAdcVDDA());
+      debugPrintf("%d"CLI_NEW_LINE, getVoltageVDDA());
       resetTest();
       break;
     case GPS_C:

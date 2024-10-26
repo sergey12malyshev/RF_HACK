@@ -5,6 +5,7 @@
 #define DEBUG_PRINT(...) do { if (DEBUG_MASSAGE) debugPrintf(__VA_ARGS__); } while (0)  
 
 #define CLI_NEW_LINE "\r\n"
+#define CLI_TAB "\t"
 
 #define CLI_OK "[\033[32mOK\033[0m] "
 #define CLI_ERROR "[\033[31mERROR\033[0m] "

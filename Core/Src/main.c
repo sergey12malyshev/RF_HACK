@@ -6,6 +6,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "adc.h"
 #include "dma.h"
 #include "spi.h"
 #include "tim.h"
@@ -187,6 +188,7 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART6_UART_Init();
   MX_SPI2_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
 
   /* Настройка дисплея */
@@ -312,6 +314,8 @@ while(1) { }
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   HAL_Delay(5);
+
+  adc_enable();
 
   LCD_WriteString(lcd, 5, 25, "CC1101 int...",
             &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);

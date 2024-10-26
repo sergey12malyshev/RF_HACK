@@ -7,6 +7,7 @@
 #include "pt.h"
 
 #include "main.h"
+#include "adc.h"
 #include "application_task.h"
 #include "buttonDisplay.h"
 #include "gpio.h"
@@ -105,6 +106,13 @@ static void CC1101_DataScreen(void)
   LCD_WriteString(lcd, start_x, offset_y*5 + start_y, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 }
 
+static void screen_voltage(uint32_t voltage)
+{
+  char str[100] = "";
+  sprintf(str, "%lu.%luV", voltage/1000, voltage%1000);
+  LCD_WriteString(lcd, 185, 5, str, &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+}
+
 /*
  * Протопоток StartApplication_Thread
  *
@@ -132,6 +140,9 @@ PT_THREAD(StartApplication_Thread(struct pt *pt))
     PT_WAIT_UNTIL(pt, timer(&timer1, 350));
     
     heartbeatLedToggle();
+
+    adcConvertProcess();
+    screen_voltage(getVoltageVDDA());
 
 #define TEST_COUNT   false
 #if TEST_COUNT
