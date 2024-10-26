@@ -283,7 +283,6 @@ static void monitor_out_test(void)
     case ADC_T:
       debugPrintf("%ld"CLI_TAB, getAdcVDDA());
       debugPrintf("%d"CLI_NEW_LINE, getVoltageVDDA());
-      resetTest();
       break;
     case GPS_C:
       GPSTest();

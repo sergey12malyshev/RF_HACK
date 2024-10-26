@@ -14,6 +14,7 @@
 #include "cli_driver.h"
 #include "cc1101.h"
 #include "time.h"
+#include "adc.h"
 
 #include "display.h"
 #include "ili9341.h"
@@ -23,6 +24,10 @@ extern volatile uint8_t GDO0_FLAG;
 extern LCD_Handler *lcd;
 extern RF_t CC1101;
 
+char generateRandom(void)
+{
+  return (char)(getAdcVDDA() & 127);
+}
 
 /*
  * Протопоток jammer_Thread
@@ -53,6 +58,13 @@ PT_THREAD(jammer_Thread(struct pt *pt))
       PT_WAIT_UNTIL(pt, timer(&timer1, 350));
 
       static char packet[7] = "om5q3z"; // Резерв одного символа под нуль-терминатор!!
+
+      static uint8_t i;
+      packet[i++] = generateRandom();
+
+      if(i > 5) i = 0;
+
+      //debugPrintf("%s %d"CLI_NEW_LINE, packet, packet[i]);
 
       s = transmittRF(packet, sizeof(packet)); // the function is sending the data
       
