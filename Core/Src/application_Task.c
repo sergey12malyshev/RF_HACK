@@ -109,8 +109,14 @@ static void CC1101_DataScreen(void)
 static void screen_voltage(uint32_t voltage)
 {
   char str[100] = "";
-  sprintf(str, "%lu.%luV", voltage/1000, voltage%1000);
-  LCD_WriteString(lcd, 185, 5, str, &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+  sprintf(str, "%1lu.%03luV", voltage/1000, voltage%1000);
+
+  uint32_t color = COLOR_WHITE;
+  if(voltage < 3260)
+  {
+    color = COLOR_RED;
+  }
+  LCD_WriteString(lcd, 185, 5, str, &Font_8x13, color, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 }
 
 /*
