@@ -12,8 +12,14 @@
  * Call function when you want to jump to system memory
  */
 
+void hardwareDeinit(void)
+{
+ 
+}
+
 void runBootloader(void) 
 {
+	hardwareDeinit();
 
 	void (*SysMemBootJump)(void);
 	
