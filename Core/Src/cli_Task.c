@@ -10,6 +10,8 @@
 #include "cli_queue.h"
 #include "runBootloader.h" 
 
+#include "subGHz_TX_Thread.h"
+
 #include "gps.h"
 #include "time.h"
 #include "adc.h"
@@ -34,20 +36,22 @@ typedef enum
   R,
   BOOT,
   TEST,
+  TX,
   ADC_T,
   GPS_C,
   INFO
 }Command;
 
-static char mon_comand[] = "Enter monitor command:"CLI_NEW_LINE\
-"HELP - see existing commands"CLI_NEW_LINE\
-"RST - restart"CLI_NEW_LINE\
-"R - restart using WDT"CLI_NEW_LINE\
-"BOOT - run bootloader"CLI_NEW_LINE\
-"TEST - switch test"CLI_NEW_LINE\
-"ADC - show ADC chanel"CLI_NEW_LINE\
-"GPS - show data gps"CLI_NEW_LINE\
-"INFO - read about project"CLI_NEW_LINE\
+static char mon_comand[] = "Enter monitor command:"CLI_NEW_LINE
+"HELP - see existing commands"CLI_NEW_LINE
+"RST - restart"CLI_NEW_LINE
+"R - restart using WDT"CLI_NEW_LINE
+"BOOT - run bootloader"CLI_NEW_LINE
+"TX [msg] - transmitt massage"CLI_NEW_LINE
+"TEST - switch test"CLI_NEW_LINE
+"ADC - show ADC chanel"CLI_NEW_LINE
+"GPS - show data gps"CLI_NEW_LINE
+"INFO - read about project"CLI_NEW_LINE
 ">";
 
 #define SIZE_BUFF  12U
@@ -183,6 +187,31 @@ static void monitorParser(void)
       { // enter TEST
         setTest(TEST);
         debugPrintf_OK();
+      }
+      else if (memcmp(input_mon_buff, "TX", 2) == 0)
+      { // enter TX [msg]
+        debugPrintf_OK();
+
+        LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
+        NVIC_DisableIRQ(EXTI15_10_IRQn); //GDO
+
+        extern volatile uint8_t GDO0_FLAG;
+        GDO0_FLAG = 0;
+
+        LL_mDelay(1);
+        CC1101_reinit();
+
+        char packet[9] = " ";
+        uint8_t a = sizeof("TX"); //3
+
+        for(uint8_t i = 0; i < sizeof(packet); i++)
+        {
+          packet[i] = input_mon_buff[a++];
+        }
+
+        transmittRF(packet, strlen(packet)); // the function is sending the data
+
+        debugPrintf("send: %s"CLI_NEW_LINE, packet);
       }
        else if (mon_strcmp(input_mon_buff, "ADC"))
       { // enter ADC
