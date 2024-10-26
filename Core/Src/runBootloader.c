@@ -4,14 +4,17 @@
 #include "main.h"
 #include "runBootloader.h" 
 
+//https://stm32f4-discovery.net/2017/04/tutorial-jump-system-memory-software-stm32/
 
 /**
  * Function to perform jump to system memory boot from user application
  *
  * Call function when you want to jump to system memory
  */
+
 void runBootloader(void) 
 {
+
 	void (*SysMemBootJump)(void);
 	
 	/**
