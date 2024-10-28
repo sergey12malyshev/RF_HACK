@@ -245,8 +245,7 @@ int main(void)
   //инициализация обработчика XPT2046
   XPT2046_InitTouch(&touch1, 20, &cnt_touch);
 
-/* Самый простой вариант хранения в программе
- * коэффициентов калибровки*/
+
 #define CALIBRATE_EN    false
 #if !CALIBRATE_EN
   tCoef coef = {.D   = 0x00022b4253626d37,
@@ -259,38 +258,44 @@ int main(void)
   touch1.coef = coef;
 #else
   XPT2046_CalibrateTouch(&touch1, lcd); //Запускаем процедуру калибровки
-#endif
-  /* Вывод на дисплей 64 битных коэффициентов калибровки. Не забудьте раскомментировать функцию convert64bit_to_hex */
-  /*
+
   char b[100];
   convert64bit_to_hex((uint8_t*)(&touch1.coef.D), b);
   LCD_WriteString(lcd, 0, 0, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
+  debugPrintf(b);
   convert64bit_to_hex((uint8_t*)(&touch1.coef.Dx1), b);
   LCD_WriteString(lcd, 0, 20, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
+  debugPrintf(b);
   convert64bit_to_hex((uint8_t*)(&touch1.coef.Dx2), b);
   LCD_WriteString(lcd, 0, 40, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
+  debugPrintf(b);
   convert64bit_to_hex((uint8_t*)(&touch1.coef.Dx3), b);
   LCD_WriteString(lcd, 0, 60, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
+  debugPrintf(b);
   convert64bit_to_hex((uint8_t*)(&touch1.coef.Dy1), b);
   LCD_WriteString(lcd, 0, 80, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
+  debugPrintf(b);
   convert64bit_to_hex((uint8_t*)(&touch1.coef.Dy2), b);
   LCD_WriteString(lcd, 0, 100, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
+  debugPrintf(b);
   convert64bit_to_hex((uint8_t*)(&touch1.coef.Dy3), b);
   LCD_WriteString(lcd, 0, 120, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
-while(1) { } //После того, как перенесете параметры в coef это все "дело" закомментируйте
-*/
+  debugPrintf(b);
+  while(1) {} //Выведем коэффициенты на дисплей и в консоль
+#endif
 
-  //LCD_Fill(lcd, COLOR_WHITE);
-  //Draw_TouchPenDemo(&touch1, lcd); //Демка для рисования на экране с помощью тачскрина.
-  //RoadCircleDemo(&touch1, lcd);    //Демка рисует примитивы, отображает температуру и позволяет перемещать круг по дисплею.
-
+#if RUN_DEMO
+  LCD_Fill(lcd, COLOR_WHITE);
+  Draw_TouchPenDemo(&touch1, lcd); //Демка для рисования на экране с помощью тачскрина.
+  RoadCircleDemo(&touch1, lcd);    //Демка рисует примитивы, отображает температуру и позволяет перемещать круг по дисплею.
+#endif
 
   LCD_Fill(lcd, COLOR_BLACK);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  HAL_Delay(5);
+  LL_mDelay(5);
 
   adc_enable();
 
