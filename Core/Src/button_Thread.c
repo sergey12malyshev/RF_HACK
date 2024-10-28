@@ -55,6 +55,11 @@ bool getBootButtonState(void)
   return bootButton;
 }
 
+static void allButtonClearState(void)
+{
+  TxButton = scanButton = jammButton = bootButton = 0;
+}
+
 void buttonTx_logo(uint32_t color)
 {
     int x = BUTTON_TX_X, y = BUTTON_TX_Y;
@@ -99,6 +104,14 @@ void buttonBoot_logo(uint32_t color)
     LCD_WriteString(lcd, x + hw / 2 - 15, y + hw / 2 - 5, "BOOT", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
 }
 
+void button_logoClear(void)
+{
+    buttonTx_logo(COLOR_WHITE);
+    buttonScan_logo(COLOR_WHITE);
+    buttonJamm_logo(COLOR_WHITE);
+    buttonBoot_logo(COLOR_WHITE);
+}
+
 
 static bool buttonHandler(XPT2046_Handler *t)
 {
@@ -132,6 +145,8 @@ static bool buttonHandler(XPT2046_Handler *t)
         {
             if(!TxButton)
             {
+              allButtonClearState();
+              button_logoClear();
               buttonTx_logo(COLOR_RED);
               TxButton = true;
             }
@@ -150,6 +165,8 @@ static bool buttonHandler(XPT2046_Handler *t)
         {
             if(!scanButton)
             {
+              allButtonClearState();
+              button_logoClear();
               buttonScan_logo(COLOR_GREEN);
               scanButton = true;
             }
@@ -167,6 +184,8 @@ static bool buttonHandler(XPT2046_Handler *t)
         {
             if(!jammButton)
             {
+              allButtonClearState();
+              button_logoClear();
               buttonJamm_logo(COLOR_RED);
               jammButton = true;
             }
@@ -184,6 +203,9 @@ static bool buttonHandler(XPT2046_Handler *t)
         {
             if(!bootButton)
             {
+
+              allButtonClearState();
+              button_logoClear();
               buttonBoot_logo(COLOR_RED);
               bootButton = true;
             }
@@ -220,12 +242,12 @@ PT_THREAD(Button_Thread(struct pt *pt))
 
     PT_BEGIN(pt);
 
+    allButtonClearState();
+
     PT_DELAY_MS(pt, &timer1, 1800);
 
-    buttonTx_logo(COLOR_WHITE);
-    buttonScan_logo(COLOR_WHITE);
-    buttonJamm_logo(COLOR_WHITE);
-    buttonBoot_logo(COLOR_WHITE);
+    button_logoClear();
+
 
     while (1)
     {

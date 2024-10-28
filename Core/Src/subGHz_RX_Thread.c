@@ -70,12 +70,12 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
 
   CC1101_reinit();
 
-  TI_write_reg(CCxxx0_IOCFG0, 0x06);
+  TI_write_reg(CCxxx0_IOCFG0, 0x06); //GDO0 Output Pin Configuration
 
   while (1)
   {
-    TI_strobe(CCxxx0_SFRX); // Flush the buffer //Bufferi temizle
-    TI_strobe(CCxxx0_SRX);  // Set RX Mode //RX moda ayarlar
+    TI_strobe(CCxxx0_SFRX); // Flush the buffer
+    TI_strobe(CCxxx0_SRX);  // Set RX Mode
 
     PT_WAIT_UNTIL(pt, GDO0_FLAG != 0); // 0 - highLevel
     GDO0_FLAG = 0;

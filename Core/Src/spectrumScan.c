@@ -128,11 +128,17 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
 
   PT_BEGIN(pt);
 
-  PT_DELAY_MS(pt, &timer1, 200);
+  PT_DELAY_MS(pt, &timer1, 250);
 
   LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
-  NVIC_DisableIRQ(EXTI15_10_IRQn); //GDO
+  NVIC_EnableIRQ(EXTI15_10_IRQn); //GDO
   GDO0_FLAG = 0;
+
+  CC1101_reinit();
+
+  TI_write_reg(CCxxx0_IOCFG0, 0x06); // GDO0 Output Pin Configuration
+  TI_strobe(CCxxx0_SFRX); // Flush the buffer
+  TI_strobe(CCxxx0_SRX);  // Set RX Mode
 
   char str[25] = {0};
   sprintf(str, "%.3f-%.3f", startFreq + DIFFERENCE_WITH_CARRIER, startFreq + DIFFERENCE_WITH_CARRIER + freqStep * 128);
