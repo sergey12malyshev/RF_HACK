@@ -8,6 +8,7 @@
 #include "main.h"
 #include "adc.h"
 #include "dma.h"
+#include "iwdg.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
@@ -187,6 +188,7 @@ int main(void)
   MX_USART6_UART_Init();
   MX_SPI2_Init();
   MX_ADC1_Init();
+  MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
 
   /* Настройка дисплея */
@@ -395,6 +397,8 @@ int main(void)
     StartApplication_Thread(&application_pt);
     StartCLI_Thread(&cli_pt);
     Button_Thread(&button_pt);
+
+    reload_IWDG();
   }
   /* USER CODE END 3 */
 }
@@ -414,6 +418,13 @@ void SystemClock_Config(void)
 
    /* Wait till HSE is ready */
   while(LL_RCC_HSE_IsReady() != 1)
+  {
+
+  }
+  LL_RCC_LSI_Enable();
+
+   /* Wait till LSI is ready */
+  while(LL_RCC_LSI_IsReady() != 1)
   {
 
   }
