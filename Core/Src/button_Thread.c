@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 #include "main.h"
-#include "buttonDisplay.h"
+#include "button_Thread.h"
 #include "application_Thread.h"
 #include "gpio.h"
 #include "cli_driver.h"
@@ -208,12 +208,12 @@ static bool buttonHandler(XPT2046_Handler *t)
 }
 
 /*
- * Протопоток Display_Thread
+ * Протопоток Button_Thread
  *
  *
  */
 
-PT_THREAD(Display_Thread(struct pt *pt))
+PT_THREAD(Button_Thread(struct pt *pt))
 {
     static uint32_t timer1;
 

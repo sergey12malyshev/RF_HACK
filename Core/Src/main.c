@@ -30,7 +30,7 @@
 #include "demo.h"
 
 #include "displayInit.h"
-#include "buttonDisplay.h"
+#include "button_Thread.h"
 
 #include "runBootloader.h" 
 
@@ -44,7 +44,7 @@
 #include "pt.h"
 
 #include "application_Thread.h"
-#include "buttonDisplay.h"
+#include "button_Thread.h"
 #include "subGHz_RX_Thread.h"
 #include "subGHz_TX_Thread.h"
 #include "spectrumScan.h"
@@ -394,7 +394,7 @@ int main(void)
 
     StartApplication_Thread(&application_pt);
     StartCLI_Thread(&cli_pt);
-    Display_Thread(&button_pt);
+    Button_Thread(&button_pt);
   }
   /* USER CODE END 3 */
 }
