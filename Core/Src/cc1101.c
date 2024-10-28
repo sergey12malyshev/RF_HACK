@@ -484,8 +484,6 @@ void customSetCSpin(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint16_t cs_
 
 void Power_up_reset()
 {
-	//Güç geldikten sonra CC1101 i Macro resetlemek için
-
 	DWT_Delay_Init();
 	LL_GPIO_SetOutputPin(CS_GPIO_Port, CS_Pin);
 	DWT_Delay_us(1);
@@ -495,9 +493,9 @@ void Power_up_reset()
 	DWT_Delay_us(41);
 
 	LL_GPIO_ResetOutputPin(CS_GPIO_Port, CS_Pin);
-	while(LL_GPIO_IsInputPinSet(PORT_MISO,PIN_MISO))
+	while(LL_GPIO_IsInputPinSet(PORT_MISO, PIN_MISO))
 	{
-	}; //CS pini LOW yaptığımızd MISO pini adres yazılmadan önce low da beklemeli
+	};
 	TI_strobe(CCxxx0_SRES);
 	LL_GPIO_SetOutputPin(CS_GPIO_Port, CS_Pin);
 }
