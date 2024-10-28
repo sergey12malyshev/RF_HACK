@@ -1,5 +1,5 @@
-#ifndef __APPL_TASK_H__
-#define __APPL_TASK_H__
+#ifndef __APPL_THREAD_H__
+#define __APPL_THREAD_H__
 
 #define LC_INCLUDE "lc-addrlabels.h"
 #include "pt.h"
@@ -8,4 +8,4 @@ PT_THREAD(StartApplication_Thread(struct pt *pt));
 
 bool getTxButtonState(void);
 
-#endif /*__APPL_TASK_H__ */
+#endif /*__APPL_THREAD_H__ */
