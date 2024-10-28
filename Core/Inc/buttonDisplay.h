@@ -1,5 +1,5 @@
-#ifndef DISPLAY_INIT_H__
-#define DISPLAY_INIT_H__
+#ifndef BUTTON_DISPLAY_H__
+#define BUTTON_DISPLAY_H__
 
 bool getTxButtonState(void);
 bool getScanButtonState(void);
@@ -12,4 +12,4 @@ bool getBootButtonState(void);
 
 PT_THREAD(Display_Thread(struct pt *pt));
 
-#endif /* DISPLAY_INIT_H__ */
+#endif /* BUTTON_DISPLAY_H__ */

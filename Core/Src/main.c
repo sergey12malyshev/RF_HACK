@@ -28,8 +28,11 @@
 #include "xpt2046.h"
 #include "calibrate_touch.h"
 #include "demo.h"
-#include "runBootloader.h" 
 
+#include "displayInit.h"
+#include "buttonDisplay.h"
+
+#include "runBootloader.h" 
 
 #include "gps.h"
 #include "cc1101.h"
@@ -84,19 +87,6 @@ XPT2046_Handler touch1;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
-/* Для тех, кто не умеет пользоваться отладчиком или
- * тех, у кого он не работает */
-/*
-static void convert64bit_to_hex(uint8_t *v, char *b)
-{
-   b[0] = 0;
-  sprintf(&b[strlen(b)], "0x");
-   for (int i = 0; i < 8; i++) {
-     sprintf(&b[strlen(b)], "%02x", v[7 - i]);
-   }
-}
-*/
 
 /* USER CODE END PFP */
 
@@ -184,8 +174,8 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  //Настраиваем системный таймер (прерывания 1000 раз в секунду)
-  SysTick_Config(SystemCoreClock/1000);
+  
+  SysTick_Config(SystemCoreClock/1000); //Настраиваем системный таймер (прерывания 1000 раз в секунду)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -200,28 +190,12 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   /* Настройка дисплея */
-  //Данные DMA
-  LCD_DMA_TypeDef dma_tx = 
-  { 
-    .dma    = DMA2,           // Контроллер DMA
-    .stream = LL_DMA_STREAM_3 // Поток контроллера DMA
-  };  
 
-  //Данные подсветки
-  LCD_BackLight_data bkl_data = 
-  {
-    .htim_bk        = TIM3,       // Таймер - для подсветки с PWM (изменение яркости подсветки)
-    .channel_htim_bk = LL_TIM_CHANNEL_CH1, // Канал таймера - для подсветки с PWM (изменение яркости подсветки)
-    .blk_port       = 0,          // Порт gpio - подсветка по типу вкл./выкл.
-    .blk_pin        = 0,          // Вывод порта - подсветка по типу вкл./выкл.
-    .bk_percent     = 60          // Яркость подсветки, в %
-  };     
-
-  //Данные подключения
+    //Данные подключения
   LCD_SPI_Connected_data spi_con = 
   { 
     .spi        = SPI1,
-    .dma_tx     = dma_tx,        // Данные DMA
+    .dma_tx     = dma_tx_1,        // Данные DMA
     .reset_port = LCD_RESET_GPIO_Port,
     .reset_pin  = LCD_RESET_Pin,
     .dc_port    = LCD_DC_GPIO_Port,
@@ -303,17 +277,12 @@ int main(void)
   LCD_WriteString(lcd, 0, 100, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
   convert64bit_to_hex((uint8_t*)(&touch1.coef.Dy3), b);
   LCD_WriteString(lcd, 0, 120, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
-while(1) { }
-  //После того, как перенесете параметры в coef это все "дело" закомментируйте
+while(1) { } //После того, как перенесете параметры в coef это все "дело" закомментируйте
 */
-  //----------------------------------------- Запуск демок --------------------------------------------*/
-  //LCD_Fill(lcd, COLOR_WHITE); //Закрашиваем экран белым цветом
-  //Демка для рисования на экране с помощью тачскрина.
-  //Draw_TouchPenDemo(&touch1, lcd);
 
-  //Демка рисует примитивы, отображает температуру и позволяет перемещать круг по дисплею.
-  //При удержании касания окрашивает дисплей случайным цветом.
-  //RoadCircleDemo(&touch1, lcd);
+  //LCD_Fill(lcd, COLOR_WHITE);
+  //Draw_TouchPenDemo(&touch1, lcd); //Демка для рисования на экране с помощью тачскрина.
+  //RoadCircleDemo(&touch1, lcd);    //Демка рисует примитивы, отображает температуру и позволяет перемещать круг по дисплею.
 
 
   LCD_Fill(lcd, COLOR_BLACK);
