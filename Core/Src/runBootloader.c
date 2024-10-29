@@ -3,6 +3,9 @@
 
 #include "main.h"
 #include "runBootloader.h" 
+#include "cli_driver.h"
+
+#include "application_Thread.h"
 
 //https://stm32f4-discovery.net/2017/04/tutorial-jump-system-memory-software-stm32/
 
@@ -14,7 +17,8 @@
 
 void hardwareDeinit(void)
 {
- 
+  debugPrintf("Booting run..."CLI_NEW_LINE);
+  screen_bootload();
 }
 
 void runBootloader(void) 

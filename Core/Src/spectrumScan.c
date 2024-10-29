@@ -132,6 +132,11 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
   PT_DELAY_MS(pt, &timer1, 250);
 
   clearWindow();
+  LCD_WriteString(lcd, 0, 0, "SCAN mode", &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
+  char str[25] = {0};
+  sprintf(str, "%.3f-%.3f", startFreq + DIFFERENCE_WITH_CARRIER, startFreq + DIFFERENCE_WITH_CARRIER + freqStep * 128);
+  LCD_WriteString(lcd, 15, 25, str, &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
   LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
   NVIC_EnableIRQ(EXTI15_10_IRQn); //GDO
@@ -143,9 +148,7 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
   TI_strobe(CCxxx0_SFRX); // Flush the buffer
   TI_strobe(CCxxx0_SRX);  // Set RX Mode
 
-  char str[25] = {0};
-  sprintf(str, "%.3f-%.3f", startFreq + DIFFERENCE_WITH_CARRIER, startFreq + DIFFERENCE_WITH_CARRIER + freqStep * 128);
-  LCD_WriteString(lcd, 15, 195, str, &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
 
   while (1)
   {

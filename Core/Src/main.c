@@ -133,12 +133,6 @@ void CC1101_reinit(void)
   TI_init(&hspi2, NSS_CS_GPIO_Port, NSS_CS_Pin); // CS
 }
 
-static void screen_bootload(void)
-{
-  LCD_Fill(lcd, COLOR_BLACK);
-  LCD_WriteString(lcd, 5, 35, "Bootload run...", &Font_12x20, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
-}
-
 /* USER CODE END 0 */
 
 /**
@@ -375,8 +369,6 @@ int main(void)
 
       if(getBootButtonState())
       {
-        debugPrintf("Booting run..."CLI_NEW_LINE);
-        screen_bootload();
         runBootloader();
       }
     

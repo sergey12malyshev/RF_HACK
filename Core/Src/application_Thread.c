@@ -82,6 +82,12 @@ static void screen_voltage(uint32_t voltage)
   LCD_WriteString(lcd, 185, 5, str, &Font_8x13, color, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 }
 
+void screen_bootload(void)
+{
+  LCD_Fill(lcd, COLOR_BLACK);
+  LCD_WriteString(lcd, 5, 35, "Bootload run...", &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+}
+
 /*
  * Протопоток StartApplication_Thread
  *
