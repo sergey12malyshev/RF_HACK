@@ -41,11 +41,8 @@ static void CC1101_DataScreen(void)
   sprintf(str, "RCCI: %d dBm", CC1101.RSSI);
   LCD_WriteString(lcd, start_x, offset_y*3 + start_y, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
-  sprintf(str, "RSSI M: %ld dBm", CC1101.RSSI_main);
-  LCD_WriteString(lcd, start_x, offset_y*4 + start_y, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
-
   sprintf(str, "Message: %s", CC1101.dataString);
-  LCD_WriteString(lcd, start_x, offset_y*6 + start_y, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+  LCD_WriteString(lcd, start_x, offset_y*5 + start_y, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 }
 
 int RSSIconvert(char raw_rssi)
@@ -97,7 +94,7 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
   PT_DELAY_MS(pt, &timer1, 250);
 
   clearWindow();
-  LCD_WriteString(lcd, 0, 0, "TX Mode", &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+  LCD_WriteString(lcd, 0, 0, "RX Mode", &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
   LCD_WriteString(lcd, 0, 20, "CC1101 Data:", &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
   CC1101_DataScreen();
 

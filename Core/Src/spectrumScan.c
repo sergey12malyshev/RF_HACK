@@ -98,6 +98,8 @@ void spectumDraw(void)
   const uint16_t end_y = 50;
   const uint16_t offset_x = 15;
 
+  const int16_t min_RSSI = 138;
+
 
   uint32_t summLevel = 0;
 
@@ -108,7 +110,6 @@ void spectumDraw(void)
 
   for (uint8_t i = 0; i < 128; i++)
   {
-    const int16_t min_RSSI = 138;
 
     uint16_t y2 = start_y - (min_RSSI + scanDat[i][j]);
     if (y2 < end_y)
@@ -129,9 +130,10 @@ void spectumDraw(void)
   }
 
   interferenceLevel = summLevel / 128;
+  CC1101.RSSI_main = ((int32_t) start_y - interferenceLevel) - min_RSSI;
 }
 
-static void waterfallDraw(void)
+__UNUSED static void waterfallDraw(void)
 {
   const uint16_t start_y = 155;
   const uint16_t offset_x = 15;
@@ -198,8 +200,8 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
 
     PT_WAIT_UNTIL(pt, timer(&timer1, 250));
 
-    uint8_t rssi_raw = TI_read_status(CCxxx0_RSSI);
-    CC1101.RSSI_main = RSSIconvert(rssi_raw);
+    //uint8_t rssi_raw = TI_read_status(CCxxx0_RSSI);
+    //CC1101.RSSI_main = RSSIconvert(rssi_raw);
 
     scanRSSI(startFreq);
 #if 0
@@ -212,6 +214,9 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
 #endif
     spectumDraw();
     //waterfallDraw();
+
+    sprintf(str, "Noise: %ld dBm", CC1101.RSSI_main);
+    LCD_WriteString(lcd, 15, 240, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
     //debugPrintf("%d "CLI_NEW_LINE, interferenceLevel);
 

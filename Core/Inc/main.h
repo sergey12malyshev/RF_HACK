@@ -109,6 +109,8 @@ void checkResetSourse(void);
 #define quoting(a) prequoting(a)
 #define prequoting(a) #a
 
+#define __UNUSED __attribute__((unused))
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
