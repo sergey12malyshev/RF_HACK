@@ -30,7 +30,7 @@ static void GPS_DataScreen(void)
   uint16_t start_x = 10;
   uint16_t start_y = 0;
 
-  uint16_t offset_y = 16;
+  uint16_t offset_y = 18;
 
   char str[100] = "";
   sprintf(str, "Utc time: %.2f", GPS.utc_time);
@@ -44,9 +44,12 @@ static void GPS_DataScreen(void)
 
   sprintf(str, "Altitude_ft: %.4f",  GPS.msl_altitude);
   LCD_WriteString(lcd, start_x, offset_y*4 + start_y, str, &Font_8x13, COLOR_YELLOW, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
+  sprintf(str, "Speed km: %f",  GPS.speed_km);
+  LCD_WriteString(lcd, start_x, offset_y*5 + start_y, str, &Font_8x13, COLOR_YELLOW, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
   
   sprintf(str, "Satelites: %d",  GPS.satelites);
-  LCD_WriteString(lcd, start_x, offset_y*5 + start_y, str, &Font_8x13, COLOR_YELLOW, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+  LCD_WriteString(lcd, start_x, offset_y*6 + start_y, str, &Font_8x13, COLOR_YELLOW, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 }
 
 /*

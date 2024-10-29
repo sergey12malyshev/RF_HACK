@@ -190,7 +190,7 @@ static bool buttonHandler(XPT2046_Handler *t)
             {
               allButtonClearState();
               button_logoClear();
-              buttonScan_logo(COLOR_GREEN);
+              buttonScan_logo(COLOR_CYAN);
               scanButton = true;
             }
             else
@@ -249,7 +249,7 @@ static bool buttonHandler(XPT2046_Handler *t)
 
               allButtonClearState();
               button_logoClear();
-              buttonGPS_logo(COLOR_GREEN);
+              buttonGPS_logo(COLOR_YELLOW);
               gpsButton = true;
             }
             else
@@ -287,7 +287,7 @@ PT_THREAD(Button_Thread(struct pt *pt))
 
     allButtonClearState();
 
-    PT_DELAY_MS(pt, &timer1, 1800);
+    PT_DELAY_MS(pt, &timer1, 2600);
 
     button_logoClear();
 

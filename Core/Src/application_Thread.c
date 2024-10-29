@@ -102,7 +102,7 @@ PT_THREAD(StartApplication_Thread(struct pt *pt))
   
   bootingScreen();
 
-  PT_DELAY_MS(pt, &timer1, 1800);
+  PT_DELAY_MS(pt, &timer1, 2500);
 
   LCD_Fill(lcd, COLOR_BLACK);
 
