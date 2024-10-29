@@ -90,7 +90,7 @@ void scanRSSI(float freqSet)
 void spectumDraw(void)
 {
   const uint16_t start_y = 310;
-  const uint16_t offset_x = 90;
+  const uint16_t offset_x = 15;
 
   for (uint8_t i = 0; i < 128; i++) // clear
   {
@@ -142,7 +142,7 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
 
   char str[25] = {0};
   sprintf(str, "%.3f-%.3f", startFreq + DIFFERENCE_WITH_CARRIER, startFreq + DIFFERENCE_WITH_CARRIER + freqStep * 128);
-  LCD_WriteString(lcd, 90, 195, str, &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+  LCD_WriteString(lcd, 15, 195, str, &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
   while (1)
   {

@@ -17,18 +17,24 @@
 
 #include "time.h"
 
-#define BUTTON_TX_X 5
-#define BUTTON_TX_Y 265
 #define BUTTON_H 6
 
-#define BUTTON_SCAN_X 5
+#define BUTTON_TX_X 184
+#define BUTTON_TX_Y 265
+
+#define BUTTON_SCAN_X 184
 #define BUTTON_SCAN_Y 205
 
 #define BUTTON_JAMM_X 184
-#define BUTTON_JAMM_Y 105
+#define BUTTON_JAMM_Y 145
 
 #define BUTTON_BOOT_X 184
-#define BUTTON_BOOT_Y 45
+#define BUTTON_BOOT_Y 85
+
+#define BUTTON_GPS_X 184
+#define BUTTON_GPS_Y 25
+
+
 
 extern LCD_Handler *lcd;
 extern XPT2046_Handler touch1;
@@ -104,12 +110,24 @@ void buttonBoot_logo(uint32_t color)
     LCD_WriteString(lcd, x + hw / 2 - 15, y + hw / 2 - 5, "BOOT", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
 }
 
+void buttonGPS_logo(uint32_t color)
+{
+    int x = BUTTON_GPS_X, y = BUTTON_GPS_Y;
+    int hw = LCD_GetHeight(lcd) / BUTTON_H; // Сторона квадрата с цветом пера
+
+    LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE);         // Черный контур вокруг текущего цвета
+    LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); // Квадрат, залитый текущим цветом
+    // Кнопка "GPS" в квадрате с белым цветом
+    LCD_WriteString(lcd, x + hw / 2 - 15, y + hw / 2 - 5, "GPS", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
+}
+
 void button_logoClear(void)
 {
     buttonTx_logo(COLOR_WHITE);
     buttonScan_logo(COLOR_WHITE);
     buttonJamm_logo(COLOR_WHITE);
     buttonBoot_logo(COLOR_WHITE);
+    buttonGPS_logo(COLOR_WHITE);
 }
 
 
