@@ -27,6 +27,8 @@ extern RF_t CC1101;
 
 static int8_t scanDat[128];
 
+static uint16_t interferenceLevel;
+
 static float freqStep = 0.025;
 static float startFreq = 433.075 - DIFFERENCE_WITH_CARRIER; // LPD 1 start - BASE и CARRIER имеют сдвиг
 
@@ -91,23 +93,30 @@ void scanRSSI(float freqSet)
 void spectumDraw(void)
 {
   const uint16_t start_y = 310;
+  const uint16_t end_y = 210;
   const uint16_t offset_x = 15;
+
+
+  uint32_t summLevel = 0;
 
   for (uint8_t i = 0; i < 128; i++) // clear
   {
-    LCD_DrawLine(lcd, offset_x + i, 210, offset_x + i, start_y, COLOR_BLACK);
+    LCD_DrawLine(lcd, offset_x + i, end_y, offset_x + i, start_y, COLOR_BLACK);
   }
 
   for (uint8_t i = 0; i < 128; i++)
   {
     const int16_t min_RSSI = 138;
+
     uint16_t y2 = start_y - (min_RSSI + scanDat[i]);
-    if (y2 < 210)
+    if (y2 < end_y)
     {
-      y2 = 210;
+      y2 = end_y;
     }
 
-    if (y2 > 260)
+    summLevel += y2;
+
+    if (y2 > interferenceLevel - 10)
     {
       LCD_DrawLine(lcd, offset_x + i, y2, offset_x + i, start_y, COLOR_BLUE);
     }
@@ -116,6 +125,8 @@ void spectumDraw(void)
       LCD_DrawLine(lcd, offset_x + i, y2, offset_x + i, start_y, COLOR_PURPLE);
     }
   }
+
+  interferenceLevel = summLevel / 128;
 }
 
 
@@ -167,6 +178,8 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
     // debugPrintf("%f "CLI_NEW_LINE, startFreq + 128*freqStep);
 
     spectumDraw();
+
+    debugPrintf("%d "CLI_NEW_LINE, interferenceLevel);
 
 
     PT_YIELD(pt);
