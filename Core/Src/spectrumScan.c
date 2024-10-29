@@ -25,7 +25,9 @@ extern RF_t CC1101;
 
 #define DIFFERENCE_WITH_CARRIER 0.985
 
-static int8_t scanDat[128];
+static int8_t scanDat[128][1];
+static uint8_t j;
+
 
 static uint16_t interferenceLevel;
 
@@ -85,7 +87,7 @@ void scanRSSI(float freqSet)
   {
     CC1101_setMHZ(freqSet);
     uint8_t rssi_raw = TI_read_status(CCxxx0_RSSI);
-    scanDat[i] = RSSIconvert(rssi_raw);
+    scanDat[i][j] = RSSIconvert(rssi_raw);
     freqSet += freqStep;
   }
 }
@@ -108,7 +110,7 @@ void spectumDraw(void)
   {
     const int16_t min_RSSI = 138;
 
-    uint16_t y2 = start_y - (min_RSSI + scanDat[i]);
+    uint16_t y2 = start_y - (min_RSSI + scanDat[i][j]);
     if (y2 < end_y)
     {
       y2 = end_y;
@@ -127,6 +129,36 @@ void spectumDraw(void)
   }
 
   interferenceLevel = summLevel / 128;
+}
+
+static void waterfallDraw(void)
+{
+  const uint16_t start_y = 155;
+  const uint16_t offset_x = 15;
+
+  uint32_t color = COLOR_BLUE;
+
+  
+  for(uint8_t j = 0; j < 10; j++) // clear
+  {
+    for (uint8_t i = 0; i < 128; i++)
+    {
+      
+      const int16_t min_RSSI = 138;
+
+      uint16_t y2 = 150 - (min_RSSI + scanDat[i][j]);
+      if (y2 < 50)
+      {
+        y2 = 50;
+      }
+
+      if(y2 < interferenceLevel - 10)
+      {
+        color = COLOR_PURPLE;
+      }
+      LCD_DrawPixel(lcd, offset_x + i, start_y + j, color);
+    }
+  }
 }
 
 
@@ -170,16 +202,18 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
     CC1101.RSSI_main = RSSIconvert(rssi_raw);
 
     scanRSSI(startFreq);
-    // debugPrintf("%f "CLI_NEW_LINE);
-    // for(uint8_t i = 0; i < 128; i++)
-    //{
-    //  debugPrintf("%d ",scanDat[i]);
-    // }
-    // debugPrintf("%f "CLI_NEW_LINE, startFreq + 128*freqStep);
-
+#if 0
+    debugPrintf("%f "CLI_NEW_LINE);
+    for(uint8_t i = 0; i < 128; i++)
+    {
+      debugPrintf("%d ",scanDat[i][j]);
+    }
+    debugPrintf("%f "CLI_NEW_LINE, startFreq + 128*freqStep);
+#endif
     spectumDraw();
+    //waterfallDraw();
 
-    debugPrintf("%d "CLI_NEW_LINE, interferenceLevel);
+    //debugPrintf("%d "CLI_NEW_LINE, interferenceLevel);
 
 
     PT_YIELD(pt);
