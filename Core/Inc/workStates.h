@@ -7,6 +7,7 @@ typedef enum
   TX,
   SCAN,
   JAMMER,
+  GPS,
   NUMBER_STATE
 }Work_state;
 

@@ -5,6 +5,7 @@ bool getTxButtonState(void);
 bool getScanButtonState(void);
 bool getjammButtonState(void);
 bool getBootButtonState(void);
+bool getGpsButtonState(void);
 
 
 #define LC_INCLUDE "lc-addrlabels.h"

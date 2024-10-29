@@ -68,6 +68,7 @@ Core/Src/cli_Task.c \
 Core/Src/application_Thread.c \
 Core/Src/cli_queue.c \
 GPS/gps.c \
+Core/Src/gps_Thread.c \
 Core/Src/cc1101.c \
 Core/Src/dw_stm32_delay.c \
 Core/Src/subGHz_RX_Thread.c \

@@ -11,6 +11,7 @@
 #include "spectrumScan.h"
 #include "subGHz_RX_Thread.h"
 #include "subGHz_TX_Thread.h"
+#include "application_Thread.h"
 #include "cli_driver.h"
 #include "cc1101.h"
 #include "time.h"
@@ -42,6 +43,8 @@ PT_THREAD(jammer_Thread(struct pt *pt))
     PT_BEGIN(pt);
 
     PT_DELAY_MS(pt, &timer1, 250);
+
+    clearWindow();
 
     LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
     NVIC_DisableIRQ(EXTI15_10_IRQn); //GDO

@@ -8,13 +8,45 @@
 
 #include "main.h"
 #include "subGHz_RX_Thread.h"
+#include "application_Thread.h"
 #include "cli_driver.h"
 #include "cc1101.h"
 #include "time.h"
 
+#include "display.h"
+#include "ili9341.h"
+#include "xpt2046.h"
+#include "calibrate_touch.h"
+#include "demo.h"
+
 extern volatile uint8_t GDO0_FLAG;
 
 RF_t CC1101 = {0};
+extern LCD_Handler *lcd;
+
+static void CC1101_DataScreen(void)
+{
+  uint16_t start_x = 10;
+  uint16_t start_y = 25;
+
+  uint16_t offset_y = 16;
+
+  char str[100] = "";
+  sprintf(str, "Count mesage: %d", CC1101.countMessage);
+  LCD_WriteString(lcd, start_x, offset_y + start_y, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
+  sprintf(str, "Count error: %d", CC1101.countError);
+  LCD_WriteString(lcd, start_x, offset_y*2 + start_y, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
+  sprintf(str, "RCCI: %d dBm", CC1101.RSSI);
+  LCD_WriteString(lcd, start_x, offset_y*3 + start_y, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
+  sprintf(str, "Message: %s", CC1101.dataString);
+  LCD_WriteString(lcd, start_x, offset_y*4 + start_y, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
+  sprintf(str, "RSSI M: %ld dBm", CC1101.RSSI_main);
+  LCD_WriteString(lcd, start_x, offset_y*5 + start_y, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+}
 
 int RSSIconvert(char raw_rssi)
 {
@@ -64,6 +96,9 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
 
   PT_DELAY_MS(pt, &timer1, 250);
 
+  clearWindow();
+  CC1101_DataScreen();
+
   LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
   NVIC_EnableIRQ(EXTI15_10_IRQn); //GDO
   GDO0_FLAG = 0;
@@ -71,6 +106,8 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
   CC1101_reinit();
 
   TI_write_reg(CCxxx0_IOCFG0, 0x06); //GDO0 Output Pin Configuration
+
+  LCD_WriteString(lcd, 0, 0, "CC1101 Data:", &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
   while (1)
   {
@@ -138,6 +175,8 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
     CC1101.countMessage = counter_RX;
     CC1101.RSSI = RSSIconvert(get_RSSI());
     CC1101.countError = counter_Error;
+
+    CC1101_DataScreen();
 
     PT_YIELD(pt);
   }

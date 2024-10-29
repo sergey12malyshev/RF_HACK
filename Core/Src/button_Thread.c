@@ -39,7 +39,7 @@
 extern LCD_Handler *lcd;
 extern XPT2046_Handler touch1;
 
-static bool TxButton, scanButton, jammButton, bootButton;
+static bool TxButton, scanButton, jammButton, bootButton, gpsButton;
 
 bool getTxButtonState(void)
 {
@@ -61,9 +61,14 @@ bool getBootButtonState(void)
   return bootButton;
 }
 
+bool getGpsButtonState(void)
+{
+  return gpsButton;
+}
+
 static void allButtonClearState(void)
 {
-  TxButton = scanButton = jammButton = bootButton = 0;
+  TxButton = scanButton = jammButton = bootButton = gpsButton = 0;
 }
 
 void buttonTx_logo(uint32_t color)
@@ -233,6 +238,26 @@ static bool buttonHandler(XPT2046_Handler *t)
               {
                 buttonBoot_logo(COLOR_WHITE);
                 bootButton = false;
+              }
+            }
+        }
+
+        if (x >= BUTTON_GPS_X && x < (hw + BUTTON_GPS_X) && y >= BUTTON_GPS_Y && y < (hw + BUTTON_GPS_Y))
+        {
+            if(!gpsButton)
+            {
+
+              allButtonClearState();
+              button_logoClear();
+              buttonGPS_logo(COLOR_GREEN);
+              gpsButton = true;
+            }
+            else
+            {
+              if(noClick)
+              {
+                buttonGPS_logo(COLOR_WHITE);
+                gpsButton = false;
               }
             }
         }

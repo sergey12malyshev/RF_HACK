@@ -6,6 +6,8 @@
 
 PT_THREAD(StartApplication_Thread(struct pt *pt));
 
-bool getTxButtonState(void);
+void clearWindow(void);
+
+bool getBootingScreenMode(void);
 
 #endif /*__APPL_THREAD_H__ */

@@ -32,6 +32,7 @@
 
 #include "displayInit.h"
 #include "button_Thread.h"
+#include "gps_Thread.h"
 
 #include "runBootloader.h" 
 
@@ -55,7 +56,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-static struct pt application_pt, cli_pt, rf_pt, sub_tx_pt, button_pt, specrum_pt, jammer_pt;
+static struct pt application_pt, cli_pt, rf_pt, sub_tx_pt, button_pt, specrum_pt, jammer_pt, gps_pt;
 
 uint32_t millis = 0;
 
@@ -88,7 +89,7 @@ XPT2046_Handler touch1;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+static void scheduler(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -124,6 +125,7 @@ void initProtothreads(void)
   PT_INIT(&button_pt);
   PT_INIT(&specrum_pt);
   PT_INIT(&jammer_pt);
+  PT_INIT(&gps_pt);
 }
 
 void CC1101_reinit(void)
@@ -342,7 +344,6 @@ int main(void)
           setWorkSate(JAMMER);
           debugPrintf("JAMMER Mode"CLI_NEW_LINE);
         }
-
       }
       else if(getScanButtonState())
       {
@@ -351,6 +352,15 @@ int main(void)
           PT_INIT(&specrum_pt);
           setWorkSate(SCAN);
           debugPrintf("SCAN Mode"CLI_NEW_LINE);
+        }
+      }
+      else if(getGpsButtonState())
+      {
+        if(getWorkState() != GPS)
+        {
+          PT_INIT(&gps_pt);
+          setWorkSate(GPS);
+          debugPrintf("GPS Mode"CLI_NEW_LINE);
         }
       }
       else
@@ -371,37 +381,47 @@ int main(void)
       }
     
 
-    switch (getWorkState())
-    {
-      case TX:
-        subGHz_TX_Thread(&sub_tx_pt);
-        break;
-    
-      case RX:
-        subGHz_RX_Thread(&rf_pt);
-        break;
-
-      case SCAN:
-        spectrumScan_Thread(&specrum_pt);
-        break;
-      
-      case JAMMER:
-        jammer_Thread(&jammer_pt);
-        break;
-    
-      default:
-        assert_param(0U);
-        break;
-    }
-
-    StartApplication_Thread(&application_pt);
-    StartCLI_Thread(&cli_pt);
-    Button_Thread(&button_pt);
+    scheduler();
 
     reload_IWDG();
   }
   /* USER CODE END 3 */
 }
+
+static void scheduler(void)
+{
+    StartApplication_Thread(&application_pt);
+    StartCLI_Thread(&cli_pt);
+    Button_Thread(&button_pt);
+
+    if(getBootingScreenMode())
+    {
+      return;
+    }
+
+    switch (getWorkState())
+    {
+      case TX:
+        subGHz_TX_Thread(&sub_tx_pt);
+        break;
+      case RX:
+        subGHz_RX_Thread(&rf_pt);
+        break;
+      case SCAN:
+        spectrumScan_Thread(&specrum_pt);
+        break;
+      case JAMMER:
+        jammer_Thread(&jammer_pt);
+        break;
+      case GPS:
+        gps_Thread(&gps_pt);
+        break;
+      default:
+        assert_param(0U);
+        break;
+    }
+}
+
 
 /**
   * @brief System Clock Configuration
