@@ -92,8 +92,8 @@ void scanRSSI(float freqSet)
 
 void spectumDraw(void)
 {
-  const uint16_t start_y = 310;
-  const uint16_t end_y = 210;
+  const uint16_t start_y = 150;
+  const uint16_t end_y = 50;
   const uint16_t offset_x = 15;
 
 
