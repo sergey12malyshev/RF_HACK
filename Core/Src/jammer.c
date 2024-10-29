@@ -71,6 +71,7 @@ PT_THREAD(jammer_Thread(struct pt *pt))
       //debugPrintf("%s %d"CLI_NEW_LINE, packet, packet[i]);
 
       s = transmittRF(packet, sizeof(packet)); // the function is sending the data
+      LCD_WriteString(lcd, 15, 40, packet, &Font_12x20, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
       
 
       PT_YIELD(pt);

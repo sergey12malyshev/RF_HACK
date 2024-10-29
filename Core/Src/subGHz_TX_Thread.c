@@ -91,6 +91,8 @@ PT_THREAD(subGHz_TX_Thread(struct pt *pt))
 
         s = transmittRF(packet, sizeof(packet)); // the function is sending the data
         
+        LCD_WriteString(lcd, 15, 40, packet, &Font_12x20, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+        
         PT_WAIT_UNTIL(pt, timer(&timer1, 750));
 
         PT_YIELD(pt);
