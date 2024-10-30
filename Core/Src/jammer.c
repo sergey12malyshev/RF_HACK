@@ -57,6 +57,7 @@ PT_THREAD(jammer_Thread(struct pt *pt))
 
     CC1101_setMHZ(432.490);
 
+
     while (1)
     {
       PT_WAIT_UNTIL(pt, timer(&timer1, 350));

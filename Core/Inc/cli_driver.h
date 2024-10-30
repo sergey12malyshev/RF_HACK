@@ -20,6 +20,8 @@
 #define GREEN_CLR "\033[32m"
 #define RST_CLR "\033[0m"
 
+#define CLI_SHELL_MAX_LENGTH     250      // Shell max command line size
+
 int debugPrintf(const char *serial_data, ...);
 
 #define LC_INCLUDE "lc-addrlabels.h"

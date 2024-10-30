@@ -9,9 +9,6 @@
 
 extern UART_HandleTypeDef huart1;
 
-
-#define CLI_SHELL_MAX_LENGTH     250      // Shell max command line size
-
 static char printBufer[CLI_SHELL_MAX_LENGTH] = {0};
 
 int debugPrintf(const char *serial_data, ...)

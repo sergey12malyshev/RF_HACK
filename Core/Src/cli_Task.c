@@ -54,6 +54,8 @@ static char mon_comand[] = "Enter monitor command:"CLI_NEW_LINE
 "INFO - read about project"CLI_NEW_LINE
 ">";
 
+_Static_assert((sizeof(mon_comand) + 1U) < CLI_SHELL_MAX_LENGTH, "Print buffer size is smaller than help command!");
+
 #define SIZE_BUFF  12U
 static char input_mon_buff[SIZE_BUFF] = {0};
 
