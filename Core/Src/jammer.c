@@ -60,7 +60,8 @@ PT_THREAD(jammer_Thread(struct pt *pt))
 
     while (1)
     {
-      PT_WAIT_UNTIL(pt, timer(&timer1, 350));
+      PT_WAIT_UNTIL(pt, (HAL_GPIO_ReadPin(CC_GDO_GPIO_Port, CC_GDO_Pin) == GPIO_PIN_RESET)); // TODO: уточнить работу GDO
+
 
       static char packet[7] = "om5q3z"; // Резерв одного символа под нуль-терминатор!!
 

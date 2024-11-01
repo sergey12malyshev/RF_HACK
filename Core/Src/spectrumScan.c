@@ -198,7 +198,7 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
   while (1)
   {
 
-    PT_WAIT_UNTIL(pt, timer(&timer1, 250));
+    PT_WAIT_UNTIL(pt, timer(&timer1, 300));
 
     //uint8_t rssi_raw = TI_read_status(CCxxx0_RSSI);
     //CC1101.RSSI_main = RSSIconvert(rssi_raw);
