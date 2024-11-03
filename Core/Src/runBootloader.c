@@ -4,6 +4,7 @@
 #include "main.h"
 #include "runBootloader.h" 
 #include "cli_driver.h"
+#include "iwdg.h"
 
 #include "application_Thread.h"
 
@@ -21,6 +22,7 @@ void hardwareDeinit(void)
   debugPrintf("Booting run..."CLI_NEW_LINE);
   screen_bootload();
   LL_mDelay(75);
+  reload_IWDG();
 }
 
 void runBootloader(void) 
