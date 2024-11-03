@@ -180,7 +180,7 @@ void TI_send_packet(uint8_t* txBuffer, UINT8 size)
 {
 	__attribute__((unused)) uint8_t status;
 
-  	TI_strobe(CCxxx0_SIDLE); //ïåðåâîäèì ìîäåì â IDLE
+  	TI_strobe(CCxxx0_SIDLE);
 
     TI_write_reg(CCxxx0_TXFIFO, size);
 
@@ -503,8 +503,6 @@ void Power_up_reset()
 
 void TI_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t cs_pin)
 {
-	//UINT8 i;
-	//UINT16 delay;
 	uint8_t status;
 	hal_spi = hspi;
 	CS_GPIO_Port = cs_port;
@@ -516,7 +514,7 @@ void TI_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t cs_pin)
 	  status = TI_read_status(CCxxx0_VERSION);
 	  if(status != 0x14)
 	  {
-
+		;
 	  }
 	}
 	TI_strobe(CCxxx0_SFRX); //RX FIFO
@@ -529,33 +527,6 @@ void TI_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t cs_pin)
 	TI_strobe(CCxxx0_SIDLE);
 	TI_strobe(CCxxx0_SFRX);
 	TI_strobe(CCxxx0_SFTX);
-
-	//TI_strobe(CCxxx0_SRX);
-
-	/*delay = RSSI_VALID_DELAY_US;
-
-	do
-	{
-		status = TI_read_status(CCxxx0_PKTSTATUS) & (PKTSTATUS_CCA | PKTSTATUS_CS);
-
-		if (status)
-		{
-			break;
-		}
-
-		ACC = 16;
-
-		while(--ACC);
-
-		delay -= 64;
-	} while(delay > 0);
-
-	for(i = 0; i < 16; i++)
-	{
-	  rnd_seed = (rnd_seed << 1) | (TI_read_status(CCxxx0_RSSI) & 0x01);
-	}
-
-	rnd_seed |= 0x0080;*/
 
 	TI_strobe(CCxxx0_SIDLE);
 }

@@ -60,7 +60,9 @@ PT_THREAD(jammer_Thread(struct pt *pt))
 
     while (1)
     {
-      PT_WAIT_UNTIL(pt, (HAL_GPIO_ReadPin(CC_GDO_GPIO_Port, CC_GDO_Pin) == GPIO_PIN_RESET)); // TODO: уточнить работу GDO
+      //You can connect only GDO0, if you are using asynchronous serial mode. The pin will switch automatically from INPUT to OUTPUT when you call setTX() and vice versa.
+
+      PT_WAIT_UNTIL(pt, (HAL_GPIO_ReadPin(CC_GDO_GPIO_Port, CC_GDO_Pin) == GPIO_PIN_RESET)); // TODO: уточнить работу GDO (low lowel - end transmitt)
 
       PT_WAIT_UNTIL(pt, timer(&timer1, 5));
 
