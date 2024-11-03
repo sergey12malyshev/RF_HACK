@@ -22,6 +22,8 @@ UART_HandleTypeDef* hal_uart;
 uint16_t CS_Pin;
 GPIO_TypeDef* CS_GPIO_Port;
 
+volatile uint8_t GDO0_FLAG;
+
 #define WRITE_BURST             0x40
 #define READ_SINGLE             0x80
 #define READ_BURST              0xC0

@@ -1,7 +1,7 @@
 /* USER CODE BEGIN Header */
 /*
  * RF_HACK 2024
- *
+ * Malyshev Sergey
  */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
@@ -59,8 +59,6 @@
 static struct pt application_pt, cli_pt, rf_pt, sub_tx_pt, button_pt, specrum_pt, jammer_pt, gps_pt;
 
 uint32_t millis = 0;
-
-volatile uint8_t GDO0_FLAG;
 
 
 /* USER CODE END PTD */
