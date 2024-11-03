@@ -189,7 +189,6 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
 
   CC1101_reinit();
 
-  TI_write_reg(CCxxx0_IOCFG0, 0x06); // GDO0 Output Pin Configuration
   TI_strobe(CCxxx0_SFRX); // Flush the buffer
   TI_strobe(CCxxx0_SRX);  // Set RX Mode
 

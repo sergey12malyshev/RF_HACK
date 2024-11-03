@@ -104,15 +104,13 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
 
   CC1101_reinit();
 
-  TI_write_reg(CCxxx0_IOCFG0, 0x06); //GDO0 Output Pin Configuration
-
   while (1)
   {
     TI_strobe(CCxxx0_SFRX); // Flush the buffer
     TI_strobe(CCxxx0_SRX);  // Set RX Mode
 
     PT_WAIT_UNTIL(pt, GDO0_FLAG); // 0 - highLevel
-    
+
     GDO0_FLAG = 0;
     uint8_t errorData = 0;
 
@@ -169,7 +167,7 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
       debugPrintf(CLI_ERROR "CRC" CLI_NEW_LINE);
       counter_Error++;
     }
-
+    
     CC1101.countMessage = counter_RX;
     CC1101.RSSI = RSSIconvert(get_RSSI());
     CC1101.countError = counter_Error;
