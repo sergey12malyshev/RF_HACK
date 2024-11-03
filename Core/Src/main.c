@@ -40,7 +40,7 @@
 #include "cc1101.h"
 
 #include "cli_driver.h"
-#include "cli_task.h"
+#include "cli_thread.h"
 
 #define LC_INCLUDE "lc-addrlabels.h"
 #include "pt.h"

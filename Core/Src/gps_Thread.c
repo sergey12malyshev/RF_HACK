@@ -22,9 +22,6 @@
 #include "time.h"
 
 
-
-
-
 static void GPS_DataScreen(void)
 {
   uint16_t start_x = 10;

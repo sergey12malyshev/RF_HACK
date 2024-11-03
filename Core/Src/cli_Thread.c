@@ -5,7 +5,7 @@
 #include <stdarg.h>
 
 #include "main.h"
-#include "cli_task.h"
+#include "cli_thread.h"
 #include "cli_driver.h"
 #include "cli_queue.h"
 #include "runBootloader.h" 

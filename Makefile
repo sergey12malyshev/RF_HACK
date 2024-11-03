@@ -64,7 +64,7 @@ Core/Src/tim.c \
 Core/Src/usart.c \
 Core/Src/stm32f4xx_hal_msp.c \
 Core/Src/cli_driver.c \
-Core/Src/cli_Task.c \
+Core/Src/cli_Thread.c \
 Core/Src/application_Thread.c \
 Core/Src/cli_queue.c \
 GPS/gps.c \
