@@ -48,8 +48,7 @@ PT_THREAD(jammer_Thread(struct pt *pt))
     LCD_WriteString(lcd, 0, 0, "Jammer mode", &Font_8x13, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
     LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
-    NVIC_DisableIRQ(EXTI15_10_IRQn); //GDO
-    GDO0_FLAG = 0;
+    NVIC_EnableIRQ(EXTI15_10_IRQn); //GDO
 
     CC1101_reinit();
 
@@ -57,15 +56,12 @@ PT_THREAD(jammer_Thread(struct pt *pt))
 
     CC1101_setMHZ(432.490);
 
+    GDO0_FLAG = 0;
 
     while (1)
     {
-      //You can connect only GDO0, if you are using asynchronous serial mode. The pin will switch automatically from INPUT to OUTPUT when you call setTX() and vice versa.
-
-      PT_WAIT_UNTIL(pt, (HAL_GPIO_ReadPin(CC_GDO_GPIO_Port, CC_GDO_Pin) == GPIO_PIN_RESET)); // TODO: уточнить работу GDO (low lowel - end transmitt)
-
-      PT_WAIT_UNTIL(pt, timer(&timer1, 5));
-
+      /*You can connect only GDO0, if you are using asynchronous serial mode. 
+      The pin will switch automatically from INPUT to OUTPUT when you call setTX() and vice versa.*/
 
       static char packet[7] = "om5q3z"; // Резерв одного символа под нуль-терминатор!!
 
@@ -76,9 +72,11 @@ PT_THREAD(jammer_Thread(struct pt *pt))
 
       //debugPrintf("%s %d"CLI_NEW_LINE, packet, packet[i]);
 
-      s = transmittRF(packet, sizeof(packet)); // the function is sending the data
+      s = transmittRF(packet, sizeof(packet)); // sending the data
       LCD_WriteString(lcd, 15, 40, packet, &Font_12x20, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
       
+      PT_WAIT_UNTIL(pt, (GDO0_FLAG)); //GDO low lowel - end transmitt
+      GDO0_FLAG = 0;
 
       PT_YIELD(pt);
     }
