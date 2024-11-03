@@ -111,7 +111,8 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
     TI_strobe(CCxxx0_SFRX); // Flush the buffer
     TI_strobe(CCxxx0_SRX);  // Set RX Mode
 
-    PT_WAIT_UNTIL(pt, GDO0_FLAG != 0); // 0 - highLevel
+    PT_WAIT_UNTIL(pt, GDO0_FLAG); // 0 - highLevel
+    
     GDO0_FLAG = 0;
     uint8_t errorData = 0;
 

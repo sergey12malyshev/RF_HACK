@@ -76,20 +76,20 @@ PT_THREAD(subGHz_TX_Thread(struct pt *pt))
     LCD_WriteString(lcd, 0, 0, "TX mode", &Font_8x13, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
     LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
-    NVIC_DisableIRQ(EXTI15_10_IRQn); //GDO
-    GDO0_FLAG = 0;
+    NVIC_EnableIRQ(EXTI15_10_IRQn); //GDO
 
     CC1101_reinit();
 
     setTime(&timer1);
+    
+    GDO0_FLAG = 0;
 
     while (1)
-    {   
-        PT_WAIT_UNTIL(pt, (HAL_GPIO_ReadPin(CC_GDO_GPIO_Port, CC_GDO_Pin) == GPIO_PIN_RESET)); // TODO: уточнить работу GDO (low lowel - end transmitt)
-        
-        PT_WAIT_UNTIL(pt, timer(&timer1, 450));
+    {           
+        PT_WAIT_UNTIL(pt, timer(&timer1, 350));
 
         static uint8_t count_tx = 0;
+
         if(count_tx >= 99)
         {
           count_tx = 0;
@@ -99,7 +99,10 @@ PT_THREAD(subGHz_TX_Thread(struct pt *pt))
         s = transmittRF(packet, sizeof(packet)); // the function is sending the data
         
         LCD_WriteString(lcd, 15, 40, packet, &Font_12x20, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
-        
+
+        PT_WAIT_UNTIL(pt, (GDO0_FLAG)); // TODO: уточнить работу GDO (low lowel - end transmitt)
+        GDO0_FLAG = 0;
+
         PT_YIELD(pt);
     }
 
