@@ -130,34 +130,26 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
         counter_Error++;
         debugPrintf(CLI_ERROR "status: %d, len: %d" CLI_NEW_LINE, status, length);
       }
-
-      for (uint8_t i = 0; i < 7; i++) // copy
+      else
       {
-        massage[i] = buffer[i];
-        CC1101.dataString[i] = buffer[i];
-      }
-
-      for (uint8_t i = 0; i < 4; i++) // to check for receiving data
-      {
-        if (massage[i] != control_str[i])
+        for (uint8_t i = 0; i < 7; i++) // copy
         {
-          errorData = 1;
-          break;
+          massage[i] = buffer[i];
+          CC1101.dataString[i] = buffer[i];
         }
-      }
 
-      uint16_t offset = autoCalibrate();
+        for (uint8_t i = 0; i < 4; i++) // to check for receiving data
+        {
+          if (massage[i] != control_str[i])
+          {
+            errorData = 1;
+            break;
+          }
+        }
 
-      debugPrintf("%s, RSSI: %d, offset: %d" CLI_NEW_LINE, massage, RSSIconvert(get_RSSI()), offset);
+        uint16_t offset = autoCalibrate();
 
-      if (++counter_RX > 99)
-      {
-        counter_RX = 0;
-      }
-
-      if (errorData == 0)
-      {
-        // userLedToggle(); // Data is correct
+        debugPrintf("%s, RSSI: %d, offset: %d" CLI_NEW_LINE, massage, RSSIconvert(get_RSSI()), offset);
       }
     }
     else
@@ -167,7 +159,12 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
       debugPrintf(CLI_ERROR "CRC" CLI_NEW_LINE);
       counter_Error++;
     }
-    
+
+
+    if (++counter_RX > 99)
+    {
+      counter_RX = 0;
+    }
     CC1101.countMessage = counter_RX;
     CC1101.RSSI = RSSIconvert(get_RSSI());
     CC1101.countError = counter_Error;
