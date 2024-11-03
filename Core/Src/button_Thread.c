@@ -36,8 +36,6 @@
 #define BUTTON_GPS_Y 25
 
 
-extern XPT2046_Handler touch1;
-
 static bool TxButton, scanButton, jammButton, bootButton, gpsButton;
 
 bool getTxButtonState(void)

@@ -62,7 +62,7 @@ uint32_t millis = 0;
 
 volatile uint8_t GDO0_FLAG;
 
-XPT2046_Handler touch1;
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -229,19 +229,8 @@ int main(void)
   LCD_Init(lcd);
   LCD_Fill(lcd, COLOR_RED);
 
-  /* ----------------------------------- Настройка тачскрина ------------------------------------------*/
-  //Будем обмениваться данными с XPT2046 на скорости 2.625 Мбит/с (по спецификации максимум 2.0 Мбит/с).
-  XPT2046_ConnectionData cnt_touch = { .spi    = SPI1,   //используемый spi
-                                   .speed    = 4,        //Скорость spi 0...7 (0 - clk/2, 1 - clk/4, ..., 7 - clk/256)
-                     .cs_port  = T_CS_GPIO_Port,  //Порт для управления T_CS
-                     .cs_pin    = T_CS_Pin,       //Вывод порта для управления T_CS
-                     .irq_port = T_IRQ_GPIO_Port, //Порт для управления T_IRQ
-                     .irq_pin  = T_IRQ_Pin,       //Вывод порта для управления T_IRQ
-                     .exti_irq = T_IRQ_EXTI_IRQn  //Канал внешнего прерывания
-                                     };
   //инициализация обработчика XPT2046
   XPT2046_InitTouch(&touch1, 20, &cnt_touch);
-
 
 #define CALIBRATE_EN    false
 #if !CALIBRATE_EN
@@ -254,31 +243,7 @@ int main(void)
                 .Dy3 = 0xff9cc25725238e55 };
   touch1.coef = coef;
 #else
-  XPT2046_CalibrateTouch(&touch1, lcd); //Запускаем процедуру калибровки
-
-  char b[100];
-  convert64bit_to_hex((uint8_t*)(&touch1.coef.D), b);
-  LCD_WriteString(lcd, 0, 0, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
-  debugPrintf(b);
-  convert64bit_to_hex((uint8_t*)(&touch1.coef.Dx1), b);
-  LCD_WriteString(lcd, 0, 20, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
-  debugPrintf(b);
-  convert64bit_to_hex((uint8_t*)(&touch1.coef.Dx2), b);
-  LCD_WriteString(lcd, 0, 40, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
-  debugPrintf(b);
-  convert64bit_to_hex((uint8_t*)(&touch1.coef.Dx3), b);
-  LCD_WriteString(lcd, 0, 60, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
-  debugPrintf(b);
-  convert64bit_to_hex((uint8_t*)(&touch1.coef.Dy1), b);
-  LCD_WriteString(lcd, 0, 80, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
-  debugPrintf(b);
-  convert64bit_to_hex((uint8_t*)(&touch1.coef.Dy2), b);
-  LCD_WriteString(lcd, 0, 100, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
-  debugPrintf(b);
-  convert64bit_to_hex((uint8_t*)(&touch1.coef.Dy3), b);
-  LCD_WriteString(lcd, 0, 120, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
-  debugPrintf(b);
-  while(1) {} //Выведем коэффициенты на дисплей и в консоль
+calibrateTouchEnable();
 #endif
 
 #if RUN_DEMO
@@ -308,8 +273,6 @@ int main(void)
   TI_setDevAddress(1); 
 #endif
   CC1101_reinit();
-
-
   initProtothreads();
 
   while (1)

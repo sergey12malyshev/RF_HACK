@@ -24,7 +24,6 @@
 #include "gps.h"
 #include "time.h"
 
-extern XPT2046_Handler touch1;
 extern RF_t CC1101;
 
 static bool bootingScreenMode = true;
