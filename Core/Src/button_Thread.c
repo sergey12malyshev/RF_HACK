@@ -10,6 +10,7 @@
 #include "cli_driver.h"
 
 #include "display.h"
+#include "displayInit.h"
 #include "ili9341.h"
 #include "xpt2046.h"
 #include "calibrate_touch.h"
@@ -35,8 +36,6 @@
 #define BUTTON_GPS_Y 25
 
 
-
-extern LCD_Handler *lcd;
 extern XPT2046_Handler touch1;
 
 static bool TxButton, scanButton, jammButton, bootButton, gpsButton;

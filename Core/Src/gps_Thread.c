@@ -12,6 +12,7 @@
 #include "application_Thread.h"
 
 #include "display.h"
+#include "displayInit.h"
 #include "ili9341.h"
 #include "xpt2046.h"
 #include "calibrate_touch.h"
@@ -20,8 +21,7 @@
 #include "gps.h"
 #include "time.h"
 
-extern LCD_Handler *lcd;
-extern GPS_t GPS;
+
 
 
 

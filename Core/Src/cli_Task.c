@@ -27,7 +27,6 @@
 #define mon_strcmp(ptr, cmd) (!strcmp(ptr, cmd))
 
 extern UART_HandleTypeDef huart1, huart6;
-extern GPS_t GPS;
 
 typedef enum
 {

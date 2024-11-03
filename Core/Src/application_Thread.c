@@ -14,6 +14,7 @@
 #include "cli_driver.h"
 
 #include "display.h"
+#include "displayInit.h"
 #include "ili9341.h"
 #include "xpt2046.h"
 #include "calibrate_touch.h"
@@ -23,9 +24,7 @@
 #include "gps.h"
 #include "time.h"
 
-extern LCD_Handler *lcd;
 extern XPT2046_Handler touch1;
-extern GPS_t GPS;
 extern RF_t CC1101;
 
 static bool bootingScreenMode = true;

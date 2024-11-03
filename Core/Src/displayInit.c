@@ -10,6 +10,7 @@
 #include "xpt2046.h"
 #include "calibrate_touch.h"
 
+LCD_Handler *lcd = NULL;     //Указатель на первый дисплей в списке
 
 //Данные DMA
 LCD_DMA_TypeDef dma_tx_1 = 

@@ -15,11 +15,11 @@
 #include "time.h"
 
 #include "display.h"
+#include "displayInit.h"
 #include "ili9341.h"
 
 extern volatile uint8_t GDO0_FLAG;
 
-extern LCD_Handler *lcd;
 extern RF_t CC1101;
 
 

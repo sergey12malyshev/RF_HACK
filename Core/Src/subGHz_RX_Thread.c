@@ -14,6 +14,7 @@
 #include "time.h"
 
 #include "display.h"
+#include "displayInit.h"
 #include "ili9341.h"
 #include "xpt2046.h"
 #include "calibrate_touch.h"
@@ -25,7 +26,6 @@
 extern volatile uint8_t GDO0_FLAG;
 
 RF_t CC1101 = {0};
-extern LCD_Handler *lcd;
 
 static void CC1101_DataScreen(void)
 {

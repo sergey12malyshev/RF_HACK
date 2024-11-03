@@ -40,6 +40,11 @@ uint32_t getVoltageVDDA(void)
   return adcValue.voltageVDDA;
 }
 
+char generateRandomChar(void)
+{
+  return (char)(getAdcVDDA() & 127);
+}
+
 void adc_enable(void)
 {
   __IO uint32_t wait_loop_index = 0;

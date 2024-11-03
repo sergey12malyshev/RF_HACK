@@ -62,7 +62,6 @@ uint32_t millis = 0;
 
 volatile uint8_t GDO0_FLAG;
 
-LCD_Handler *lcd = NULL;     //Указатель на первый дисплей в списке
 XPT2046_Handler touch1;
 /* USER CODE END PTD */
 
@@ -350,10 +349,10 @@ int main(void)
       }
       else if(getGpsButtonState())
       {
-        if(getWorkState() != GPS)
+        if(getWorkState() != GPS_MODE)
         {
           PT_INIT(&gps_pt);
-          setWorkSate(GPS);
+          setWorkSate(GPS_MODE);
           debugPrintf("GPS Mode"CLI_NEW_LINE);
         }
       }
@@ -405,7 +404,7 @@ static void scheduler(void)
       case JAMMER:
         jammer_Thread(&jammer_pt);
         break;
-      case GPS:
+      case GPS_MODE:
         gps_Thread(&gps_pt);
         break;
       default:

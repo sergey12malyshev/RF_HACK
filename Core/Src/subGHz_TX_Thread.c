@@ -14,9 +14,8 @@
 #include "time.h"
 
 #include "display.h"
+#include "displayInit.h"
 #include "ili9341.h"
-
-extern LCD_Handler *lcd;
 
 extern volatile uint8_t GDO0_FLAG;
 

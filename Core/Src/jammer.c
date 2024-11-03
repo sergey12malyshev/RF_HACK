@@ -18,17 +18,12 @@
 #include "adc.h"
 
 #include "display.h"
+#include "displayInit.h"
 #include "ili9341.h"
 
 extern volatile uint8_t GDO0_FLAG;
 
-extern LCD_Handler *lcd;
 extern RF_t CC1101;
-
-char generateRandom(void)
-{
-  return (char)(getAdcVDDA() & 127);
-}
 
 /*
  * Протопоток jammer_Thread
@@ -66,7 +61,7 @@ PT_THREAD(jammer_Thread(struct pt *pt))
       static char packet[7] = "om5q3z"; // Резерв одного символа под нуль-терминатор!!
 
       static uint8_t i;
-      packet[i++] = generateRandom();
+      packet[i++] = generateRandomChar();
 
       if(i > 5) i = 0;
 
