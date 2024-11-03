@@ -41,16 +41,18 @@ typedef enum
   INFO
 }Command;
 
-static char mon_comand[] = "Enter monitor command:"CLI_NEW_LINE
-"HELP - see existing commands"CLI_NEW_LINE
-"RST - restart"CLI_NEW_LINE
-"R - restart using WDT"CLI_NEW_LINE
-"BOOT - run bootloader"CLI_NEW_LINE
-"TX [msg] - transmitt massage"CLI_NEW_LINE
-"TEST - switch test"CLI_NEW_LINE
-"ADC - show ADC chanel"CLI_NEW_LINE
-"GPS - show data gps"CLI_NEW_LINE
-"INFO - read about project"CLI_NEW_LINE
+static const char mon_comand[] =\
+"Enter CLI command:"CLI_NEW_LINE
+"HELP"CLI_TAB2    "See existing commands"CLI_NEW_LINE
+"RST"CLI_TAB2     "Restart"CLI_NEW_LINE
+"R"CLI_TAB2       "Restart using WDT"CLI_NEW_LINE
+"BOOT"CLI_TAB2    "Run bootloader"CLI_NEW_LINE
+"TX [msg]"CLI_TAB "Transmitt massage"CLI_NEW_LINE
+"TEST"CLI_TAB2    "Switch test"CLI_NEW_LINE
+"ADC"CLI_TAB2     "Show ADC chanel"CLI_NEW_LINE
+"GPS"CLI_TAB2     "Show data gps"CLI_NEW_LINE
+"INFO"CLI_TAB2    "Read about project"CLI_NEW_LINE
+"-----------------------------------"CLI_NEW_LINE
 ">";
 
 _Static_assert((sizeof(mon_comand) + 1U) < CLI_SHELL_MAX_LENGTH, "Print buffer size is smaller than help command!");
