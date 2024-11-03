@@ -19,6 +19,9 @@
 #include "calibrate_touch.h"
 #include "demo.h"
 
+
+#define MAX_PACKET_LENGTH   25U  // указываем максимальный размер принимаемой строки
+
 extern volatile uint8_t GDO0_FLAG;
 
 RF_t CC1101 = {0};
@@ -86,7 +89,6 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
   static char buffer[64];
   char massage[7] = "";
   static const char control_str[7] = {'T', 'S', 'T', ' ', 'X', 'X', '0'};
-  uint8_t length;
   static uint8_t counter_RX, counter_Error = 0;
 
   PT_BEGIN(pt);
@@ -123,12 +125,14 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
 
     if (LQI & 0x80 /*CRC_OK*/)
     {
-      status = TI_receive_packet((uint8_t *)buffer, &length);
+      uint8_t length_packet = MAX_PACKET_LENGTH;
+
+      status = TI_receive_packet((uint8_t *)buffer, &length_packet);
 
       if ((status == RX_ERR_LENGHT)||(status == RX_ERR_RX))
       {
         counter_Error++;
-        debugPrintf(CLI_ERROR "status: %d, len: %d" CLI_NEW_LINE, status, length);
+        debugPrintf(CLI_ERROR "status: %d, len: %d" CLI_NEW_LINE, status, length_packet);
       }
       else
       {
