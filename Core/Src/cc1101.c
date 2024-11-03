@@ -128,7 +128,7 @@ unsigned char get_RSSI(void)
   return rssi;
 }
 
-BOOL TI_receive_packet(uint8_t* rxBuffer, UINT8 *length)
+ResiveSt TI_receive_packet(uint8_t* rxBuffer, UINT8 *length)
 {
 	uint8_t status[2];
 	UINT8 packet_len;
@@ -164,10 +164,10 @@ BOOL TI_receive_packet(uint8_t* rxBuffer, UINT8 *length)
 
 			// Flush RX FIFO
 			TI_strobe(CCxxx0_SFRX);
-			return(FALSE);
+			return(RX_ERR_LENGHT);
 		}
 	}
-	else return(FALSE);
+	else return(RX_ERR_RX);
 }
 
 void init_serial(UART_HandleTypeDef* huart){

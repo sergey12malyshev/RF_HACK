@@ -125,7 +125,7 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
     {
       status = TI_receive_packet((uint8_t *)buffer, &length);
 
-      if (status == false)
+      if ((status == RX_ERR_LENGHT)||(status == RX_ERR_RX))
       {
         counter_Error++;
         debugPrintf(CLI_ERROR "status: %d, len: %d" CLI_NEW_LINE, status, length);

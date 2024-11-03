@@ -232,7 +232,11 @@ RF_SETTINGS TISettings = {
 extern RF_SETTINGS code TISettings; //it didnt work
 */
 
-
+typedef enum
+{
+  RX_ERR_LENGHT,
+  RX_ERR_RX
+}ResiveSt;
 //Function definitions
 
 HAL_StatusTypeDef __spi_write(uint8_t* addr, uint8_t *pData, uint16_t size);
@@ -249,7 +253,7 @@ void TI_strobe(uint8_t strobe);
 uint8_t TI_read_reg(uint8_t addr);
 uint8_t TI_read_status(uint8_t addr);
 void TI_read_burst_reg(uint8_t addr, uint8_t * buffer, uint8_t count);
-BOOL TI_receive_packet(uint8_t * rxBuffer, UINT8 *length);
+ResiveSt TI_receive_packet(uint8_t * rxBuffer, UINT8 *length);
 void TI_send_packet(uint8_t * txBuffer, UINT8 size);
 void TI_write_settings();
 UINT8 get_random_byte(void);
