@@ -10,6 +10,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #ifndef __STM32F1xx_HAL_H
 #include "stm32f4xx_hal.h"
@@ -242,7 +243,7 @@ typedef enum
 HAL_StatusTypeDef __spi_write(uint8_t* addr, uint8_t *pData, uint16_t size);
 HAL_StatusTypeDef __spi_read(uint8_t* addr, uint8_t *pData, uint16_t size);
 
-void TI_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t cs_pin);
+bool TI_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t cs_pin);
 
 void init_serial(UART_HandleTypeDef* huart);
 
@@ -257,7 +258,7 @@ ResiveSt TI_receive_packet(uint8_t * rxBuffer, UINT8 *length);
 void TI_send_packet(uint8_t * txBuffer, UINT8 size);
 void TI_write_settings();
 UINT8 get_random_byte(void);
-void Power_up_reset();
+bool power_up_reset(void);
 
 unsigned char get_RSSI(void);
 

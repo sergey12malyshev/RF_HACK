@@ -125,9 +125,9 @@ void initProtothreads(void)
   PT_INIT(&gps_pt);
 }
 
-void CC1101_reinit(void)
+bool CC1101_reinit(void)
 {
-  TI_init(&hspi2, NSS_CS_GPIO_Port, NSS_CS_Pin); // CS
+  return TI_init(&hspi2, NSS_CS_GPIO_Port, NSS_CS_Pin); // CS
 }
 
 /* USER CODE END 0 */
@@ -263,14 +263,25 @@ calibrateTouchEnable();
             &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
   customSetCSpin(&hspi2, NSS_CS_GPIO_Port, NSS_CS_Pin);
-  Power_up_reset();
+
+  bool error_state = power_up_reset();
+
+  if(error_state)
+  {
+    LCD_WriteString(lcd, 5, 55, "CC1101 not found!",
+            &Font_8x13, COLOR_WHITE, COLOR_RED, LCD_SYMBOL_PRINT_FAST);
+    while (1)
+    {
+      reload_IWDG();
+    }
+  }
 
 #define CUSTOM_OLD_CONFIG 0
 #if CUSTOM_OLD_CONFIG
   TI_setCarrierFreq(CFREQ_433);
   TI_setDevAddress(1); 
 #endif
-  CC1101_reinit();
+  error_state = CC1101_reinit();
   initProtothreads();
 
   while (1)

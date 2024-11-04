@@ -15,6 +15,7 @@
 
 #include "cli_driver.h"
 #include <stdbool.h>
+#include <stdint.h>
 
 SPI_HandleTypeDef* hal_spi;
 UART_HandleTypeDef* hal_uart;
@@ -55,7 +56,7 @@ HAL_StatusTypeDef __spi_write(uint8_t *addr, uint8_t *pData, uint16_t size)
 	while(LL_GPIO_IsInputPinSet(PORT_MISO,PIN_MISO)){}; //CS pini LOW yaptığımızd MISO pini adres yazılmadan önce low da beklemeli
 
 	status = HAL_SPI_Transmit(hal_spi, addr, 1, 0xFFFF);
-	if(status==HAL_OK && pData != NULL)
+	if(status == HAL_OK && pData != NULL)
 	{
       status = HAL_SPI_Transmit(hal_spi, pData, size, 0xFFFF);
 	}
@@ -149,7 +150,7 @@ ResiveSt TI_receive_packet(uint8_t* rxBuffer, UINT8 *length)
 
 			// Read the 2 appended status bytes (status[0] = RSSI, status[1] = LQI)
 			TI_read_burst_reg(CCxxx0_RXFIFO, status, 2);
-			
+
 			// MSB of LQI is the CRC_OK bit
 			rssi = status[RSSI];
 
@@ -481,8 +482,10 @@ void customSetCSpin(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint16_t cs_
 	CS_Pin = cs_pin;
 }
 
-void Power_up_reset()
+bool power_up_reset(void)
 {
+	const uint32_t waiting = 450;
+
 	DWT_Delay_Init();
 	LL_GPIO_SetOutputPin(CS_GPIO_Port, CS_Pin);
 	DWT_Delay_us(1);
@@ -492,15 +495,24 @@ void Power_up_reset()
 	DWT_Delay_us(41);
 
 	LL_GPIO_ResetOutputPin(CS_GPIO_Port, CS_Pin);
+
+	uint32_t timeStamp = HAL_GetTick();
+
 	while(LL_GPIO_IsInputPinSet(PORT_MISO, PIN_MISO))
 	{
-	};
+		if(HAL_GetTick() - timeStamp > waiting)
+		{
+			return true;
+		}
+	}
 	TI_strobe(CCxxx0_SRES);
 	LL_GPIO_SetOutputPin(CS_GPIO_Port, CS_Pin);
+
+	return false;
 }
 
 
-void TI_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t cs_pin)
+bool TI_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t cs_pin)
 {
 	uint8_t status;
 	hal_spi = hspi;
@@ -508,12 +520,17 @@ void TI_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t cs_pin)
 	CS_Pin = cs_pin;
 
 
-	for(int i = 0; i < 10; i++)
+	for(int i = 0; i < 20; i++)
 	{
 	  status = TI_read_status(CCxxx0_VERSION);
-	  if(status != 0x14)
+	  if(status == 0x14)
 	  {
-		;
+	    break;
+	  }
+
+	  if (i == 18)
+	  {
+		return true;
 	  }
 	}
 	TI_strobe(CCxxx0_SFRX); //RX FIFO
@@ -528,4 +545,6 @@ void TI_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t cs_pin)
 	TI_strobe(CCxxx0_SFTX);
 
 	TI_strobe(CCxxx0_SIDLE);
+
+	return false;
 }
