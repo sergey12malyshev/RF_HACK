@@ -86,6 +86,12 @@ void scanRSSI(float freqSet)
   for (uint8_t i = 0; i < 128; i++)
   {
     CC1101_setMHZ(freqSet);
+    
+    for (uint8_t i = 0; i < 5; i++)
+    {
+      __ASM volatile ("NOP");
+    }
+
     uint8_t rssi_raw = TI_read_status(CCxxx0_RSSI);
     scanDat[i][j] = RSSIconvert(rssi_raw);
     freqSet += freqStep;
@@ -190,14 +196,13 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
   CC1101_reinit();
 
   TI_strobe(CCxxx0_SFRX); // Flush the buffer
-  TI_strobe(CCxxx0_SRX);  // Set RX Mode
-
+  TI_strobe(CCxxx0_SRX);  // Set RX Mod
 
 
   while (1)
   {
 
-    PT_WAIT_UNTIL(pt, timer(&timer1, 300));
+    PT_WAIT_UNTIL(pt, timer(&timer1, 275));
 
     //uint8_t rssi_raw = TI_read_status(CCxxx0_RSSI);
     //CC1101.RSSI_main = RSSIconvert(rssi_raw);
@@ -217,7 +222,10 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
     sprintf(str, "Noise: %ld dBm", CC1101.RSSI_main);
     LCD_WriteString(lcd, 15, 240, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
-    //debugPrintf("%d "CLI_NEW_LINE, interferenceLevel);
+
+    TI_strobe(CCxxx0_SFRX); // Flush the buffer
+    TI_strobe(CCxxx0_SRX);  // Set RX Mod
+
 
 
     PT_YIELD(pt);
