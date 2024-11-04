@@ -46,40 +46,40 @@ volatile uint8_t GDO0_FLAG;
 #define PORT_MISO GPIOB
 #define PIN_MISO LL_GPIO_PIN_14
 
-//static UINT8 rnd_seed = 0;
 
-HAL_StatusTypeDef __spi_write(uint8_t *addr, uint8_t *pData, uint16_t size){
-
+HAL_StatusTypeDef __spi_write(uint8_t *addr, uint8_t *pData, uint16_t size)
+{
 	HAL_StatusTypeDef status;
+
 	LL_GPIO_ResetOutputPin(CS_GPIO_Port, CS_Pin); //set Chip Select to Low
-	while(LL_GPIO_IsInputPinSet(PORT_MISO,PIN_MISO)); //CS pini LOW yaptığımızd MISO pini adres yazılmadan önce low da beklemeli
+	while(LL_GPIO_IsInputPinSet(PORT_MISO,PIN_MISO)){}; //CS pini LOW yaptığımızd MISO pini adres yazılmadan önce low da beklemeli
 
 	status = HAL_SPI_Transmit(hal_spi, addr, 1, 0xFFFF);
-	if(status==HAL_OK && pData!=NULL)
-		status = HAL_SPI_Transmit(hal_spi, pData, size, 0xFFFF);
+	if(status==HAL_OK && pData != NULL)
+	{
+      status = HAL_SPI_Transmit(hal_spi, pData, size, 0xFFFF);
+	}
+		
 	LL_GPIO_SetOutputPin(CS_GPIO_Port, CS_Pin); //set Chip Select to High
 	return status;
 
 }
 
-HAL_StatusTypeDef __spi_read(uint8_t *addr, uint8_t *pData, uint16_t size){
-
+HAL_StatusTypeDef __spi_read(uint8_t *addr, uint8_t *pData, uint16_t size)
+{
 	HAL_StatusTypeDef status;
 
 	LL_GPIO_ResetOutputPin(CS_GPIO_Port, CS_Pin); //set Chip Select to Low
+	while(LL_GPIO_IsInputPinSet(PORT_MISO,PIN_MISO)){}; //CS pini LOW yaptığımızd MISO pini adres yazılmadan önce low da beklemeli
 
-	while(LL_GPIO_IsInputPinSet(PORT_MISO,PIN_MISO)); //CS pini LOW yaptığımızd MISO pini adres yazılmadan önce low da beklemeli
-	//HAL_StatusTypeDef HAL_SPI_Transmit(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout)
 
 	status = HAL_SPI_Transmit(hal_spi, addr, 1, 0xFFFF);
 	status = HAL_SPI_Receive(hal_spi, pData, size, 0xFFFF);
 
-//	while(LL_GPIO_IsInputPinSet(PORT_MISO,PIN_MISO)); //CS pini LOW yaptığımızd MISO pini adres yazılmadan önce low da beklemeli
 
 	LL_GPIO_SetOutputPin(CS_GPIO_Port, CS_Pin); //set Chip Select to High
 
 	return status;
-
 }
 
 void TI_write_reg(UINT8 addr, UINT8 value)
@@ -149,8 +149,7 @@ ResiveSt TI_receive_packet(uint8_t* rxBuffer, UINT8 *length)
 
 			// Read the 2 appended status bytes (status[0] = RSSI, status[1] = LQI)
 			TI_read_burst_reg(CCxxx0_RXFIFO, status, 2);
-			//while(HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0));
-			//while(!HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_0));
+			
 			// MSB of LQI is the CRC_OK bit
 			rssi = status[RSSI];
 
@@ -473,8 +472,6 @@ void TI_write_settingsOld(void)
     TI_write_reg(CCxxx0_ADDR,     settings->ADDR);
     TI_write_reg(CCxxx0_PKTLEN,   settings->PKTLEN);*/
 }
-
-
 
 
 void customSetCSpin(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint16_t cs_pin)
