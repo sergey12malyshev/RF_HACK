@@ -44,6 +44,7 @@ typedef enum
 static const char mon_comand[] =\
 "Enter CLI command:"CLI_NEW_LINE
 "HELP"CLI_TAB2    "See existing commands"CLI_NEW_LINE
+"CLS" CLI_TAB2    "Clear the screen"CLI_NEW_LINE
 "RST"CLI_TAB2     "Restart"CLI_NEW_LINE
 "R"CLI_TAB2       "Restart using WDT"CLI_NEW_LINE
 "BOOT"CLI_TAB2    "Run bootloader"CLI_NEW_LINE
@@ -126,7 +127,7 @@ static void sendSNversion(void)
  debugPrintf("Version SW: %d.%d.%d"CLI_NEW_LINE, SOFTWARE_VERSION_MAJOR, SOFTWARE_VERSION_MINOR, SOFTWARE_VERSION_PATCH);
 }
 
-void debugPrintf_hello(void)
+static void debugPrintf_hello(void)
 {
   debugPrintf("RF_HACK project start"CLI_NEW_LINE);
   sendSNversion();
@@ -136,7 +137,13 @@ void debugPrintf_hello(void)
   debugPrintf_symbolTerm();
 }
 
-void debugPrintf_help(void)
+static void cli_clearScreen(void)
+{
+  CLI_RESET_CURSOR();
+  CLI_DISPLAY_CLEAR();
+}
+
+static void debugPrintf_help(void)
 {
   debugPrintf(mon_comand);
 }
@@ -190,6 +197,10 @@ static void monitorParser(void)
       if (MON_STRCMP(input_mon_buff, "HELP"))
       {
         debugPrintf_help();
+      }
+      else if (MON_STRCMP(input_mon_buff, "CLS"))
+      {
+        cli_clearScreen();
       }
       else if (MON_STRCMP(input_mon_buff, "TEST"))
       { // enter TEST
