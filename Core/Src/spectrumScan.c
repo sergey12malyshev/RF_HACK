@@ -35,11 +35,9 @@ static float freqStep = 0.025;
 static float startFreq = 433.075 - DIFFERENCE_WITH_CARRIER; // LPD 1 start - BASE и CARRIER имеют сдвиг
 
 /*
- Функция выдернута из arduino-библиотеки
-
- *FUNCTION NAME:Frequency Calculator
- *FUNCTION     :Calculate the basic frequency.
- *INPUT        :Frequency
+ *FUNCTION NAME:  Frequency Calculator
+ *FUNCTION: Calculate the basic frequency.
+ *INPUT: Frequency
 */
 void CC1101_setMHZ(float mhz)
 {

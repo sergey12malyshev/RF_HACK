@@ -24,7 +24,7 @@
 
 #define LOCAL_ECHO_EN  true
 
-#define mon_strcmp(ptr, cmd) (!strcmp(ptr, cmd))
+#define MON_STRCMP(ptr, cmd) (!strcmp(ptr, cmd))
 
 extern UART_HandleTypeDef huart1, huart6;
 
@@ -61,20 +61,25 @@ _Static_assert((sizeof(mon_comand) + 1U) < CLI_SHELL_MAX_LENGTH, "Print buffer s
 static char input_mon_buff[SIZE_BUFF] = {0};
 
 /* queue UART */
-QUEUE queue1 = {0};
-uint8_t queueOutMsg[1] = {0};
+static QUEUE queue1 = {0};
+static char queueOutMsg = {0};
 
 /* Test API */
 static Command monitorTest = NONE;
 
-static void resetTest(void)
+static void cli_resetTest(void)
 {
   monitorTest = NONE;
 }
 
-static void setTest(Command c)
+static void cli_setTest(const Command c)
 {
   monitorTest = c;
+}
+
+static Command cli_getTest(void)
+{
+  return monitorTest;
 }
 
 //-------------- UART RX start ------------------
@@ -176,19 +181,19 @@ static void monitorParser(void)
   const uint8_t backspacePuTTY = 127U;
 
 #if LOCAL_ECHO_EN
-    HAL_UART_Transmit(&huart1, queueOutMsg, 1, 25); // Local echo
+    HAL_UART_Transmit(&huart1, (uint8_t*)&queueOutMsg, 1, 25); // Local echo
 #endif
-    if (queueOutMsg[0] == enter)
+    if (queueOutMsg == enter)
     {
       convertToUppercase();
       debugPrintf_r_n();
-      if (mon_strcmp(input_mon_buff, "HELP"))
+      if (MON_STRCMP(input_mon_buff, "HELP"))
       {
         debugPrintf_help();
       }
-      else if (mon_strcmp(input_mon_buff, "TEST"))
+      else if (MON_STRCMP(input_mon_buff, "TEST"))
       { // enter TEST
-        setTest(TEST);
+        cli_setTest(TEST);
         debugPrintf_OK();
       }
       else if (memcmp(input_mon_buff, "TX", 2) == 0)
@@ -216,32 +221,32 @@ static void monitorParser(void)
 
         debugPrintf("send: %s"CLI_NEW_LINE, packet);
       }
-       else if (mon_strcmp(input_mon_buff, "ADC"))
-      { // enter ADC
+       else if (MON_STRCMP(input_mon_buff, "ADC"))
+      {
         debugPrintf_OK();
-        setTest(ADC_T);
+        cli_setTest(ADC_T);
       }
       else if ((input_mon_buff[0] == 'R')&&(input_mon_buff[1] == 0))
-      { // enter RST
+      { // enter R
         debugPrintf_OK();
         while (1);
       }
-      else if (mon_strcmp(input_mon_buff, "RST"))
+      else if (MON_STRCMP(input_mon_buff, "RST"))
       {
         debugPrintf_OK();
         HAL_NVIC_SystemReset();
       }
-      else if (mon_strcmp(input_mon_buff, "BOOT"))
+      else if (MON_STRCMP(input_mon_buff, "BOOT"))
       {
         debugPrintf_OK();
         runBootloader();
       }
-      else if (mon_strcmp(input_mon_buff, "GPS"))
+      else if (MON_STRCMP(input_mon_buff, "GPS"))
       {
         debugPrintf_OK();
-        setTest(GPS_C);
+        cli_setTest(GPS_C);
       }
-      else if (mon_strcmp(input_mon_buff, "INFO"))
+      else if (MON_STRCMP(input_mon_buff, "INFO"))
       {
         debugPrintf_OK();
         debugPrintf("https://github.com/sergey12malyshev/RF_HACK.git"CLI_NEW_LINE);
@@ -259,7 +264,7 @@ static void monitorParser(void)
           debugPrintf_symbolTerm();
           uart_clear_buff();
           rec_len = 0;
-          resetTest();
+          cli_resetTest();
         }
         else
         {
@@ -272,7 +277,7 @@ static void monitorParser(void)
     }
     else
     {
-      if ((queueOutMsg[0] == backspace)||(queueOutMsg[0] == backspacePuTTY))
+      if ((queueOutMsg == backspace)||(queueOutMsg == backspacePuTTY))
       {
         if (rec_len != 0)
         {
@@ -285,9 +290,9 @@ static void monitorParser(void)
       {
         if (rec_len < SIZE_BUFF)
         {
-          if((queueOutMsg[0] > 0) &&  (queueOutMsg[0] <= 127))// ASCIi check
+          if((queueOutMsg > 0) &&  (queueOutMsg <= 127))// ASCIi check
           {
-            input_mon_buff[rec_len++] = queueOutMsg[0]; // load char do string
+            input_mon_buff[rec_len++] = queueOutMsg; // load char do string
           }
           else
           {
@@ -310,7 +315,7 @@ static void GPSTest(void)
 
 static void monitor_out_test(void)
 {
-  switch (monitorTest)
+  switch (cli_getTest())
   {
     case ADC_T:
       debugPrintf("%ld"CLI_TAB, getAdcVDDA());
@@ -321,8 +326,9 @@ static void monitor_out_test(void)
       break;
     case TEST:
       debugPrintf("Test OK");
-      resetTest();
+      cli_resetTest();
       break;
+
     default:
       break;
   }
@@ -341,18 +347,19 @@ PT_THREAD(StartCLI_Thread(struct pt *pt))
   uart_clear_buff();
   uart_receve_IT();
   cli_init_queue(&queue1);
-  resetTest();
+  cli_resetTest();
   debugPrintf_hello();
 
   while (1)
   {
-    PT_WAIT_UNTIL(pt, timer(&timer1, 50)); // Запускаем преобразования ~ раз в 50 мс
+    PT_WAIT_UNTIL(pt, timer(&timer1, 50));
 
-    if(cli_deque(&queue1, (MESSAGE*)&queueOutMsg)) // чтение из очереди
+    if(cli_deque(&queue1, (MESSAGE*)&queueOutMsg))
     {
       monitorParser();
     }
     monitor_out_test();
+
     PT_YIELD(pt);
   }
 
