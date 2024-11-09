@@ -89,7 +89,6 @@ void screen_bootload(void)
 /*
  * Протопоток StartApplication_Thread
  *
- * 
  */
 
 PT_THREAD(StartApplication_Thread(struct pt *pt))

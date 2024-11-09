@@ -53,12 +53,12 @@ static const char mon_comand[] =\
 "GPS"CLI_TAB2     "Show data gps"CLI_NEW_LINE
 "INFO"CLI_TAB2    "Read about project"CLI_NEW_LINE
 "-----------------------------------"CLI_NEW_LINE
-">";
+CLI_PROMPT_STR;
 
 _Static_assert((sizeof(mon_comand) + 1U) < CLI_SHELL_MAX_LENGTH, "Print buffer size is smaller than help command!");
 
-#define SIZE_BUFF  12U
-static char input_mon_buff[SIZE_BUFF] = {0};
+
+static char input_mon_buff[CLI_INPUT_BUFF_LENGTH] = {0};
 
 /* queue UART */
 static QUEUE queue1 = {0};
@@ -118,7 +118,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 static void debugPrintf_symbolTerm(void)
 {
-  debugPrintf(">");
+  debugPrintf(CLI_PROMPT_STR);
 }
 
 static void sendSNversion(void)
@@ -143,7 +143,7 @@ void debugPrintf_help(void)
 
 static void debugPrintf_OK(void)
 {
-  debugPrintf("OK"CLI_NEW_LINE);
+  debugPrintf("Ok"CLI_NEW_LINE);
 }
 
 static void debugPrintf_r_n(void)
@@ -255,7 +255,7 @@ static void monitorParser(void)
         debugPrintf("%d", HAL_GetHalVersion());
         debugPrintf_r_n();
         debugPrintf("Data build: "__DATE__ CLI_NEW_LINE);
-        debugPrintf("Time build: "__TIME__ CLI_NEW_LINE ">");
+        debugPrintf("Time build: "__TIME__ CLI_NEW_LINE CLI_PROMPT_STR);
       }
       else
       {
@@ -288,9 +288,9 @@ static void monitorParser(void)
       }
       else
       {
-        if (rec_len < SIZE_BUFF)
+        if (rec_len < CLI_INPUT_BUFF_LENGTH)
         {
-          if((queueOutMsg > 0) &&  (queueOutMsg <= 127))// ASCIi check
+          if((queueOutMsg > 0) && (queueOutMsg <= 127)) // ASCII check
           {
             input_mon_buff[rec_len++] = queueOutMsg; // load char do string
           }

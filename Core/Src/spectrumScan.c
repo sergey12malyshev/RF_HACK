@@ -149,10 +149,10 @@ __UNUSED static void waterfallDraw(void)
   {
     for (uint8_t i = 0; i < 128; i++)
     {
-      
       const int16_t min_RSSI = 138;
 
       uint16_t y2 = 150 - (min_RSSI + scanDat[i][j]);
+      
       if (y2 < 50)
       {
         y2 = 50;
