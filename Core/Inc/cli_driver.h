@@ -7,6 +7,7 @@
 #define CLI_NEW_LINE "\r\n"
 #define CLI_TAB "\t"
 #define CLI_TAB2 "\t\t"
+#define CLI_CLEAR_LINE "\33[2K\r"
 
 #define CLI_OK "[\033[32mOK\033[0m] "
 #define CLI_ERROR "[\033[31mERROR\033[0m] "
