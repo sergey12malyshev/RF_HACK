@@ -45,6 +45,7 @@
 #define LC_INCLUDE "lc-addrlabels.h"
 #include "pt.h"
 
+#include "encoderDriver.h"
 #include "application_Thread.h"
 #include "button_Thread.h"
 #include "subGHz_RX_Thread.h"
@@ -182,6 +183,7 @@ int main(void)
   MX_SPI2_Init();
   MX_ADC1_Init();
   MX_IWDG_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
   /* Настройка дисплея */
@@ -282,6 +284,9 @@ calibrateTouchEnable();
   TI_setDevAddress(1); 
 #endif
   error_state = CC1101_reinit();
+
+  encoder_init();
+  
   initProtothreads();
 
   while (1)

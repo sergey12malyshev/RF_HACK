@@ -99,6 +99,9 @@ void checkResetSourse(void);
 #define NSS_CS_GPIO_Port GPIOB
 #define T_OUT_Pin LL_GPIO_PIN_4
 #define T_OUT_GPIO_Port GPIOB
+#define ENCODER_SW_Pin LL_GPIO_PIN_8
+#define ENCODER_SW_GPIO_Port GPIOB
+#define ENCODER_SW_EXTI_IRQn EXTI9_5_IRQn
 /* USER CODE BEGIN Private defines */
 
 #define SOFTWARE_VERSION_MAJOR  0

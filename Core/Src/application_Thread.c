@@ -21,6 +21,8 @@
 #include "demo.h"
 #include "subGHz_RX_Thread.h"
 
+#include "encoderDriver.h"
+
 #include "gps.h"
 #include "time.h"
 
@@ -111,6 +113,8 @@ PT_THREAD(StartApplication_Thread(struct pt *pt))
   {
     PT_WAIT_UNTIL(pt, timer(&timer1, 350));
     
+    encoder_process();
+
     heartbeatLedToggle();
 
     adcConvertProcess();

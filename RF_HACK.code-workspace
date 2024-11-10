@@ -18,7 +18,8 @@
 			"subghz_tx_thread.h": "c",
 			"calibrate_touch.h": "c",
 			"gps.h": "c",
-			"main.h": "c"
+			"main.h": "c",
+			"encoderdriver.h": "c"
 		}
 	}
 }
