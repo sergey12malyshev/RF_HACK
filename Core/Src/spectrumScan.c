@@ -216,7 +216,7 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
   TI_strobe(CCxxx0_SFRX); // Flush the buffer
   TI_strobe(CCxxx0_SRX);  // Set RX Mod
   
-  encoder_setRotaryNum(offset_x);
+  encoder_setRotaryNum(offset_x + 68);
 
   while (1)
   {
@@ -229,7 +229,7 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
 
     float freqCursor = FREQ_START + (cursor_x - offset_x) * freqStep;
     sprintf(str, "%.3f", freqCursor);
-    LCD_WriteString(lcd, 35, 170, str, &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+    LCD_WriteString(lcd, 55, 165, str, &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
     sprintf(str, "Noise: %ld dBm", CC1101.RSSI_main);
     LCD_WriteString(lcd, 15, 240, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
