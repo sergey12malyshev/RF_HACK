@@ -238,7 +238,10 @@ void EXTI9_5_IRQHandler(void)
   {
     LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_8);
     /* USER CODE BEGIN LL_EXTI_LINE_8 */
-    encoder_setStateSwitch(true);
+    if (!LL_GPIO_IsOutputPinSet(ENCODER_SW_GPIO_Port, ENCODER_SW_Pin))
+    {
+      encoder_setStateSwitch(true);
+    } 
     /* USER CODE END LL_EXTI_LINE_8 */
   }
   /* USER CODE BEGIN EXTI9_5_IRQn 1 */

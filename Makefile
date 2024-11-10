@@ -112,7 +112,7 @@ Core/Src/iwdg.c
 ASM_SOURCES = \
 startup_stm32f401xc.s \
 #######################################
-binaries
+# binaries
 #######################################
 PREFIX = arm-none-eabi-
 # The gcc compiler bin path can be either defined in make command via GCC_PATH variable (> make GCC_PATH=xxx)
