@@ -96,14 +96,28 @@ void scanRSSI(float freqSet)
   }
 }
 
+const uint16_t start_y = 150;
+const uint16_t end_y = 50;
+const uint16_t offset_x = 15;
+
+static void drawCursor(uint16_t cursor_x)
+{
+  LCD_DrawLine(lcd, cursor_x, end_y, cursor_x, start_y, COLOR_RED);
+}
+
+static void cursorProcess(void)
+{
+  uint16_t cursor_x = encoder_getRotaryNum();
+
+  if (cursor_x < offset_x) cursor_x = offset_x;
+  if (cursor_x > offset_x + 127) cursor_x = offset_x + 127;
+
+  drawCursor(cursor_x);
+}
+
 void spectumDraw(void)
 {
-  const uint16_t start_y = 150;
-  const uint16_t end_y = 50;
-  const uint16_t offset_x = 15;
-
   const int16_t min_RSSI = 138;
-
 
   uint32_t summLevel = 0;
 
@@ -111,6 +125,8 @@ void spectumDraw(void)
   {
     LCD_DrawLine(lcd, offset_x + i, end_y, offset_x + i, start_y, COLOR_BLACK);
   }
+
+  cursorProcess();
 
   for (uint8_t i = 0; i < 128; i++)
   {
@@ -195,27 +211,17 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
 
   TI_strobe(CCxxx0_SFRX); // Flush the buffer
   TI_strobe(CCxxx0_SRX);  // Set RX Mod
-
+  
+  encoder_setRotaryNum(offset_x);
 
   while (1)
   {
 
     PT_WAIT_UNTIL(pt, timer(&timer1, 275));
-
-    //uint8_t rssi_raw = TI_read_status(CCxxx0_RSSI);
-    //CC1101.RSSI_main = RSSIconvert(rssi_raw);
-
+    
     scanRSSI(startFreq);
-#if 0
-    debugPrintf("%f "CLI_NEW_LINE);
-    for(uint8_t i = 0; i < 128; i++)
-    {
-      debugPrintf("%d ",scanDat[i][j]);
-    }
-    debugPrintf("%f "CLI_NEW_LINE, startFreq + 128*freqStep);
-#endif
+
     spectumDraw();
-    //waterfallDraw();
 
     sprintf(str, "Noise: %ld dBm", CC1101.RSSI_main);
     LCD_WriteString(lcd, 15, 240, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
@@ -223,7 +229,6 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
 
     TI_strobe(CCxxx0_SFRX); // Flush the buffer
     TI_strobe(CCxxx0_SRX);  // Set RX Mod
-
 
 
     PT_YIELD(pt);
