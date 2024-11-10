@@ -18,11 +18,13 @@
 #include "displayInit.h"
 #include "ili9341.h"
 
+#include "encoderDriver.h"
+
 extern volatile uint8_t GDO0_FLAG;
 
 extern RF_t CC1101;
 
-
+#define FREQ_START 433.075
 #define DIFFERENCE_WITH_CARRIER 0.985
 
 static int8_t scanDat[128][1];
@@ -32,7 +34,9 @@ static uint8_t j;
 static uint16_t interferenceLevel;
 
 static float freqStep = 0.025;
-static float startFreq = 433.075 - DIFFERENCE_WITH_CARRIER; // LPD 1 start - BASE и CARRIER имеют сдвиг
+static float startFreq = FREQ_START - DIFFERENCE_WITH_CARRIER; // LPD 1 start - BASE и CARRIER имеют сдвиг
+
+static uint16_t cursor_x;
 
 /*
  *FUNCTION NAME:  Frequency Calculator
@@ -107,10 +111,10 @@ static void drawCursor(uint16_t cursor_x)
 
 static void cursorProcess(void)
 {
-  uint16_t cursor_x = encoder_getRotaryNum();
+  cursor_x = encoder_getRotaryNum();
 
   if (cursor_x < offset_x) cursor_x = offset_x;
-  if (cursor_x > offset_x + 127) cursor_x = offset_x + 127;
+  if (cursor_x > offset_x + 128) cursor_x = offset_x + 127;
 
   drawCursor(cursor_x);
 }
@@ -222,6 +226,10 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
     scanRSSI(startFreq);
 
     spectumDraw();
+
+    float freqCursor = FREQ_START + (cursor_x - offset_x) * freqStep;
+    sprintf(str, "%.3f", freqCursor);
+    LCD_WriteString(lcd, 35, 170, str, &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
     sprintf(str, "Noise: %ld dBm", CC1101.RSSI_main);
     LCD_WriteString(lcd, 15, 240, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
