@@ -1,0 +1,94 @@
+#pragma once
+
+#define LPD1    433.075
+#define LPD2    433.100
+#define LPD3    433.125
+#define LPD4    433.150
+#define LPD5    433.175
+#define LPD6    433.200
+#define LPD7    433.225
+#define LPD8    433.250
+#define LPD9    433.275
+#define LPD10   433.300
+#define LPD11   433.325
+#define LPD12   433.350
+#define LPD13   433.375
+#define LPD14   433.400
+#define LPD15   433.425
+#define LPD16   433.450
+#define LPD17   433.475
+#define LPD18   433.500
+#define LPD19   433.525
+#define LPD20   433.550
+#define LPD21   433.575
+#define LPD22   433.600
+#define LPD23   433.625
+#define LPD24   433.650
+#define LPD25   433.675
+#define LPD26   433.700
+#define LPD27   433.725
+#define LPD28   433.750
+#define LPD29   433.775
+#define LPD30   433.800
+#define LPD31   433.825
+#define LPD32   433.850
+#define LPD33   433.875
+#define LPD34   433.900
+#define LPD35   433.925
+#define LPD36   433.950
+#define LPD37   433.975
+#define LPD38   434.000
+#define LPD39   434.025
+#define LPD40   434.050
+#define LPD41   434.075
+#define LPD42   434.100
+#define LPD43   434.125
+#define LPD44   434.150
+#define LPD45   434.175
+#define LPD46   434.200
+#define LPD47   434.225
+#define LPD48   434.250
+#define LPD49   434.275
+#define LPD50   434.300
+#define LPD51   434.325
+#define LPD52   434.350
+#define LPD53   434.375
+#define LPD54   434.400
+#define LPD55   434.425
+#define LPD56   434.450
+#define LPD57   434.475
+#define LPD58   434.500
+#define LPD59   434.525
+#define LPD60   434.550
+#define LPD61   434.575
+#define LPD62   434.600
+#define LPD63   434.625
+#define LPD64   434.650
+#define LPD65   434.675
+#define LPD66   434.700
+#define LPD67   434.725
+#define LPD68   434.750
+#define LPD69   434.775
+
+
+#define PMR1	446.00625
+#define PMR2	446.01875
+#define PMR3	446.03125
+#define PMR4	446.04375
+#define PMR5	446.05625
+#define PMR6	446.06875
+#define PMR7	446.08125
+#define PMR8	446.09375
+#define PMR9	446.10625
+#define PMR10	446.11875
+#define PMR11	446.13125
+#define PMR12	446.14375
+#define PMR13	446.15625
+#define PMR14	446.16875
+#define PMR15	446.18125
+#define PMR16	446.19375
+
+float freqLpdList[] = {LPD1, LPD2, LPD3, LPD4, LPD5, LPD6, LPD7, LPD8, LPD9, LPD10, LPD11, LPD12, LPD13, LPD14, LPD15, LPD16, LPD17, LPD18, LPD19,
+LPD20, LPD21, LPD22, LPD23, LPD24, LPD25, LPD26, LPD27, LPD28, LPD29, LPD30, LPD31, LPD32, LPD33, LPD34, LPD35, LPD36, LPD37, LPD38, LPD39, LPD40,
+LPD41, LPD42, LPD43, LPD44, LPD45, LPD46, LPD47, LPD48, LPD49, LPD50, LPD51, LPD52, LPD53, LPD54, LPD55, LPD56, LPD57, LPD58, LPD59, LPD60, LPD61, 
+LPD62, LPD63, LPD64, LPD65, LPD66, LPD67, LPD68, LPD69};
