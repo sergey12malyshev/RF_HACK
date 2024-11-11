@@ -19,6 +19,7 @@
 #include "ili9341.h"
 
 #include "encoderDriver.h"
+#include "frequencyChannelsTable.h"
 
 extern volatile uint8_t GDO0_FLAG;
 
@@ -207,6 +208,7 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
   sprintf(str, "%.3f-%.3f", startFreq + DIFFERENCE_WITH_CARRIER, startFreq + DIFFERENCE_WITH_CARRIER + freqStep * 128);
   LCD_WriteString(lcd, 15, 25, str, &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
+
   LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
   NVIC_EnableIRQ(EXTI15_10_IRQn); //GDO
   GDO0_FLAG = 0;
@@ -228,8 +230,28 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
     spectumDraw();
 
     float freqCursor = FREQ_START + (cursor_x - offset_x) * freqStep;
-    sprintf(str, "%.3f", freqCursor);
-    LCD_WriteString(lcd, 55, 165, str, &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
+    uint8_t LPD_channel;
+    for(LPD_channel = 0; LPD_channel < (sizeof(freqLpdList) / sizeof(float)); LPD_channel++)
+    {
+      if(freqLpdList[LPD_channel] == freqCursor)
+      {
+        LPD_channel += 1;
+        break;
+      }
+    }
+    
+    static float freqCursorTmp;
+    if (freqCursor != freqCursorTmp)
+    {
+      freqCursorTmp = freqCursor;
+      sprintf(str, "%.3f", freqCursor);
+      LCD_WriteString(lcd, 55, 165, str, &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
+      sprintf(str, "LPD %02d", LPD_channel);
+      LCD_WriteString(lcd, 55, 185, str, &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+    }
+
 
     sprintf(str, "Noise: %ld dBm", CC1101.RSSI_main);
     LCD_WriteString(lcd, 15, 240, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);

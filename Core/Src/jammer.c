@@ -8,6 +8,8 @@
 
 #include "main.h"
 #include "jammer.h"
+#include "frequencyChannelsTable.h"
+
 #include "spectrumScan.h"
 #include "subGHz_RX_Thread.h"
 #include "subGHz_TX_Thread.h"
