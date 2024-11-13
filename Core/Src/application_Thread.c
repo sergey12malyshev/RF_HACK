@@ -35,12 +35,12 @@ bool getBootingScreenMode(void)
   return bootingScreenMode;
 }
 
-void clearWindow(void)
+void screen_clear(void)
 {
-  LCD_FillWindow(lcd, 0, 0, 170, 320 - 1, COLOR_BLACK);
+  LCD_FillWindow(lcd, 0, 0, 175, 320 - 1, COLOR_BLACK);
 }
 
-static void bootingScreen(void)
+static void screen_booting(void)
 {
   char str[100] = {0};
   uint16_t y = 0;
@@ -99,7 +99,7 @@ PT_THREAD(StartApplication_Thread(struct pt *pt))
 
   PT_BEGIN(pt);
   
-  bootingScreen();
+  screen_booting();
 
   PT_DELAY_MS(pt, &timer1, 2500);
 

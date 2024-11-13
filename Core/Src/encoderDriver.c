@@ -59,12 +59,12 @@ void encoder_process(void)
 
   if(currCounter != prevCounter) 
   {
-    debugPrintf("%d"CLI_NEW_LINE, currCounter);
+    //debugPrintf("%d"CLI_NEW_LINE, currCounter);
     prevCounter = currCounter;
   }
 
   if(encoder_getStateSwitch())
   {
-    debugPrintf("SW!"CLI_NEW_LINE);
+    //debugPrintf("SW!"CLI_NEW_LINE);
   }
 }

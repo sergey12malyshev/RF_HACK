@@ -155,7 +155,7 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
 
   PT_DELAY_MS(pt, &timer1, 250);
 
-  clearWindow();
+  screen_clear();
   LCD_WriteString(lcd, 0, 0, "SCAN mode", &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
   char str[25] = {0};

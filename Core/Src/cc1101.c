@@ -11,7 +11,7 @@
  * Внимание! Скорость шины spi не более 10 МГц!
  */
 
-#include"cc1101.h"
+#include "cc1101.h"
 #include "dw_stm32_delay.h"
 
 #include "cli_driver.h"

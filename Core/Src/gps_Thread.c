@@ -64,7 +64,7 @@ PT_THREAD(gps_Thread(struct pt *pt))
 
   PT_DELAY_MS(pt, &timer1, 250);
 
-  clearWindow();
+  screen_clear();
 
   GPS_Init();
   LCD_WriteString(lcd, 0, 0, "GPS Data:", &Font_8x13, COLOR_YELLOW, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);

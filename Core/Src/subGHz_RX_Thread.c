@@ -48,20 +48,6 @@ static void CC1101_DataScreen(void)
   LCD_WriteString(lcd, start_x, offset_y*5 + start_y, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 }
 
-static uint16_t autoCalibrate(void)
-{
-  static uint16_t accumulatedOffset = 0;
-
-  uint16_t offset = TI_read_status(CCxxx0_FREQEST);
-  if (offset != 0)
-  {
-    accumulatedOffset += offset;
-    TI_write_reg(CCxxx0_FSCTRL0, accumulatedOffset);
-  }
-
-  return accumulatedOffset;
-}
-
 /*
  * Протопоток subGHz_RX_Thread
  *
@@ -79,7 +65,7 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
 
   PT_DELAY_MS(pt, &timer1, 250);
 
-  clearWindow();
+  screen_clear();
   LCD_WriteString(lcd, 0, 0, "RX Mode", &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
   LCD_WriteString(lcd, 0, 20, "CC1101 Data:", &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
   CC1101_DataScreen();
@@ -135,7 +121,7 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
           }
         }
 
-        uint16_t offset = autoCalibrate();
+        uint16_t offset = CC1101_autoCalibrate1();
 
         debugPrintf("%s, RSSI: %d, offset: %d" CLI_NEW_LINE, massage, CC1101_RSSIconvert(get_RSSI()), offset);
       }

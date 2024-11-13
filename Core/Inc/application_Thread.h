@@ -6,7 +6,7 @@
 
 PT_THREAD(StartApplication_Thread(struct pt *pt));
 
-void clearWindow(void);
+void screen_clear(void);
 
 bool getBootingScreenMode(void);
 void screen_bootload(void);

@@ -10,7 +10,7 @@
 #include "cli_queue.h"
 #include "runBootloader.h" 
 
-#include "subGHz_TX_Thread.h"
+#include "cc1101.h"
 
 #include "gps.h"
 #include "time.h"
