@@ -21,41 +21,6 @@ extern volatile uint8_t GDO0_FLAG;
 
 static char packet[7] = "QWERTY";; // Резерв одного символа под нуль-терминатор!!
 
-
-uint8_t transmittRF(const char *packet_loc, uint8_t len)
-{
-    uint8_t status = 0;
-    
-    assert_param(packet_loc != NULL);
-    assert_param(len > 0);
-
-    status = TI_read_status(CCxxx0_VERSION);         // it is for checking only (it must be 0x14)
-    status = TI_read_status(CCxxx0_TXBYTES);         // it is too
-    TI_strobe(CCxxx0_SFTX);                          // flush the buffer
-
-    __ASM volatile ("NOP");
-
-    TI_send_packet((uint8_t *)packet_loc, len); // the function is sending the data
-    //DEBUG_PRINT(CLI_TX"%s %d"CLI_NEW_LINE, packet, len);
-
-    while (HAL_GPIO_ReadPin(CC_GDO_GPIO_Port, CC_GDO_Pin)) // start transmitt
-    {
-      __ASM volatile ("NOP");
-    }
-
-    while (!HAL_GPIO_ReadPin(CC_GDO_GPIO_Port, CC_GDO_Pin)) // end transmitt
-    {
-      __ASM volatile ("NOP");
-    }
-
-    // if the pass to this function, the data was sent.
-    status = TI_read_status(CCxxx0_TXBYTES); // it is checking to send the data
-    
-    // userLEDHide();
-
-    return status;
-}
-
 /*
  * Протопоток subGHz_TX_Thread
  *
@@ -95,7 +60,7 @@ PT_THREAD(subGHz_TX_Thread(struct pt *pt))
         }
         sprintf(packet, "TST %02d", count_tx++);
 
-        s = transmittRF(packet, sizeof(packet)); // the function is sending the data
+        s = CC1101_transmittRF(packet, sizeof(packet)); // the function is sending the data
         
         LCD_WriteString(lcd, 15, 40, packet, &Font_12x20, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 

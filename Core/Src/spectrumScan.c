@@ -50,8 +50,7 @@ void scanRSSI(float freqSet)
       __ASM volatile ("NOP");
     }
 
-    uint8_t rssi_raw = TI_read_status(CCxxx0_RSSI);
-    scanDat[i][j] = RSSIconvert(rssi_raw);
+    scanDat[i][j] = CC1101_RSSIconvert(CC1101_getRssiRaw());
     freqSet += freqStep;
   }
 }

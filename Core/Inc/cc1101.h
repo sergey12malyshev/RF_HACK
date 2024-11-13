@@ -250,8 +250,10 @@ bool CC1101_power_up_reset(void);
 
 unsigned char get_RSSI(void);
 void CC1101_setMHZ(float mhz);
-
 void CC1101_customSetCSpin(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint16_t cs_pin);
+uint8_t CC1101_transmittRF(const char *packet_loc, uint8_t len);
+uint8_t CC1101_getRssiRaw(void);
+int CC1101_RSSIconvert(char raw_rssi);
 
 /**
  * Carrier frequencies

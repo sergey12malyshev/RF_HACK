@@ -48,22 +48,6 @@ static void CC1101_DataScreen(void)
   LCD_WriteString(lcd, start_x, offset_y*5 + start_y, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 }
 
-int RSSIconvert(char raw_rssi)
-{
-  const uint8_t rssi_offset = 74;
-
-  uint8_t rssi_dec = (uint8_t)raw_rssi;
-
-  if (rssi_dec >= 128)
-  {
-    return ((int)(rssi_dec - 256) / 2) - rssi_offset;
-  }
-  else
-  {
-    return (rssi_dec / 2) - rssi_offset;
-  }
-}
-
 static uint16_t autoCalibrate(void)
 {
   static uint16_t accumulatedOffset = 0;
@@ -153,7 +137,7 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
 
         uint16_t offset = autoCalibrate();
 
-        debugPrintf("%s, RSSI: %d, offset: %d" CLI_NEW_LINE, massage, RSSIconvert(get_RSSI()), offset);
+        debugPrintf("%s, RSSI: %d, offset: %d" CLI_NEW_LINE, massage, CC1101_RSSIconvert(get_RSSI()), offset);
       }
     }
     else
@@ -170,7 +154,7 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
       counter_RX = 0;
     }
     CC1101.countMessage = counter_RX;
-    CC1101.RSSI = RSSIconvert(get_RSSI());
+    CC1101.RSSI = CC1101_RSSIconvert(get_RSSI());
     CC1101.countError = counter_Error;
 
     CC1101_DataScreen();
