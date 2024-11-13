@@ -11,6 +11,9 @@
 
 
 static bool encoderSwitch;
+static bool encoderSwitchIRQ;
+static uint32_t encoderTimeSwitch;
+
 static int32_t currCounter;
 
 bool encoder_getStateSwitch(void)
@@ -26,9 +29,10 @@ bool encoder_getStateSwitch(void)
   return rc;
 }
 
-void encoder_setStateSwitch(bool const s)
+void encoder_setStateSwitch(bool const s, uint32_t time)
 {
-  encoderSwitch = s;
+  encoderSwitchIRQ = s;
+  encoderTimeSwitch = time;
 }
 
 int32_t encoder_getRotaryNum(void)
@@ -62,9 +66,13 @@ void encoder_process(void)
     //debugPrintf("%d"CLI_NEW_LINE, currCounter);
     prevCounter = currCounter;
   }
-
-  if(encoder_getStateSwitch())
+  
+ // https://istarik.ru/blog/stm32/148.html
+  if(encoderSwitchIRQ && (HAL_GetTick() - encoderTimeSwitch) > 200)
   {
-    //debugPrintf("SW!"CLI_NEW_LINE);
+    encoderSwitch = true;
+    encoderSwitchIRQ = false;
+    LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_8);
+    NVIC_EnableIRQ(EXTI9_5_IRQn);
   }
 }

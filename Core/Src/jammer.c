@@ -43,6 +43,7 @@ PT_THREAD(jammer_Thread(struct pt *pt))
 
     screen_clear();
     LCD_WriteString(lcd, 0, 0, "Jammer mode", &Font_8x13, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+    LCD_WriteString(lcd, 0, 30, "Push the encoder!", &Font_8x13, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
     LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
     NVIC_EnableIRQ(EXTI15_10_IRQn); //GDO
@@ -59,21 +60,32 @@ PT_THREAD(jammer_Thread(struct pt *pt))
     {
       /*You can connect only GDO0, if you are using asynchronous serial mode. 
       The pin will switch automatically from INPUT to OUTPUT when you call setTX() and vice versa.*/
+      static bool runJamm;
+      bool stateSwitch = encoder_getStateSwitch();
+
+      if(stateSwitch)
+      {
+        runJamm = !runJamm;
+      }
+
 
       static char packet[7] = "om5q3z"; // Резерв одного символа под нуль-терминатор!!
 
       static uint8_t i;
       packet[i++] = generateRandomChar();
 
-      if(i > 5) i = 0;
+      if (i > 5) i = 0;
 
-      //debugPrintf("%s %d"CLI_NEW_LINE, packet, packet[i]);
+      if (runJamm)
+      {
+        //debugPrintf("%s %d"CLI_NEW_LINE, packet, packet[i]);
 
-      s = CC1101_transmittRF(packet, sizeof(packet)); // sending the data
-      LCD_WriteString(lcd, 15, 40, packet, &Font_12x20, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+        s = CC1101_transmittRF(packet, sizeof(packet)); // sending the data
+        LCD_WriteString(lcd, 15, 65, packet, &Font_12x20, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
       
-      PT_WAIT_UNTIL(pt, (GDO0_FLAG)); //GDO low lowel - end transmitt
-      GDO0_FLAG = 0;
+        PT_WAIT_UNTIL(pt, (GDO0_FLAG)); //GDO low lowel - end transmitt
+        GDO0_FLAG = 0;
+      }
 
       PT_YIELD(pt);
     }

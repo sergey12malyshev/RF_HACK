@@ -3,7 +3,7 @@
 
 
 bool encoder_getStateSwitch(void);
-void encoder_setStateSwitch(bool const s);
+void encoder_setStateSwitch(bool const s, uint32_t time);
 void encoder_init(void);
 void encoder_process(void);
 

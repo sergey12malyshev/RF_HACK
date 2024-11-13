@@ -240,7 +240,8 @@ void EXTI9_5_IRQHandler(void)
     /* USER CODE BEGIN LL_EXTI_LINE_8 */
     if (!LL_GPIO_IsOutputPinSet(ENCODER_SW_GPIO_Port, ENCODER_SW_Pin))
     {
-      encoder_setStateSwitch(true);
+      encoder_setStateSwitch(true, HAL_GetTick());
+      NVIC_DisableIRQ(EXTI9_5_IRQn);
     } 
     /* USER CODE END LL_EXTI_LINE_8 */
   }
