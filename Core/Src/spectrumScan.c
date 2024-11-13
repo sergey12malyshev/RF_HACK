@@ -25,8 +25,6 @@ extern volatile uint8_t GDO0_FLAG;
 
 extern RF_t CC1101;
 
-#define FREQ_START 433.075
-#define DIFFERENCE_WITH_CARRIER 0.985
 
 static int8_t scanDat[128][1];
 static uint8_t j;
@@ -35,7 +33,7 @@ static uint8_t j;
 static uint16_t interferenceLevel;
 
 static float freqStep = 0.025;
-static float startFreq = FREQ_START - DIFFERENCE_WITH_CARRIER; // LPD 1 start - BASE и CARRIER имеют сдвиг
+static float startFreq = LPD1 - DIFFERENCE_WITH_CARRIER; // LPD 1 start - BASE и CARRIER имеют сдвиг
 
 static uint16_t cursor_x;
 
@@ -183,7 +181,7 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
 
     spectumDraw();
 
-    float freqCursor = FREQ_START + (cursor_x - offset_x) * freqStep;
+    float freqCursor = LPD1 + (cursor_x - offset_x) * freqStep;
 
     uint8_t LPD_channel;
     for(LPD_channel = 0; LPD_channel < (sizeof(freqLpdList) / sizeof(float)); LPD_channel++)

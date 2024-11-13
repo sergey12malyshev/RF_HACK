@@ -53,7 +53,7 @@ PT_THREAD(jammer_Thread(struct pt *pt))
 
     setTime(&timer1);
 
-    CC1101_setMHZ(432.490);
+    CC1101_setMHZ(LPD17 - DIFFERENCE_WITH_CARRIER);
 
     GDO0_FLAG = 0;
 

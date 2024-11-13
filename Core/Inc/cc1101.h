@@ -281,4 +281,6 @@ typedef enum _Modulation
 void TI_setCarrierFreq(uint8_t f);
 void TI_setDevAddress(uint8_t a);
 
+#define DIFFERENCE_WITH_CARRIER 0.985  // BASE и CARRIER имеют сдвиг
+
 #endif /* INC_CC1101_H_ */
