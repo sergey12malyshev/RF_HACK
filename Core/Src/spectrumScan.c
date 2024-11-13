@@ -39,51 +39,6 @@ static float startFreq = FREQ_START - DIFFERENCE_WITH_CARRIER; // LPD 1 start - 
 
 static uint16_t cursor_x;
 
-/*
- *FUNCTION NAME:  Frequency Calculator
- *FUNCTION: Calculate the basic frequency.
- *INPUT: Frequency
-*/
-void CC1101_setMHZ(float mhz)
-{
-  uint8_t freq2 = 0;
-  uint8_t freq1 = 0;
-  uint8_t freq0 = 0;
-
-  for (bool i = 0; i == 0;)
-  {
-    if (mhz >= 26)
-    {
-      mhz -= 26;
-      freq2 += 1;
-    }
-    else if (mhz >= 0.1015625)
-    {
-      mhz -= 0.1015625;
-      freq1 += 1;
-    }
-    else if (mhz >= 0.00039675)
-    {
-      mhz -= 0.00039675;
-      freq0 += 1;
-    }
-    else
-    {
-      i = 1;
-    }
-  }
-  if (freq0 > 255)
-  {
-    freq1 += 1;
-    freq0 -= 256;
-  }
-
-  TI_write_reg(CCxxx0_FREQ2, freq2);
-  TI_write_reg(CCxxx0_FREQ1, freq1);
-  TI_write_reg(CCxxx0_FREQ0, freq0);
-  // Calibrate();
-}
-
 void scanRSSI(float freqSet)
 {
   for (uint8_t i = 0; i < 128; i++)

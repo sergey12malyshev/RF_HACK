@@ -6,7 +6,4 @@
 
 PT_THREAD(spectrumScan_Thread(struct pt *pt));
 
-void CC1101_setMHZ(float mhz);
-
-
 #endif /*__SPC_THREAD_H__ */

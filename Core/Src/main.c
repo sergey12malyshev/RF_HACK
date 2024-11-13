@@ -264,9 +264,9 @@ calibrateTouchEnable();
   LCD_WriteString(lcd, 5, 25, "CC1101 int...",
             &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
-  customSetCSpin(&hspi2, NSS_CS_GPIO_Port, NSS_CS_Pin);
+  CC1101_customSetCSpin(&hspi2, NSS_CS_GPIO_Port, NSS_CS_Pin);
 
-  bool error_state = power_up_reset();
+  bool error_state = CC1101_power_up_reset();
 
   if(error_state)
   {

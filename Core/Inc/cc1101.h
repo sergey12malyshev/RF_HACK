@@ -7,17 +7,16 @@
 
 #ifndef INC_CC1101_H_
 #define INC_CC1101_H_
+
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 
-#ifndef __STM32F1xx_HAL_H
+#ifndef __STM32F4xx_HAL_H
 #include "stm32f4xx_hal.h"
 #endif
 
-//-------------------------------------------------------------------------------------------------------
-typedef unsigned char       BOOL;
 
 // Data
 typedef unsigned char       BYTE;
@@ -34,17 +33,6 @@ typedef signed char         INT8;
 typedef signed short        INT16;
 typedef signed long         INT32;
 
-//-------------------------------------------------------------------------------------------------------
-// Common values
-#ifndef FALSE
-    #define FALSE 0
-#endif
-
-#ifndef TRUE
-    #define TRUE 1
-#endif
-
-//------------------------------------------------------------------------------------------------------
 // CC2500/CC1100 STROBE, CONTROL AND STATUS REGSITER
 #define CCxxx0_IOCFG2       0x00        // GDO2 output pin configuration
 #define CCxxx0_IOCFG1       0x01        // GDO1 output pin configuration
@@ -238,7 +226,7 @@ typedef enum
   RX_ERR_LENGHT,
   RX_ERR_RX
 }ResiveSt;
-//Function definitions
+
 
 HAL_StatusTypeDef __spi_write(uint8_t* addr, uint8_t *pData, uint16_t size);
 HAL_StatusTypeDef __spi_read(uint8_t* addr, uint8_t *pData, uint16_t size);
@@ -258,11 +246,12 @@ ResiveSt TI_receive_packet(uint8_t * rxBuffer, UINT8 *length);
 void TI_send_packet(uint8_t * txBuffer, UINT8 size);
 void TI_write_settings();
 UINT8 get_random_byte(void);
-bool power_up_reset(void);
+bool CC1101_power_up_reset(void);
 
 unsigned char get_RSSI(void);
+void CC1101_setMHZ(float mhz);
 
-void customSetCSpin(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint16_t cs_pin);
+void CC1101_customSetCSpin(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint16_t cs_pin);
 
 /**
  * Carrier frequencies
@@ -275,6 +264,15 @@ enum CFREQ
   CFREQ_918,
   CFREQ_LAST
 };
+
+typedef enum _Modulation
+{
+  _2_FSK = 0
+ ,_GFSK
+ ,_ASK
+ ,_4_FSK
+ ,_MSK
+}Modulation;
 
 void TI_setCarrierFreq(uint8_t f);
 void TI_setDevAddress(uint8_t a);
