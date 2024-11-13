@@ -18,6 +18,7 @@
 #include "cc1101.h"
 #include "time.h"
 #include "adc.h"
+#include "encoderDriver.h"
 
 #include "display.h"
 #include "displayInit.h"
@@ -43,7 +44,7 @@ PT_THREAD(jammer_Thread(struct pt *pt))
 
     screen_clear();
     LCD_WriteString(lcd, 0, 0, "Jammer mode", &Font_8x13, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
-    LCD_WriteString(lcd, 0, 30, "Push the encoder!", &Font_8x13, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+    LCD_WriteString(lcd, 0, 30, "Push the encoder!", &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
     LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
     NVIC_EnableIRQ(EXTI15_10_IRQn); //GDO
@@ -56,6 +57,8 @@ PT_THREAD(jammer_Thread(struct pt *pt))
 
     GDO0_FLAG = 0;
 
+    encoder_init();
+
     while (1)
     {
       /*You can connect only GDO0, if you are using asynchronous serial mode. 
@@ -63,9 +66,17 @@ PT_THREAD(jammer_Thread(struct pt *pt))
       static bool runJamm;
       bool stateSwitch = encoder_getStateSwitch();
 
-      if(stateSwitch)
+      if (stateSwitch)
       {
         runJamm = !runJamm;
+        if(runJamm)
+        {
+          LCD_WriteString(lcd, 55, 100, "TX", &Font_12x20, COLOR_WHITE, COLOR_RED, LCD_SYMBOL_PRINT_FAST);
+        }
+        else
+        {
+          LCD_WriteString(lcd, 55, 100, "no", &Font_12x20, COLOR_WHITE, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
+        }
       }
 
 

@@ -20,7 +20,7 @@ bool encoder_getStateSwitch(void)
 {
   bool rc = false;
 
-  if(encoderSwitch)
+  if (encoderSwitch)
   {
     rc = true;
     encoderSwitch = false;
@@ -50,6 +50,7 @@ void encoder_init(void)
 {
   HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);
   encoder_setRotaryNum(0);
+  encoderSwitch = false;
 }
 
 
