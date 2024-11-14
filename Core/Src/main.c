@@ -329,10 +329,10 @@ calibrateTouchEnable();
       }
       else if(getScanButtonState())
       {
-        if(getWorkState() != SCAN)
+        if(getWorkState() != SCAN_MODE)
         {
           PT_INIT(&specrum_pt);
-          setWorkSate(SCAN);
+          setWorkSate(SCAN_MODE);
           debugPrintf("SCAN Mode"CLI_NEW_LINE);
         }
       }
@@ -387,7 +387,7 @@ static void scheduler(void)
     case RX:
       subGHz_RX_Thread(&rf_pt);
       break;
-    case SCAN:
+    case SCAN_MODE:
       spectrumScan_Thread(&specrum_pt);
       break;
     case JAMMER_MODE:

@@ -5,7 +5,7 @@ typedef enum
 {
   RX = 0, 
   TX,
-  SCAN,
+  SCAN_MODE,
   JAMMER_MODE,
   GPS_MODE,
   NUMBER_STATE
