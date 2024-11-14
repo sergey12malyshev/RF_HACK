@@ -3,4 +3,4 @@
 
 void runBootloader(void);
 
-#endif
+#endif // __BOOT_H

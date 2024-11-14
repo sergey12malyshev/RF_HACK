@@ -22,7 +22,7 @@ LCD_DMA_TypeDef dma_tx_1 =
   .stream = LL_DMA_STREAM_3 // Поток контроллера DMA
 };  
 
-  //Данные подсветки
+//Данные подсветки
 LCD_BackLight_data bkl_data = 
 {
   .htim_bk        = TIM3,       // Таймер - для подсветки с PWM (изменение яркости подсветки)
@@ -34,13 +34,15 @@ LCD_BackLight_data bkl_data =
 
   /* ----------------------------------- Настройка тачскрина ------------------------------------------*/
   //Будем обмениваться данными с XPT2046 на скорости 2.625 Мбит/с (по спецификации максимум 2.0 Мбит/с).
-XPT2046_ConnectionData cnt_touch = { .spi    = SPI1,   //используемый spi
-                                   .speed    = 4,        //Скорость spi 0...7 (0 - clk/2, 1 - clk/4, ..., 7 - clk/256)
-                     .cs_port  = T_CS_GPIO_Port,  //Порт для управления T_CS
-                     .cs_pin    = T_CS_Pin,       //Вывод порта для управления T_CS
-                     .irq_port = T_IRQ_GPIO_Port, //Порт для управления T_IRQ
-                     .irq_pin  = T_IRQ_Pin,       //Вывод порта для управления T_IRQ
-                     .exti_irq = T_IRQ_EXTI_IRQn  //Канал внешнего прерывания
+XPT2046_ConnectionData cnt_touch = 
+{ 
+  .spi    = SPI1,              //используемый spi
+  .speed    = 4,               //Скорость spi 0...7 (0 - clk/2, 1 - clk/4, ..., 7 - clk/256)
+  .cs_port  = T_CS_GPIO_Port,  //Порт для управления T_CS
+  .cs_pin    = T_CS_Pin,       //Вывод порта для управления T_CS
+  .irq_port = T_IRQ_GPIO_Port, //Порт для управления T_IRQ
+  .irq_pin  = T_IRQ_Pin,       //Вывод порта для управления T_IRQ
+  .exti_irq = T_IRQ_EXTI_IRQn  //Канал внешнего прерывания
 };
 
 

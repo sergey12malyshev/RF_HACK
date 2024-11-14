@@ -1,8 +1,14 @@
 /* USER CODE BEGIN Header */
+
 /*
- * RF_HACK 2024
+ * RF_HACK project 2024
  * Malyshev Sergey
+ * 
+ * https://github.com/sergey12malyshev/RF_HACK
+ * 
+ * GPL-3.0 license
  */
+
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -131,15 +137,10 @@ bool CC1101_reinit(void)
   return TI_init(&hspi2, NSS_CS_GPIO_Port, NSS_CS_Pin); // CS
 }
 
-/* USER CODE END 0 */
 
-/**
-  * @brief  The application entry point.
-  * @retval int
-  */
-int main(void)
-{
-  /* USER CODE BEGIN 1 */
+static void stm32_cacheEnable(void)
+{//Дублирует код из HAL_Init()
+
 /* Включаем кэширование инструкций */
 #if (INSTRUCTION_CACHE_ENABLE != 0U)
   ((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (9U));
@@ -154,6 +155,17 @@ int main(void)
 #if (PREFETCH_ENABLE != 0U)
   ((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (8U));
 #endif
+}
+/* USER CODE END 0 */
+
+/**
+  * @brief  The application entry point.
+  * @retval int
+  */
+int main(void)
+{
+  /* USER CODE BEGIN 1 */
+  stm32_cacheEnable();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
