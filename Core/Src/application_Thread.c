@@ -89,11 +89,11 @@ void screen_bootload(void)
 }
 
 /*
- * Протопоток StartApplication_Thread
+ * Протопоток Application_Thread
  *
  */
 
-PT_THREAD(StartApplication_Thread(struct pt *pt))
+PT_THREAD(Application_Thread(struct pt *pt))
 {
   static uint32_t timer1;
 

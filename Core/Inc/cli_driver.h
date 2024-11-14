@@ -45,6 +45,6 @@ int debugPrintf(const char *serial_data, ...);
 #define LC_INCLUDE "lc-addrlabels.h"
 #include "pt.h"
 
-PT_THREAD(StartApplication_Thread(struct pt *pt));
+PT_THREAD(Application_Thread(struct pt *pt));
 
 #endif /* __CLI_DRIVER_H  */

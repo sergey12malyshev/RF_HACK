@@ -358,8 +358,8 @@ calibrateTouchEnable();
 
 static void scheduler(void)
 {
-    StartApplication_Thread(&application_pt);
-    StartCLI_Thread(&cli_pt);
+    Application_Thread(&application_pt);
+    CLI_Thread(&cli_pt);
     Button_Thread(&button_pt);
 
     if(getBootingScreenMode())

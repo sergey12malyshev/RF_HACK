@@ -4,7 +4,7 @@
 #define LC_INCLUDE "lc-addrlabels.h"
 #include "pt.h"
 
-PT_THREAD(StartApplication_Thread(struct pt *pt));
+PT_THREAD(Application_Thread(struct pt *pt));
 
 void screen_clear(void);
 

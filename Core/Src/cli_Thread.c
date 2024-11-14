@@ -346,10 +346,10 @@ static void monitor_out_test(void)
 }
 
 /*
- * Протопоток StartCLI_Thread
+ * Протопоток CLI_Thread
  *
  */
-PT_THREAD(StartCLI_Thread(struct pt *pt))
+PT_THREAD(CLI_Thread(struct pt *pt))
 {
   static uint32_t timer1;
 

@@ -4,6 +4,6 @@
 #define LC_INCLUDE "lc-addrlabels.h"
 #include "pt.h"
 
-PT_THREAD(StartCLI_Thread(struct pt *pt));
+PT_THREAD(CLI_Thread(struct pt *pt));
 
 #endif /*__CLI_TASK_H__ */
