@@ -219,11 +219,11 @@ int main(void)
   LCD_Handler lcd1;
 #endif
    //Cоздаем обработчик дисплея ILI9341
-   LCD = LCD_DisplayAdd( LCD,
+   LCD = LCD_DisplayAdd(LCD,
 #ifndef  LCD_DYNAMIC_MEM
-                         &lcd1,
+            &lcd1,
 #endif
-                         240,
+             240,
              320,
              ILI9341_CONTROLLER_WIDTH,
              ILI9341_CONTROLLER_HEIGHT,
@@ -237,15 +237,14 @@ int main(void)
              ILI9341_SleepOut,
              &spi_con,
              LCD_DATA_16BIT_BUS,
-             bkl_data           );
+             bkl_data);
 
   lcd = LCD;     //Указатель на первый дисплей в списке
   LCD_Init(lcd);
   LCD_Fill(lcd, COLOR_RED);
 
-  //инициализация обработчика XPT2046
-  XPT2046_InitTouch(&touch1, 20, &cnt_touch);
 
+  XPT2046_InitTouch(&touch1, 20, &cnt_touch);   // инициализация обработчика XPT2046
 
 #if !CALIBRATE_EN
   tCoef coef = {.D   = 0x00022b4253626d37,
