@@ -320,10 +320,10 @@ calibrateTouchEnable();
     }
     else if(getjammButtonState())
       {
-        if(getWorkState() != JAMMER)
+        if(getWorkState() != JAMMER_MODE)
         {
           PT_INIT(&jammer_pt);
-          setWorkSate(JAMMER);
+          setWorkSate(JAMMER_MODE);
           debugPrintf("JAMMER Mode"CLI_NEW_LINE);
         }
       }
@@ -390,7 +390,7 @@ static void scheduler(void)
     case SCAN:
       spectrumScan_Thread(&specrum_pt);
       break;
-    case JAMMER:
+    case JAMMER_MODE:
       jammer_Thread(&jammer_pt);
       break;
     case GPS_MODE:
