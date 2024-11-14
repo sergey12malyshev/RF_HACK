@@ -7,7 +7,7 @@
 #include "pt.h"
 
 #include "main.h"
-#include "jammer.h"
+#include "jammer_Thread.h"
 #include "frequencyChannelsTable.h"
 
 #include "application_Thread.h"

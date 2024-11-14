@@ -51,7 +51,7 @@
 #include "subGHz_RX_Thread.h"
 #include "subGHz_TX_Thread.h"
 #include "spectrumScan_Thread.h"
-#include "jammer.h"
+#include "jammer_Thread.h"
 
 /* USER CODE END Includes */
 
