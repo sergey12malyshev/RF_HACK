@@ -204,6 +204,13 @@ all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET
 release: all
 debug: all
 
+.PHONY: help
+help :
+	@echo "usage default: *make -j* cmd command"
+	@echo "make clean - clean project"
+	@echo "make debug - build debug version"
+	@echo "See README.md"
+
 #######################################
 # build the application
 #######################################
