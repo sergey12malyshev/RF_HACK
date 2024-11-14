@@ -59,11 +59,12 @@ void GPS_UART_CallBack(){
     HAL_UART_Transmit(&huart1, (uint8_t *)rx_data, 1, 29);
 #endif
     
-	if (rx_data[0] != '\n' && rx_index < sizeof(rx_buffer)) {
+	if (rx_data[0] != '\n' && rx_index < sizeof(rx_buffer)) 
+    {
 		rx_buffer[rx_index++] = rx_data[0];
-	} else {
-
-
+	} 
+    else 
+    {
 		if(GPS_validate((char*) rx_buffer))
         {
           GPS_parse((char*) rx_buffer);
@@ -82,7 +83,8 @@ void GPS_UART_CallBack(){
 }
 
 
-int GPS_validate(char *nmeastr){
+int GPS_validate(char *nmeastr)
+{
     char check[3];
     char checkcalcstr[3];
     int i;
@@ -167,12 +169,15 @@ void GPS_parse(char *GPSstrParse){
 
 }
 
-float GPS_nmea_to_dec(float deg_coord, char nsew) {
+float GPS_nmea_to_dec(float deg_coord, char nsew) 
+{
     int degree = (int)(deg_coord/100);
     float minutes = deg_coord - degree*100;
     float dec_deg = minutes / 60;
     float decimal = degree + dec_deg;
-    if (nsew == 'S' || nsew == 'W') { // return negative
+    
+    if (nsew == 'S' || nsew == 'W') 
+    { // return negative
         decimal *= -1;
     }
     return decimal;
