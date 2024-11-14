@@ -7,7 +7,7 @@
 #include "pt.h"
 
 #include "main.h"
-#include "spectrumScan.h"
+#include "spectrumScan_Thread.h"
 #include "subGHz_RX_Thread.h"
 #include "application_Thread.h"
 #include "cli_driver.h"

@@ -74,7 +74,7 @@ Core/Src/dw_stm32_delay.c \
 Core/Src/subGHz_RX_Thread.c \
 Core/Src/subGHz_TX_Thread.c \
 Core/Src/button_Thread.c \
-Core/Src/spectrumScan.c \
+Core/Src/spectrumScan_Thread.c \
 Core/Src/jammer.c \
 Core/Src/workStates.c \
 Core/Src/runBootloader.c \

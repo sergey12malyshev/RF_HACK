@@ -10,7 +10,7 @@
 #include "jammer.h"
 #include "frequencyChannelsTable.h"
 
-#include "spectrumScan.h"
+#include "spectrumScan_Thread.h"
 #include "subGHz_RX_Thread.h"
 #include "subGHz_TX_Thread.h"
 #include "application_Thread.h"

@@ -50,7 +50,7 @@
 #include "button_Thread.h"
 #include "subGHz_RX_Thread.h"
 #include "subGHz_TX_Thread.h"
-#include "spectrumScan.h"
+#include "spectrumScan_Thread.h"
 #include "jammer.h"
 
 /* USER CODE END Includes */
