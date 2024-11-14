@@ -32,6 +32,7 @@ PT_THREAD(jammer_Thread(struct pt *pt))
 {
   static uint32_t timer1;
   __attribute__((unused)) uint8_t s;
+  char str[25] = {0};
 
 
   PT_BEGIN(pt);
@@ -54,6 +55,7 @@ PT_THREAD(jammer_Thread(struct pt *pt))
   GDO0_FLAG = 0;
 
   encoder_init();
+  encoder_setRotaryNum(16);
 
   while (1)
   {
@@ -92,6 +94,33 @@ PT_THREAD(jammer_Thread(struct pt *pt))
       
       PT_WAIT_UNTIL(pt, (GDO0_FLAG)); //GDO low lowel - end transmitt
       GDO0_FLAG = 0;
+    }
+    else
+    {
+      int16_t num = encoder_getRotaryNum();
+      
+      if (num < 0)
+      {
+        num = 0;
+        encoder_setRotaryNum(0);
+      }
+      else
+      {
+        if (num > 68)
+        {
+          num = 68;
+          encoder_setRotaryNum(68);
+        } 
+      }
+
+      float freq = freqLpdList[num];
+      sprintf(str, "LPD%02d %.3f", num + 1, freq);
+      LCD_WriteString(lcd, 10, 175, str, &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
+
+      CC1101_setMHZ(freq - DIFFERENCE_WITH_CARRIER);
+
+      PT_WAIT_UNTIL(pt, timer(&timer1, 250));
     }
 
     PT_YIELD(pt);

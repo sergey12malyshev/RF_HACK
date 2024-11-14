@@ -66,8 +66,16 @@ static void cursorProcess(void)
 {
   cursor_x = encoder_getRotaryNum();
 
-  if (cursor_x < offset_x) cursor_x = offset_x;
-  if (cursor_x > offset_x + 128) cursor_x = offset_x + 127;
+  if (cursor_x < offset_x)
+  {
+    cursor_x = offset_x;
+    encoder_setRotaryNum(cursor_x);
+  }
+  if (cursor_x > offset_x + 128)
+  {
+    cursor_x = offset_x + 127;
+    encoder_setRotaryNum(cursor_x);
+  }
 
   drawCursor(cursor_x);
 }
