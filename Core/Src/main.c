@@ -307,14 +307,14 @@ calibrateTouchEnable();
 
     /* USER CODE BEGIN 3 */
 
-#define TX_MODE false
+#define TX_MODE_ALWAYS     false
 
-    if(getTxButtonState() || TX_MODE)
+    if(getTxButtonState() || TX_MODE_ALWAYS)
     {
-      if(getWorkState() != TX)
+      if(getWorkState() != TX_MODE)
       {
         PT_INIT(&sub_tx_pt);
-        setWorkSate(TX);
+        setWorkSate(TX_MODE);
         debugPrintf("TX Mode"CLI_NEW_LINE);
       }
     }
@@ -381,7 +381,7 @@ static void scheduler(void)
 
   switch (getWorkState())
   {
-    case TX:
+    case TX_MODE:
       subGHz_TX_Thread(&sub_tx_pt);
       break;
     case RX_MODE:
