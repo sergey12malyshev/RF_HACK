@@ -29,6 +29,8 @@
 
 
 #include "workStates.h"
+#include "configFile.h"
+
 
 #include "display.h"
 #include "ili9341.h"
@@ -244,7 +246,7 @@ int main(void)
   //инициализация обработчика XPT2046
   XPT2046_InitTouch(&touch1, 20, &cnt_touch);
 
-#define CALIBRATE_EN    false
+
 #if !CALIBRATE_EN
   tCoef coef = {.D   = 0x00022b4253626d37,
                 .Dx1 = 0xffffd9e9e85d81b6,
@@ -290,7 +292,6 @@ calibrateTouchEnable();
     }
   }
 
-#define CUSTOM_OLD_CONFIG 0
 #if CUSTOM_OLD_CONFIG
   TI_setCarrierFreq(CFREQ_433);
   TI_setDevAddress(1); 
@@ -307,8 +308,6 @@ calibrateTouchEnable();
 
     /* USER CODE BEGIN 3 */
 
-#define TX_MODE_ALWAYS     false
-
     if(getTxButtonState() || TX_MODE_ALWAYS)
     {
       if(getWorkState() != TX_MODE)
@@ -319,48 +318,47 @@ calibrateTouchEnable();
       }
     }
     else if(getjammButtonState())
+    {
+      if(getWorkState() != JAMMER_MODE)
       {
-        if(getWorkState() != JAMMER_MODE)
-        {
-          PT_INIT(&jammer_pt);
-          setWorkSate(JAMMER_MODE);
-          debugPrintf("JAMMER Mode"CLI_NEW_LINE);
-        }
+        PT_INIT(&jammer_pt);
+        setWorkSate(JAMMER_MODE);
+        debugPrintf("JAMMER Mode"CLI_NEW_LINE);
       }
-      else if(getScanButtonState())
+    }
+    else if(getScanButtonState())
+    {
+      if(getWorkState() != SCAN_MODE)
       {
-        if(getWorkState() != SCAN_MODE)
-        {
-          PT_INIT(&specrum_pt);
-          setWorkSate(SCAN_MODE);
-          debugPrintf("SCAN Mode"CLI_NEW_LINE);
-        }
+        PT_INIT(&specrum_pt);
+        setWorkSate(SCAN_MODE);
+        debugPrintf("SCAN Mode"CLI_NEW_LINE);
       }
-      else if(getGpsButtonState())
+    }
+    else if(getGpsButtonState())
+    {
+      if(getWorkState() != GPS_MODE)
       {
-        if(getWorkState() != GPS_MODE)
-        {
-          PT_INIT(&gps_pt);
-          setWorkSate(GPS_MODE);
-          debugPrintf("GPS Mode"CLI_NEW_LINE);
-        }
+        PT_INIT(&gps_pt);
+        setWorkSate(GPS_MODE);
+        debugPrintf("GPS Mode"CLI_NEW_LINE);
       }
-      else
+    }
+    else
+    {
+      if(getWorkState() != RX_MODE)
       {
-        if(getWorkState() != RX_MODE)
-        {
-          PT_INIT(&rf_pt);
-          setWorkSate(RX_MODE);
-          debugPrintf("RX Mode"CLI_NEW_LINE);
-        }
+        PT_INIT(&rf_pt);
+        setWorkSate(RX_MODE);
+        debugPrintf("RX Mode"CLI_NEW_LINE);
       }
+    }
 
-      if(getBootButtonState())
-      {
-        runBootloader();
-      }
+    if(getBootButtonState())
+    {
+      runBootloader();
+    }
     
-
     scheduler();
 
     reload_IWDG();
