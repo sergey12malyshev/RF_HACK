@@ -137,6 +137,8 @@ static bool buttonHandler(XPT2046_Handler *t)
 {
   int x = 0, y = 0;
   tPoint point_d;
+  static uint8_t i = 0;
+  const antibounsing_k = 1;
 
   static bool noClick;
 
@@ -256,11 +258,14 @@ static bool buttonHandler(XPT2046_Handler *t)
     }
 
     noClick = false;
+    i = 0;
   }
   else
   {
-    // TODO: можно добавить счетчик периодов для установки noClick
-    noClick = true;
+    if (i++ > antibounsing_k)
+    {
+      noClick = true;
+    }
   }
 
   return false;
