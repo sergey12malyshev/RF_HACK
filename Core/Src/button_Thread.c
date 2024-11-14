@@ -162,7 +162,7 @@ static bool buttonHandler(XPT2046_Handler *t)
 
     if (x >= BUTTON_TX_X && x < (hw + BUTTON_TX_X) && y >= BUTTON_TX_Y && y < (hw + BUTTON_TX_Y))
     {
-      if(!TxButton)
+      if (!TxButton)
       {
         allButtonClearState();
         button_logoClear();
@@ -171,17 +171,17 @@ static bool buttonHandler(XPT2046_Handler *t)
       }
       else
       {
-        if(noClick)
+        if (noClick)
         {
-        buttonTx_logo(COLOR_WHITE);
-        TxButton = false;
+          buttonTx_logo(COLOR_WHITE);
+          TxButton = false;
         }
       }
     }
 
     if (x >= BUTTON_SCAN_X && x < (hw + BUTTON_SCAN_X) && y >= BUTTON_SCAN_Y && y < (hw + BUTTON_SCAN_Y))
     {
-      if(!scanButton)
+      if (!scanButton)
       {
         allButtonClearState();
         button_logoClear();
@@ -190,17 +190,17 @@ static bool buttonHandler(XPT2046_Handler *t)
       }
       else
       {
-        if(noClick)
+        if (noClick)
         {
-        buttonScan_logo(COLOR_WHITE);
-        scanButton = false;
+          buttonScan_logo(COLOR_WHITE);
+          scanButton = false;
         }
       }
     }
 
     if (x >= BUTTON_JAMM_X && x < (hw + BUTTON_JAMM_X) && y >= BUTTON_JAMM_Y && y < (hw + BUTTON_JAMM_Y))
     {
-      if(!jammButton)
+      if (!jammButton)
       {
         allButtonClearState();
         button_logoClear();
@@ -209,17 +209,17 @@ static bool buttonHandler(XPT2046_Handler *t)
       }
       else
       {
-        if(noClick)
+        if (noClick)
         {
-        buttonJamm_logo(COLOR_WHITE);
-        jammButton = false;
+          buttonJamm_logo(COLOR_WHITE);
+          jammButton = false;
         }
       }
     }
 
     if (x >= BUTTON_BOOT_X && x < (hw + BUTTON_BOOT_X) && y >= BUTTON_BOOT_Y && y < (hw + BUTTON_BOOT_Y))
     {
-      if(!bootButton)
+      if (!bootButton)
       {
         allButtonClearState();
         button_logoClear();
@@ -228,17 +228,17 @@ static bool buttonHandler(XPT2046_Handler *t)
       }
       else
       {
-        if(noClick)
+        if (noClick)
         {
-        buttonBoot_logo(COLOR_WHITE);
-        bootButton = false;
+          buttonBoot_logo(COLOR_WHITE);
+          bootButton = false;
         }
       }
     }
 
     if (x >= BUTTON_GPS_X && x < (hw + BUTTON_GPS_X) && y >= BUTTON_GPS_Y && y < (hw + BUTTON_GPS_Y))
     {
-      if(!gpsButton)
+      if (!gpsButton)
       {
         allButtonClearState();
         button_logoClear();
@@ -247,10 +247,10 @@ static bool buttonHandler(XPT2046_Handler *t)
       }
       else
       {
-        if(noClick)
+        if (noClick)
         {
-        buttonGPS_logo(COLOR_WHITE);
-        gpsButton = false;
+          buttonGPS_logo(COLOR_WHITE);
+          gpsButton = false;
         }
       }
     }
@@ -259,6 +259,7 @@ static bool buttonHandler(XPT2046_Handler *t)
   }
   else
   {
+    // TODO: можно добавить счетчик периодов для установки noClick
     noClick = true;
   }
 
