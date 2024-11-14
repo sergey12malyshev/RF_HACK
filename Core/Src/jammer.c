@@ -10,9 +10,6 @@
 #include "jammer.h"
 #include "frequencyChannelsTable.h"
 
-#include "spectrumScan_Thread.h"
-#include "subGHz_RX_Thread.h"
-#include "subGHz_TX_Thread.h"
 #include "application_Thread.h"
 #include "cli_driver.h"
 #include "cc1101.h"
@@ -26,7 +23,6 @@
 
 extern volatile uint8_t GDO0_FLAG;
 
-extern RF_t CC1101;
 
 /*
  * Протопоток jammer_Thread
