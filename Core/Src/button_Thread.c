@@ -18,22 +18,22 @@
 
 #include "time.h"
 
-#define BUTTON_H 6
+#define BUTTON_H        6
 
-#define BUTTON_TX_X 184
-#define BUTTON_TX_Y 265
+#define BUTTON_GPS_X    184
+#define BUTTON_GPS_Y    25
 
-#define BUTTON_SCAN_X 184
-#define BUTTON_SCAN_Y 205
+#define BUTTON_SCAN_X   184
+#define BUTTON_SCAN_Y   85
 
-#define BUTTON_JAMM_X 184
-#define BUTTON_JAMM_Y 145
+#define BUTTON_JAMM_X   184
+#define BUTTON_JAMM_Y   145
 
-#define BUTTON_BOOT_X 184
-#define BUTTON_BOOT_Y 85
+#define BUTTON_TX_X     184
+#define BUTTON_TX_Y     205
 
-#define BUTTON_GPS_X 184
-#define BUTTON_GPS_Y 25
+#define BUTTON_BOOT_X   184
+#define BUTTON_BOOT_Y   265
 
 
 static bool TxButton, scanButton, jammButton, bootButton, gpsButton;
@@ -138,7 +138,7 @@ static bool buttonHandler(XPT2046_Handler *t)
   int x = 0, y = 0;
   tPoint point_d;
   static uint8_t i = 0;
-  const antibounsing_k = 1;
+  const uint8_t antibounsing_k = 1;
 
   static bool noClick;
 
