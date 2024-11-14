@@ -347,10 +347,10 @@ calibrateTouchEnable();
       }
       else
       {
-        if(getWorkState() != RX)
+        if(getWorkState() != RX_MODE)
         {
           PT_INIT(&rf_pt);
-          setWorkSate(RX);
+          setWorkSate(RX_MODE);
           debugPrintf("RX Mode"CLI_NEW_LINE);
         }
       }
@@ -384,7 +384,7 @@ static void scheduler(void)
     case TX:
       subGHz_TX_Thread(&sub_tx_pt);
       break;
-    case RX:
+    case RX_MODE:
       subGHz_RX_Thread(&rf_pt);
       break;
     case SCAN_MODE:

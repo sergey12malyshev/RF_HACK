@@ -3,7 +3,7 @@
 
 typedef enum 
 {
-  RX = 0, 
+  RX_MODE = 0, 
   TX,
   SCAN_MODE,
   JAMMER_MODE,
