@@ -10,6 +10,7 @@
 #include "xpt2046.h"
 #include "calibrate_touch.h"
 #include "cli_driver.h"
+#include "iwdg.h"
 
 LCD_Handler *lcd = NULL;     //Указатель на первый дисплей в списке
 
@@ -85,7 +86,7 @@ void calibrateTouchEnable(void)
   convert64bit_to_hex((uint8_t*)(&touch1.coef.Dy3), b);
   LCD_WriteString(lcd, 0, 120, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
   debugPrintf(b);
-  while(1) {} //Выведем коэффициенты на дисплей и в консоль
+  while(1) { IWDG_reload(); } //Выведем коэффициенты на дисплей и в консоль
 }
 
 

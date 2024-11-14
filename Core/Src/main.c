@@ -287,7 +287,7 @@ calibrateTouchEnable();
             &Font_8x13, COLOR_WHITE, COLOR_RED, LCD_SYMBOL_PRINT_FAST);
     while (1)
     {
-      reload_IWDG();
+      IWDG_reload();
     }
   }
 
@@ -360,7 +360,7 @@ calibrateTouchEnable();
     
     scheduler();
 
-    reload_IWDG();
+    IWDG_reload();
   }
   /* USER CODE END 3 */
 }
