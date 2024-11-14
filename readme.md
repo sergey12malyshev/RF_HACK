@@ -44,8 +44,8 @@ Batch Runner - для запуска из VScode
 Как включить поддержку флоат для std вывода:
 https://stackoverflow.com/questions/54534700/enabling-floating-point-emulation-in-gcc-arm-none-eabi
 
-Частоту шины APB1 (SPI2) снизил в четыре раза, иначе были проблемы с передачей CC1101 (снижалась мощность передачи) 
-(можно просто установить предделитель боадрейта в настройках SPI)
+Частоту шины APB1 (SPI2) снизил в четыре раза, иначе были проблемы с мощностью передачи CC1101 (частота обмена с CC1101 не более 10 Mhz)
+(TODO: установить предделитель боадрейта в настройках SPI)
 
 ## Tools
 
@@ -75,11 +75,11 @@ https://dunkels.com/adam/pt/
 *VS Code* file Pac-ManGame.code-workspace
 
 ## Build 
-To make the release project , run **makeProject.bat** (OR *make -j* cmd command)
+To make the release project run **makeProject.bat** (OR *make -j* cmd command)
 
-To make the debug project , run **makeProjectDebug.bat** (OR *make -j1 debug* cmd command)
+To make the debug project run **makeProjectDebug.bat** (OR *make -j1 debug* cmd command)
 
-To clean the project, run **makeClean.bat** (OR *make clean*)
+To clean the project run **makeClean.bat** (OR *make clean*)
 
 ## Programm firmware
 Connect ST-Link V2 to SWD connector. Run **programFlash.bat**
