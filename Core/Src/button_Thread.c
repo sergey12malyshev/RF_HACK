@@ -68,62 +68,62 @@ static void allButtonClearState(void)
   TxButton = scanButton = jammButton = bootButton = gpsButton = 0;
 }
 
-void buttonTx_logo(uint32_t color)
+static void buttonTx_logo(uint32_t color)
 {
   int x = BUTTON_TX_X, y = BUTTON_TX_Y;
   int hw = LCD_GetHeight(lcd) / BUTTON_H; // Сторона квадрата с цветом пера
 
   LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE);     // Черный контур вокруг текущего цвета
-  LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); // Квадрат, залитый текущим цветом
+  LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); 
   // Кнопка "TX" в квадрате с белым цветом
   LCD_WriteString(lcd, x + hw / 2 - 10, y + hw / 2 - 5, "TX", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
 }
 
-void buttonScan_logo(uint32_t color)
+static void buttonScan_logo(uint32_t color)
 {
   int x = BUTTON_SCAN_X, y = BUTTON_SCAN_Y;
-  int hw = LCD_GetHeight(lcd) / BUTTON_H; // Сторона квадрата с цветом пера
+  int hw = LCD_GetHeight(lcd) / BUTTON_H;
 
-  LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE);     // Черный контур вокруг текущего цвета
-  LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); // Квадрат, залитый текущим цветом
+  LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE);     
+  LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); 
   // Кнопка "SCAN" в квадрате с белым цветом
   LCD_WriteString(lcd, x + hw / 2 - 15, y + hw / 2 - 5, "SCAN", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
 }
 
-void buttonJamm_logo(uint32_t color)
+static void buttonJamm_logo(uint32_t color)
 {
   int x = BUTTON_JAMM_X, y = BUTTON_JAMM_Y;
-  int hw = LCD_GetHeight(lcd) / BUTTON_H; // Сторона квадрата с цветом пера
+  int hw = LCD_GetHeight(lcd) / BUTTON_H;
 
-  LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE);     // Черный контур вокруг текущего цвета
-  LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); // Квадрат, залитый текущим цветом
+  LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE);     
+  LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); 
   // Кнопка "JAMM" в квадрате с белым цветом
   LCD_WriteString(lcd, x + hw / 2 - 15, y + hw / 2 - 5, "JAMM", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
 }
 
-void buttonBoot_logo(uint32_t color)
+static void buttonBoot_logo(uint32_t color)
 {
   int x = BUTTON_BOOT_X, y = BUTTON_BOOT_Y;
-  int hw = LCD_GetHeight(lcd) / BUTTON_H; // Сторона квадрата с цветом пера
+  int hw = LCD_GetHeight(lcd) / BUTTON_H;
 
-  LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE);     // Черный контур вокруг текущего цвета
-  LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); // Квадрат, залитый текущим цветом
+  LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE);     
+  LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); 
   // Кнопка "BOOT" в квадрате с белым цветом
   LCD_WriteString(lcd, x + hw / 2 - 15, y + hw / 2 - 5, "BOOT", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
 }
 
-void buttonGPS_logo(uint32_t color)
+static void buttonGPS_logo(uint32_t color)
 {
   int x = BUTTON_GPS_X, y = BUTTON_GPS_Y;
-  int hw = LCD_GetHeight(lcd) / BUTTON_H; // Сторона квадрата с цветом пера
+  int hw = LCD_GetHeight(lcd) / BUTTON_H;
 
-  LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE);     // Черный контур вокруг текущего цвета
-  LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); // Квадрат, залитый текущим цветом
+  LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE);     
+  LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); 
   // Кнопка "GPS" в квадрате с белым цветом
   LCD_WriteString(lcd, x + hw / 2 - 15, y + hw / 2 - 5, "GPS", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
 }
 
-void button_logoClear(void)
+static void button_logoClear(void)
 {
   buttonTx_logo(COLOR_WHITE);
   buttonScan_logo(COLOR_WHITE);
@@ -145,21 +145,20 @@ static bool buttonHandler(XPT2046_Handler *t)
   if (t->click) // Есть касание тачскрина
   {
     XPT2046_ConvertPoint(&point_d, &t->point, &t->coef); // Преобразуем координаты тачскрина в дисплейные
-    x = point_d.x;                     // Получаем значения дисплейных
-    y = point_d.y;                     // координат
+    x = point_d.x;  // Получаем значения дисплейных координат
+    y = point_d.y;
     if (x < 0)
-      x = 0; // Проверяем координаты
+      x = 0; // Проверяем координаты за выход за границы
     if (y < 0)
-      y = 0; // на
+      y = 0;
     if (x >= lcd->Width)
-      x = lcd->Width - 1; // выход за допустимые
+      x = lcd->Width - 1;
     if (y >= lcd->Height)
-      y = lcd->Height - 1; // границы
+      y = lcd->Height - 1;
 
     // debugPrintf("%d, %d"CLI_NEW_LINE, x, y);
     int hw = LCD_GetHeight(lcd) / BUTTON_H; // Сторона квадрата с цветом пера
     
-
 
     if (x >= BUTTON_TX_X && x < (hw + BUTTON_TX_X) && y >= BUTTON_TX_Y && y < (hw + BUTTON_TX_Y))
     {
@@ -222,7 +221,6 @@ static bool buttonHandler(XPT2046_Handler *t)
     {
       if(!bootButton)
       {
-
         allButtonClearState();
         button_logoClear();
         buttonBoot_logo(COLOR_RED);
@@ -242,7 +240,6 @@ static bool buttonHandler(XPT2046_Handler *t)
     {
       if(!gpsButton)
       {
-
         allButtonClearState();
         button_logoClear();
         buttonGPS_logo(COLOR_YELLOW);
@@ -271,7 +268,7 @@ static bool buttonHandler(XPT2046_Handler *t)
 /*
  * Протопоток Button_Thread
  *
- *
+ * Создание и обработка нажатий кнопок на дисплее
  */
 
 PT_THREAD(Button_Thread(struct pt *pt))
