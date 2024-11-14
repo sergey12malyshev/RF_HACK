@@ -20,7 +20,8 @@
 			"gps.h": "c",
 			"main.h": "c",
 			"encoderdriver.h": "c",
-			"jammer_Thread.h": "c"
+			"jammer_Thread.h": "c",
+			"frequencychannelstable.h": "c"
 		}
 	}
 }
