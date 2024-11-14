@@ -10,5 +10,6 @@ void screen_clear(void);
 
 bool getBootingScreenMode(void);
 void screen_bootload(void);
+uint16_t screen_booting_get_time(void);
 
 #endif /*__APPL_THREAD_H__ */

@@ -69,6 +69,11 @@ static void screen_booting(void)
 
 }
 
+uint16_t screen_booting_get_time(void)
+{
+  return 2500;
+}
+
 static void screen_voltage(uint32_t voltage)
 {
   char str[100] = "";
@@ -101,7 +106,7 @@ PT_THREAD(Application_Thread(struct pt *pt))
   
   screen_booting();
 
-  PT_DELAY_MS(pt, &timer1, 2500);
+  PT_DELAY_MS(pt, &timer1, screen_booting_get_time());
 
   LCD_Fill(lcd, COLOR_BLACK);
 
