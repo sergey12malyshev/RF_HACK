@@ -370,36 +370,36 @@ calibrateTouchEnable();
 
 static void scheduler(void)
 {
-    Application_Thread(&application_pt);
-    CLI_Thread(&cli_pt);
-    Button_Thread(&button_pt);
+  Application_Thread(&application_pt);
+  CLI_Thread(&cli_pt);
+  Button_Thread(&button_pt);
 
-    if(getBootingScreenMode())
-    {
-      return;
-    }
+  if(getBootingScreenMode())
+  {
+    return;
+  }
 
-    switch (getWorkState())
-    {
-      case TX:
-        subGHz_TX_Thread(&sub_tx_pt);
-        break;
-      case RX:
-        subGHz_RX_Thread(&rf_pt);
-        break;
-      case SCAN:
-        spectrumScan_Thread(&specrum_pt);
-        break;
-      case JAMMER:
-        jammer_Thread(&jammer_pt);
-        break;
-      case GPS_MODE:
-        gps_Thread(&gps_pt);
-        break;
-      default:
-        assert_param(0U);
-        break;
-    }
+  switch (getWorkState())
+  {
+    case TX:
+      subGHz_TX_Thread(&sub_tx_pt);
+      break;
+    case RX:
+      subGHz_RX_Thread(&rf_pt);
+      break;
+    case SCAN:
+      spectrumScan_Thread(&specrum_pt);
+      break;
+    case JAMMER:
+      jammer_Thread(&jammer_pt);
+      break;
+    case GPS_MODE:
+      gps_Thread(&gps_pt);
+      break;
+    default:
+      assert_param(0U);
+      break;
+  }
 }
 
 
