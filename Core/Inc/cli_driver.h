@@ -9,7 +9,7 @@
 #define CLI_SHELL_MAX_LENGTH     300U      // Shell out max command line size
 
 #define CLI_INPUT_BUFF_LENGTH    12U      // CLI input max line size
-
+////
 
 #define CLI_PROMPT_STR  "rf> "
 
@@ -31,13 +31,10 @@
 #define GREEN_CLR "\033[32m"
 #define RST_CLR   "\033[0m"
 
-
-
 #define CLI_DISPLAY_CLEAR()    debugPrintf("\033[2J")
 #define CLI_RESET_CURSOR()     debugPrintf("\033[H")
 #define CLI_HIDE_CURSOR()      debugPrintf("\033[?25l")
 #define CLI_SHOW_CURSOR()      debugPrintf("\033[?25h")
-
 
 
 int debugPrintf(const char *serial_data, ...);
