@@ -12,5 +12,6 @@
 
 #define TX_MODE_ALWAYS     false       // Включение режима постоянной передачи
 
+#define CLI_ENABLE         true        // Включение командной строки
 
 #endif // _CONFIG_H_

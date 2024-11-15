@@ -60,6 +60,7 @@
 #include "subGHz_TX_Thread.h"
 #include "spectrumScan_Thread.h"
 #include "jammer_Thread.h"
+#include "configFile.h"
 
 /* USER CODE END Includes */
 
@@ -139,22 +140,17 @@ bool CC1101_reinit(void)
   return TI_init(&hspi2, NSS_CS_GPIO_Port, NSS_CS_Pin); // CS
 }
 
-
 static void stm32_cacheEnable(void)
-{//Дублирует код из HAL_Init()
-
-/* Включаем кэширование инструкций */
-#if (INSTRUCTION_CACHE_ENABLE != 0U)
+{
+#if (INSTRUCTION_CACHE_ENABLE != 0U) /* Включаем кэширование инструкций */
   ((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (9U));
 #endif
 
-/* Включаем кэширование данных */
-#if (DATA_CACHE_ENABLE != 0U)
+#if (DATA_CACHE_ENABLE != 0U) /* Включаем кэширование данных */
   ((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (10U));
 #endif
 
-/* Включаем систему предварительной выборки инструкций */
-#if (PREFETCH_ENABLE != 0U)
+#if (PREFETCH_ENABLE != 0U) /* Включаем систему предварительной выборки инструкций */
   ((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (8U));
 #endif
 }
@@ -201,9 +197,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   /* Настройка дисплея */
-
-    //Данные подключения
-  LCD_SPI_Connected_data spi_con = 
+  LCD_SPI_Connected_data spi_con =     
   { 
     .spi        = SPI1,
     .dma_tx     = dma_tx_1,        // Данные DMA
@@ -368,10 +362,12 @@ calibrateTouchEnable();
 static void scheduler(void)
 {
   Application_Thread(&application_pt);
-  CLI_Thread(&cli_pt);
   Button_Thread(&button_pt);
+#if(CLI_ENABLE)
+    CLI_Thread(&cli_pt);
+#endif
 
-  if(getBootingScreenMode())
+  if (getBootingScreenMode())
   {
     return;
   }
