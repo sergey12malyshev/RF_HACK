@@ -43,6 +43,8 @@ uint16_t getAdcVDDA(void);
 uint32_t getVoltageVDDA(void);
 uint32_t getVoltageVDDA_Av(void);
 
+void setDefaultValueFilter(uint16_t defValue);
+
 void adcConvertProcess(void);
 char generateRandomChar(void);
 

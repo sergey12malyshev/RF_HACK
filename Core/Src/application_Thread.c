@@ -110,9 +110,12 @@ PT_THREAD(Application_Thread(struct pt *pt))
 
   LCD_Fill(lcd, COLOR_BLACK);
 
-  setTime(&timer1);
+  adcConvertProcess();
+  setDefaultValueFilter(getVoltageVDDA());
 
   bootingScreenMode = false;
+
+  setTime(&timer1);
   
   while (1)
   {
@@ -123,7 +126,7 @@ PT_THREAD(Application_Thread(struct pt *pt))
     heartbeatLedToggle();
 
     adcConvertProcess();
-    screen_voltage(getVoltageVDDA());
+    screen_voltage(getVoltageVDDA_Av());
 
 #define TEST_COUNT   false
 #if TEST_COUNT
