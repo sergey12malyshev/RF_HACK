@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#include "stm32f4xx_ll_gpio.h"
+
 #ifndef __STM32F4xx_HAL_H
 #include "stm32f4xx_hal.h"
 #endif

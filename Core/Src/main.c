@@ -31,18 +31,18 @@
 #include "workStates.h"
 #include "configFile.h"
 
-
 #include "display.h"
 #include "ili9341.h"
 #include "xpt2046.h"
 #include "calibrate_touch.h"
 #include "demo.h"
-
 #include "displayInit.h"
+
 #include "button_Thread.h"
 #include "gps_Thread.h"
 
-#include "runBootloader.h" 
+#include "runBootloader.h"
+#include "buzzer_driver.h"
 
 #include "gps.h"
 #include "cc1101.h"
@@ -264,7 +264,10 @@ calibrateTouchEnable();
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  buzzer_init(BUZZER_GPIO_Port, BUZZER_Pin);
+  buzzer_enable();
   LL_mDelay(5);
+  buzzer_disable();
 
   adc_enable();
 
