@@ -264,12 +264,16 @@ calibrateTouchEnable();
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
   buzzer_init(BUZZER_GPIO_Port, BUZZER_Pin);
   buzzer_enable();
   LL_mDelay(5);
   buzzer_disable();
+  debugPrintf("Buzzer test..."CLI_NEW_LINE);
 
   adc_enable();
+
+  debugPrintf("CC1101 init..."CLI_NEW_LINE);
 
   LCD_WriteString(lcd, 5, 25, "CC1101 int...",
             &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
@@ -293,6 +297,7 @@ calibrateTouchEnable();
   TI_setDevAddress(1); 
 #endif
   error_state = CC1101_reinit();
+  if(!error_state) debugPrintf(CLI_OK"CC1101 init pass"CLI_NEW_LINE);
 
   encoder_init();
   
