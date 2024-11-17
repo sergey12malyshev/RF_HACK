@@ -41,6 +41,8 @@ void adc_enable(void);
 
 uint16_t getAdcVDDA(void);
 uint32_t getVoltageVDDA(void);
+uint32_t getVoltageVDDA_Av(void);
+
 void adcConvertProcess(void);
 char generateRandomChar(void);
 

@@ -22,22 +22,28 @@
 
 /* USER CODE BEGIN 0 */
 
-struct adc
+typedef struct _Adc
 {
-  uint16_t adcVDDA;
-  uint32_t voltageVDDA;
-};
+  uint16_t adc;
+  uint32_t voltage;
+  uint32_t voltage_average;
+}Adc;
 
-static struct adc adcValue = {0};
+static Adc vdda = {0};
 
 uint16_t getAdcVDDA(void)
 {
-  return adcValue.adcVDDA;
+  return vdda.adc;
 }
 
 uint32_t getVoltageVDDA(void)
 {
-  return adcValue.voltageVDDA;
+  return vdda.voltage;
+}
+
+uint32_t getVoltageVDDA_Av(void)
+{
+  return vdda.voltage_average;
 }
 
 char generateRandomChar(void)
@@ -73,12 +79,36 @@ static uint32_t adc_convertVDDA(uint16_t adcData)
   return (((uint32_t) *VREFINT_CAL_ADDR) * (uint32_t)3300) / adcData;
 }
 
+/* 
+* Экспоненциальное бегущее среднее  filt = (A * filt + signal) >> k, https://alexgyver.ru/lessons/filters/ 
+*/
+static uint32_t filt = 0;
+
+uint16_t expRunningAverageFilter(uint16_t input)
+{
+  const uint8_t k = 2;
+  const uint8_t a = 3; // a =  (2^k) – 1
+
+  filt = (a * filt + input) >> k;
+
+  return filt;
+}
+
+/*
+Предустановка фильтра, для ускорения получения правильного значения
+*/
+void setDefaultValueFilter(uint16_t defValue)
+{
+  filt = defValue;
+}
 
 void adcConvertProcess(void)
 {
-  adcValue.adcVDDA = adc_convertData();
-  adcValue.voltageVDDA = adc_convertVDDA(adcValue.adcVDDA);
+  vdda.adc = adc_convertData();
+  vdda.voltage = adc_convertVDDA(vdda.adc);
+  vdda.voltage_average = expRunningAverageFilter(vdda.voltage);
 }
+
 
 /* USER CODE END 0 */
 

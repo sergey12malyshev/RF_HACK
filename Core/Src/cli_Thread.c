@@ -330,7 +330,8 @@ static void monitor_out_test(void)
   {
     case ADC_T:
       debugPrintf(CLI_CLEAR_LINE"%ld"CLI_TAB, getAdcVDDA());
-      debugPrintf("%d", getVoltageVDDA());
+      debugPrintf("%d"CLI_TAB, getVoltageVDDA());
+      debugPrintf("%d", getVoltageVDDA_Av());
       break;
     case GPS_C:
       GPSTest();
