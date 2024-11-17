@@ -129,7 +129,7 @@ static void sendSNversion(void)
 
 static void debugPrintf_hello(void)
 {
-  debugPrintf("RF_HACK project start"CLI_NEW_LINE);
+  debugPrintf("RF_HACK project started!"CLI_NEW_LINE);
   sendSNversion();
   DEBUG_PRINT(YEL_CLR"Debug Version"RST_CLR CLI_NEW_LINE);
   debugPrintf("Enter 'HELP' for list of commands...."CLI_NEW_LINE);
