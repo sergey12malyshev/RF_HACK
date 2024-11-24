@@ -91,7 +91,7 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
     if (!(status & 0x7f))
       continue;
 
-    uint8_t LQI = TI_read_status(CCxxx0_LQI);
+    uint8_t LQI = CC1101_getLqi();
 
     if (LQI & 0x80 /*CRC_OK*/)
     {

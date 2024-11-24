@@ -258,6 +258,7 @@ uint8_t CC1101_transmittRF(const char *packet_loc, uint8_t len);
 uint8_t CC1101_getRssiRaw(void);
 int CC1101_RSSIconvert(char raw_rssi);
 uint16_t CC1101_autoCalibrate1(void);
+uint8_t CC1101_getLqi(void);
 
 /**
  * Carrier frequencies
