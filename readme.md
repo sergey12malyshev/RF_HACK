@@ -113,7 +113,7 @@ It is possible to output the analysis result to a file
 - CH340N USB-UART module (Optional for updating firmware via USB Type-C and working with CLI)
 - P-MOSFET for power switch
 
-<img src="https://github.com/sergey12malyshev/RF_HACK/shematic/shematic.png" width=29% height=29%> 
+<img src="https://github.com/sergey12malyshev/RF_HACK/blob/feature/work/shematic/shematic.png" width=29% height=29%> 
 
 ## About repo
 
