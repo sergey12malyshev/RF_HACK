@@ -150,7 +150,7 @@ __UNUSED static void waterfallDraw(void)
 
 
 /*
- * Протопоток spectrumScan_Thread
+ * Protothread spectrumScan_Thread
  *
  */
 PT_THREAD(spectrumScan_Thread(struct pt *pt))

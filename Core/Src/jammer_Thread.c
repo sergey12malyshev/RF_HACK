@@ -25,7 +25,7 @@ extern volatile uint8_t GDO0_FLAG;
 
 
 /*
- * Протопоток jammer_Thread
+ * Protothread jammer_Thread
  *
  */
 PT_THREAD(jammer_Thread(struct pt *pt))

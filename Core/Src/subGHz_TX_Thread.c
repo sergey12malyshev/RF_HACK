@@ -19,10 +19,10 @@
 
 extern volatile uint8_t GDO0_FLAG;
 
-static char packet[7] = "QWERTY";; // Резерв одного символа под нуль-терминатор!!
+static char packet[7] = "QWERTY";; // Reserve one character for a null terminator!
 
 /*
- * Протопоток subGHz_TX_Thread
+ * Protothread subGHz_TX_Thread
  *
  *
  */

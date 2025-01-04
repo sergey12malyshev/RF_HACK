@@ -272,9 +272,9 @@ static bool buttonHandler(XPT2046_Handler *t)
 }
 
 /*
- * Протопоток Button_Thread
+ * Protothread Button_Thread
  *
- * Создание и обработка нажатий кнопок на дисплее
+ * Creating and processing button presses on the display
  */
 
 PT_THREAD(Button_Thread(struct pt *pt))

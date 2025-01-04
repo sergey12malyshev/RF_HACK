@@ -94,7 +94,7 @@ void screen_bootload(void)
 }
 
 /*
- * Протопоток Application_Thread
+ * Protothread Application_Thread
  *
  */
 

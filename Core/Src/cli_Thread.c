@@ -347,7 +347,7 @@ static void monitor_out_test(void)
 }
 
 /*
- * Протопоток CLI_Thread
+ * Protothread CLI_Thread
  *
  */
 PT_THREAD(CLI_Thread(struct pt *pt))
