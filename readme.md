@@ -36,6 +36,8 @@ Performs:
 - передачу и прием в Sub-GHz диапазоне тестовой строки;
 - режим сканирования диапазона с выводом спектра
 
+<img src="https://github.com/sergey12malyshev/RF_HACK/blob/develop/shematic/photo_1.jpg" width=15% height=15%>  <img src="https://github.com/sergey12malyshev/RF_HACK/blob/develop/shematic/photo_2.jpg" width=20% height=20%> 
+
 ## MCU
 STM32F401CC, High-performance access line, Arm Cortex-M4 core with DSP and FPU, 256 Kbytes of Flash memory, 84 MHz CPU, ART Accelerator
 
