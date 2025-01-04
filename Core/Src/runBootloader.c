@@ -18,11 +18,11 @@
 
 void hardwareDeinit(void)
 { 
-  // пропадание подсветки связано с работой таймера
+  // TODO: пропадание подсветки связано с работой таймера
   debugPrintf("Booting run..."CLI_NEW_LINE);
   screen_bootload();
   LL_mDelay(75);
-  reload_IWDG();
+  IWDG_reload();
 }
 
 void runBootloader(void) 

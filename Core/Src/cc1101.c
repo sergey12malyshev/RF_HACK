@@ -8,7 +8,7 @@
  *  Updated 2024 Malyshev Sergey
  *      https://github.com/sergey12malyshev
  * 
- * Внимание! Скорость шины spi не более 10 МГц!
+ *  Attention! The speed of the SPI bus is no more than 10 MHz!
  */
 
 #include "cc1101.h"

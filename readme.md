@@ -39,13 +39,13 @@ Performs:
 ## MCU
 STM32F401CC, High-performance access line, Arm Cortex-M4 core with DSP and FPU, 256 Kbytes of Flash memory, 84 MHz CPU, ART Accelerator
 
-Batch Runner - для запуска из VScode
+Batch Runner - to run from VSCode
 
-Как включить поддержку флоат для std вывода:
+How to enable float support for std withdrawal:
 https://stackoverflow.com/questions/54534700/enabling-floating-point-emulation-in-gcc-arm-none-eabi
 
-Частоту шины APB1 (SPI2) снизил в четыре раза, иначе были проблемы с передачей CC1101 (снижалась мощность передачи) 
-(можно просто установить предделитель боадрейта в настройках SPI)
+Частоту шины APB1 (SPI2) снизил в четыре раза, иначе были проблемы с мощностью передачи CC1101 (частота обмена с CC1101 не более 10 Mhz)
+(TODO: установить предделитель боадрейта в настройках SPI)
 
 ## Tools
 
@@ -64,7 +64,7 @@ https://github.com/xpack-dev-tools/windows-build-tools-xpack/releases/
 
 3. Add paths to the PATH environment variable in Windows
 
-Подробная статья: https://habr.com/ru/articles/673522/
+Detailed article: https://habr.com/ru/articles/673522/
 
 ### RTOS
 Prototreads AD v1.4
@@ -75,11 +75,11 @@ https://dunkels.com/adam/pt/
 *VS Code* file Pac-ManGame.code-workspace
 
 ## Build 
-To make the release project , run **makeProject.bat** (OR *make -j* cmd command)
+To make the release project run **makeProject.bat** (OR *make -j* cmd command)
 
-To make the debug project , run **makeProjectDebug.bat** (OR *make -j1 debug* cmd command)
+To make the debug project run **makeProjectDebug.bat** (OR *make -j1 debug* cmd command)
 
-To clean the project, run **makeClean.bat** (OR *make clean*)
+To clean the project run **makeClean.bat** (OR *make clean*)
 
 ## Programm firmware
 Connect ST-Link V2 to SWD connector. Run **programFlash.bat**
@@ -112,6 +112,8 @@ It is possible to output the analysis result to a file
 - Battery 18650 li-ion
 - CH340N USB-UART module (Optional for updating firmware via USB Type-C and working with CLI)
 - P-MOSFET for power switch
+
+<img src="https://github.com/sergey12malyshev/RF_HACK/blob/feature/work/shematic/shematic.png" width=35% height=35%> 
 
 ## About repo
 

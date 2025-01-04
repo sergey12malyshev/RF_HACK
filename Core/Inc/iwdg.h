@@ -38,7 +38,7 @@ extern "C" {
 void MX_IWDG_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-void reload_IWDG(void);
+void IWDG_reload(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

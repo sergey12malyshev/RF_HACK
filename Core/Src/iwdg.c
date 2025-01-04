@@ -21,7 +21,7 @@
 #include "iwdg.h"
 
 /* USER CODE BEGIN 0 */
-void reload_IWDG(void)
+void IWDG_reload(void)
 { /* T= 1/(32 kHz /4095*8) = 1024 мс время сброса */
   LL_IWDG_ReloadCounter(IWDG);
 }

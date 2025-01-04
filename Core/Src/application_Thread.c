@@ -69,6 +69,11 @@ static void screen_booting(void)
 
 }
 
+uint16_t screen_booting_get_time(void)
+{
+  return 2500;
+}
+
 static void screen_voltage(uint32_t voltage)
 {
   char str[100] = "";
@@ -89,11 +94,11 @@ void screen_bootload(void)
 }
 
 /*
- * Протопоток StartApplication_Thread
+ * Protothread Application_Thread
  *
  */
 
-PT_THREAD(StartApplication_Thread(struct pt *pt))
+PT_THREAD(Application_Thread(struct pt *pt))
 {
   static uint32_t timer1;
 
@@ -101,13 +106,16 @@ PT_THREAD(StartApplication_Thread(struct pt *pt))
   
   screen_booting();
 
-  PT_DELAY_MS(pt, &timer1, 2500);
+  PT_DELAY_MS(pt, &timer1, screen_booting_get_time());
 
   LCD_Fill(lcd, COLOR_BLACK);
 
-  setTime(&timer1);
+  adcConvertProcess();
+  setDefaultValueFilter(getVoltageVDDA());
 
   bootingScreenMode = false;
+
+  setTime(&timer1);
   
   while (1)
   {
@@ -118,7 +126,7 @@ PT_THREAD(StartApplication_Thread(struct pt *pt))
     heartbeatLedToggle();
 
     adcConvertProcess();
-    screen_voltage(getVoltageVDDA());
+    screen_voltage(getVoltageVDDA_Av());
 
 #define TEST_COUNT   false
 #if TEST_COUNT

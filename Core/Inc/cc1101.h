@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#include "stm32f4xx_ll_gpio.h"
+
 #ifndef __STM32F4xx_HAL_H
 #include "stm32f4xx_hal.h"
 #endif
@@ -256,6 +258,7 @@ uint8_t CC1101_transmittRF(const char *packet_loc, uint8_t len);
 uint8_t CC1101_getRssiRaw(void);
 int CC1101_RSSIconvert(char raw_rssi);
 uint16_t CC1101_autoCalibrate1(void);
+uint8_t CC1101_getLqi(void);
 
 /**
  * Carrier frequencies

@@ -7,7 +7,7 @@
 #include "pt.h"
 
 #include "main.h"
-#include "spectrumScan.h"
+#include "spectrumScan_Thread.h"
 #include "subGHz_RX_Thread.h"
 #include "application_Thread.h"
 #include "cli_driver.h"
@@ -66,8 +66,16 @@ static void cursorProcess(void)
 {
   cursor_x = encoder_getRotaryNum();
 
-  if (cursor_x < offset_x) cursor_x = offset_x;
-  if (cursor_x > offset_x + 128) cursor_x = offset_x + 127;
+  if (cursor_x < offset_x)
+  {
+    cursor_x = offset_x;
+    encoder_setRotaryNum(cursor_x);
+  }
+  if (cursor_x > offset_x + 128)
+  {
+    cursor_x = offset_x + 127;
+    encoder_setRotaryNum(cursor_x);
+  }
 
   drawCursor(cursor_x);
 }
@@ -142,7 +150,7 @@ __UNUSED static void waterfallDraw(void)
 
 
 /*
- * Протопоток spectrumScan_Thread
+ * Protothread spectrumScan_Thread
  *
  */
 PT_THREAD(spectrumScan_Thread(struct pt *pt))

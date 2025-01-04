@@ -1,8 +1,14 @@
 /* USER CODE BEGIN Header */
+
 /*
- * RF_HACK 2024
+ * RF_HACK project 2024
  * Malyshev Sergey
+ * 
+ * https://github.com/sergey12malyshev/RF_HACK
+ * 
+ * GPL-3.0 license
  */
+
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -23,18 +29,20 @@
 
 
 #include "workStates.h"
+#include "configFile.h"
 
 #include "display.h"
 #include "ili9341.h"
 #include "xpt2046.h"
 #include "calibrate_touch.h"
 #include "demo.h"
-
 #include "displayInit.h"
+
 #include "button_Thread.h"
 #include "gps_Thread.h"
 
-#include "runBootloader.h" 
+#include "runBootloader.h"
+#include "buzzer_driver.h"
 
 #include "gps.h"
 #include "cc1101.h"
@@ -50,8 +58,9 @@
 #include "button_Thread.h"
 #include "subGHz_RX_Thread.h"
 #include "subGHz_TX_Thread.h"
-#include "spectrumScan.h"
-#include "jammer.h"
+#include "spectrumScan_Thread.h"
+#include "jammer_Thread.h"
+#include "configFile.h"
 
 /* USER CODE END Includes */
 
@@ -131,6 +140,20 @@ bool CC1101_reinit(void)
   return TI_init(&hspi2, NSS_CS_GPIO_Port, NSS_CS_Pin); // CS
 }
 
+static void stm32_cacheEnable(void)
+{
+#if (INSTRUCTION_CACHE_ENABLE != 0U) /* Enable caching instructions */
+  ((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (9U));
+#endif
+
+#if (DATA_CACHE_ENABLE != 0U) /* Enabling data caching */
+  ((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (10U));
+#endif
+
+#if (PREFETCH_ENABLE != 0U) /* Enabling the instruction prefetch system */
+  ((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (8U));
+#endif
+}
 /* USER CODE END 0 */
 
 /**
@@ -140,20 +163,7 @@ bool CC1101_reinit(void)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-/* Включаем кэширование инструкций */
-#if (INSTRUCTION_CACHE_ENABLE != 0U)
-  ((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (9U));
-#endif
-
-/* Включаем кэширование данных */
-#if (DATA_CACHE_ENABLE != 0U)
-  ((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (10U));
-#endif
-
-/* Включаем систему предварительной выборки инструкций */
-#if (PREFETCH_ENABLE != 0U)
-  ((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (8U));
-#endif
+  stm32_cacheEnable();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -170,7 +180,7 @@ int main(void)
 
   /* USER CODE BEGIN SysInit */
   
-  SysTick_Config(SystemCoreClock/1000); //Настраиваем системный таймер (прерывания 1000 раз в секунду)
+  SysTick_Config(SystemCoreClock/1000); //Setting up the system timer (interrupts 1000 times per second)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -186,13 +196,11 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
-  /* Настройка дисплея */
-
-    //Данные подключения
-  LCD_SPI_Connected_data spi_con = 
+  /* Setting up the display */
+  LCD_SPI_Connected_data spi_con =     
   { 
     .spi        = SPI1,
-    .dma_tx     = dma_tx_1,        // Данные DMA
+    .dma_tx     = dma_tx_1,        // data DMA
     .reset_port = LCD_RESET_GPIO_Port,
     .reset_pin  = LCD_RESET_Pin,
     .dc_port    = LCD_DC_GPIO_Port,
@@ -204,18 +212,18 @@ int main(void)
 #ifndef  LCD_DYNAMIC_MEM
   LCD_Handler lcd1;
 #endif
-   //Cоздаем обработчик дисплея ILI9341
-   LCD = LCD_DisplayAdd( LCD,
+   // Creating a display handler ILI9341
+   LCD = LCD_DisplayAdd(LCD,
 #ifndef  LCD_DYNAMIC_MEM
-                         &lcd1,
+            &lcd1,
 #endif
-                         240,
+             240,
              320,
              ILI9341_CONTROLLER_WIDTH,
              ILI9341_CONTROLLER_HEIGHT,
-             //Задаем смещение по ширине и высоте для нестандартных или бракованных дисплеев:
-             0,    //смещение по ширине дисплейной матрицы
-             0,    //смещение по высоте дисплейной матрицы
+             //Setting the width and height offset for non-standard or defective displays:
+             0,    //offset in width of the display matrix
+             0,    //height offset of the display matrix
              PAGE_ORIENTATION_PORTRAIT,
              ILI9341_Init,
              ILI9341_SetWindow,
@@ -223,16 +231,15 @@ int main(void)
              ILI9341_SleepOut,
              &spi_con,
              LCD_DATA_16BIT_BUS,
-             bkl_data           );
+             bkl_data);
 
-  lcd = LCD;     //Указатель на первый дисплей в списке
+  lcd = LCD;     //Pointer to the first display in the list
   LCD_Init(lcd);
   LCD_Fill(lcd, COLOR_RED);
 
-  //инициализация обработчика XPT2046
-  XPT2046_InitTouch(&touch1, 20, &cnt_touch);
 
-#define CALIBRATE_EN    false
+  XPT2046_InitTouch(&touch1, 20, &cnt_touch);   //initializing the handler XPT2046
+
 #if !CALIBRATE_EN
   tCoef coef = {.D   = 0x00022b4253626d37,
                 .Dx1 = 0xffffd9e9e85d81b6,
@@ -248,8 +255,8 @@ calibrateTouchEnable();
 
 #if RUN_DEMO
   LCD_Fill(lcd, COLOR_WHITE);
-  Draw_TouchPenDemo(&touch1, lcd); //Демка для рисования на экране с помощью тачскрина.
-  RoadCircleDemo(&touch1, lcd);    //Демка рисует примитивы, отображает температуру и позволяет перемещать круг по дисплею.
+  Draw_TouchPenDemo(&touch1, lcd); //A demo for drawing on the screen using a touchscreen
+  RoadCircleDemo(&touch1, lcd);    //The demo draws primitives, displays the temperature, and allows you to move the circle around the display
 #endif
 
   LCD_Fill(lcd, COLOR_BLACK);
@@ -257,9 +264,16 @@ calibrateTouchEnable();
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  LL_mDelay(5);
+
+  buzzer_init(BUZZER_GPIO_Port, BUZZER_Pin);
+  buzzer_enable();
+  LL_mDelay(9);
+  buzzer_disable();
+  debugPrintf("Buzzer test..."CLI_NEW_LINE);
 
   adc_enable();
+
+  debugPrintf("CC1101 init..."CLI_NEW_LINE);
 
   LCD_WriteString(lcd, 5, 25, "CC1101 int...",
             &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
@@ -274,16 +288,16 @@ calibrateTouchEnable();
             &Font_8x13, COLOR_WHITE, COLOR_RED, LCD_SYMBOL_PRINT_FAST);
     while (1)
     {
-      reload_IWDG();
+      IWDG_reload();
     }
   }
 
-#define CUSTOM_OLD_CONFIG 0
 #if CUSTOM_OLD_CONFIG
   TI_setCarrierFreq(CFREQ_433);
   TI_setDevAddress(1); 
 #endif
   error_state = CC1101_reinit();
+  if(!error_state) debugPrintf(CLI_OK"CC1101 init pass"CLI_NEW_LINE);
 
   encoder_init();
   
@@ -295,99 +309,98 @@ calibrateTouchEnable();
 
     /* USER CODE BEGIN 3 */
 
-#define TX_MODE false
-
-    if(getTxButtonState() || TX_MODE)
+    if(getTxButtonState() || TX_MODE_ALWAYS)
     {
-      if(getWorkState() != TX)
+      if(getWorkState() != TX_MODE)
       {
         PT_INIT(&sub_tx_pt);
-        setWorkSate(TX);
+        setWorkSate(TX_MODE);
         debugPrintf("TX Mode"CLI_NEW_LINE);
       }
     }
     else if(getjammButtonState())
+    {
+      if(getWorkState() != JAMMER_MODE)
       {
-        if(getWorkState() != JAMMER)
-        {
-          PT_INIT(&jammer_pt);
-          setWorkSate(JAMMER);
-          debugPrintf("JAMMER Mode"CLI_NEW_LINE);
-        }
+        PT_INIT(&jammer_pt);
+        setWorkSate(JAMMER_MODE);
+        debugPrintf("JAMMER Mode"CLI_NEW_LINE);
       }
-      else if(getScanButtonState())
+    }
+    else if(getScanButtonState())
+    {
+      if(getWorkState() != SCAN_MODE)
       {
-        if(getWorkState() != SCAN)
-        {
-          PT_INIT(&specrum_pt);
-          setWorkSate(SCAN);
-          debugPrintf("SCAN Mode"CLI_NEW_LINE);
-        }
+        PT_INIT(&specrum_pt);
+        setWorkSate(SCAN_MODE);
+        debugPrintf("SCAN Mode"CLI_NEW_LINE);
       }
-      else if(getGpsButtonState())
+    }
+    else if(getGpsButtonState())
+    {
+      if(getWorkState() != GPS_MODE)
       {
-        if(getWorkState() != GPS_MODE)
-        {
-          PT_INIT(&gps_pt);
-          setWorkSate(GPS_MODE);
-          debugPrintf("GPS Mode"CLI_NEW_LINE);
-        }
+        PT_INIT(&gps_pt);
+        setWorkSate(GPS_MODE);
+        debugPrintf("GPS Mode"CLI_NEW_LINE);
       }
-      else
+    }
+    else
+    {
+      if(getWorkState() != RX_MODE)
       {
-        if(getWorkState() != RX)
-        {
-          PT_INIT(&rf_pt);
-          setWorkSate(RX);
-          debugPrintf("RX Mode"CLI_NEW_LINE);
-        }
+        PT_INIT(&rf_pt);
+        setWorkSate(RX_MODE);
+        debugPrintf("RX Mode"CLI_NEW_LINE);
       }
+    }
 
-      if(getBootButtonState())
-      {
-        runBootloader();
-      }
+    if(getBootButtonState())
+    {
+      runBootloader();
+    }
     
-
     scheduler();
 
-    reload_IWDG();
+    IWDG_reload();
   }
   /* USER CODE END 3 */
 }
 
 static void scheduler(void)
 {
-    StartApplication_Thread(&application_pt);
-    StartCLI_Thread(&cli_pt);
-    Button_Thread(&button_pt);
+  Application_Thread(&application_pt);
+  Button_Thread(&button_pt);
+#if(CLI_ENABLE)
+    CLI_Thread(&cli_pt);
+#endif
 
-    if(getBootingScreenMode())
-    {
-      return;
-    }
+  if (getBootingScreenMode())
+  {
+    return;
+  }
 
-    switch (getWorkState())
-    {
-      case TX:
-        subGHz_TX_Thread(&sub_tx_pt);
-        break;
-      case RX:
-        subGHz_RX_Thread(&rf_pt);
-        break;
-      case SCAN:
-        spectrumScan_Thread(&specrum_pt);
-        break;
-      case JAMMER:
-        jammer_Thread(&jammer_pt);
-        break;
-      case GPS_MODE:
-        gps_Thread(&gps_pt);
-        break;
-      default:
-        assert_param(0U);
-        break;
-    }
+  switch (getWorkState())
+  {
+    case TX_MODE:
+      subGHz_TX_Thread(&sub_tx_pt);
+      break;
+    case RX_MODE:
+      subGHz_RX_Thread(&rf_pt);
+      break;
+    case SCAN_MODE:
+      spectrumScan_Thread(&specrum_pt);
+      break;
+    case JAMMER_MODE:
+      jammer_Thread(&jammer_pt);
+      break;
+    case GPS_MODE:
+      gps_Thread(&gps_pt);
+      break;
+    default:
+      assert_param(0U);
+      break;
+  }
 }
 
 

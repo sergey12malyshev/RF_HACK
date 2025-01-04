@@ -50,9 +50,9 @@ static void GPS_DataScreen(void)
 }
 
 /*
- * Протопоток StartApplication_Thread
+ * Protothread gps_Thread
  *
- * 
+ * Data output from the Ublox Neo-6M Gps module
  */
 
 PT_THREAD(gps_Thread(struct pt *pt))

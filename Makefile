@@ -74,12 +74,13 @@ Core/Src/dw_stm32_delay.c \
 Core/Src/subGHz_RX_Thread.c \
 Core/Src/subGHz_TX_Thread.c \
 Core/Src/button_Thread.c \
-Core/Src/spectrumScan.c \
-Core/Src/jammer.c \
+Core/Src/spectrumScan_Thread.c \
+Core/Src/jammer_Thread.c \
 Core/Src/workStates.c \
 Core/Src/runBootloader.c \
 Core/Src/displayInit.c \
 Core/Src/encoderDriver.c \
+Core/Src/buzzer_driver.c \
 Core/Src/stm32f4xx_hal_timebase_tim.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.c \
@@ -107,7 +108,8 @@ Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c \
 Core/Src/adc.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c \
-Core/Src/iwdg.c
+Core/Src/iwdg.c \
+Core/Src/frequencyChannelsTable.c
 
 ASM_SOURCES = \
 startup_stm32f401xc.s \
@@ -203,6 +205,13 @@ LDFLAGS = $(MCU) -specs=nano.specs -u _printf_float -u _scanf_float -T$(LDSCRIPT
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 release: all
 debug: all
+
+.PHONY: help
+help :
+	@echo "usage default: *make -j* cmd command"
+	@echo "make clean - clean project"
+	@echo "make debug - build debug version"
+	@echo "See README.md"
 
 #######################################
 # build the application

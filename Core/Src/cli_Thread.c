@@ -129,7 +129,7 @@ static void sendSNversion(void)
 
 static void debugPrintf_hello(void)
 {
-  debugPrintf("RF_HACK project start"CLI_NEW_LINE);
+  debugPrintf("RF_HACK project started!"CLI_NEW_LINE);
   sendSNversion();
   DEBUG_PRINT(YEL_CLR"Debug Version"RST_CLR CLI_NEW_LINE);
   debugPrintf("Enter 'HELP' for list of commands...."CLI_NEW_LINE);
@@ -330,7 +330,8 @@ static void monitor_out_test(void)
   {
     case ADC_T:
       debugPrintf(CLI_CLEAR_LINE"%ld"CLI_TAB, getAdcVDDA());
-      debugPrintf("%d", getVoltageVDDA());
+      debugPrintf("%d"CLI_TAB, getVoltageVDDA());
+      debugPrintf("%d", getVoltageVDDA_Av());
       break;
     case GPS_C:
       GPSTest();
@@ -346,10 +347,10 @@ static void monitor_out_test(void)
 }
 
 /*
- * Протопоток StartCLI_Thread
+ * Protothread CLI_Thread
  *
  */
-PT_THREAD(StartCLI_Thread(struct pt *pt))
+PT_THREAD(CLI_Thread(struct pt *pt))
 {
   static uint32_t timer1;
 

@@ -97,6 +97,8 @@ void checkResetSourse(void);
 #define CC_GDO_EXTI_IRQn EXTI15_10_IRQn
 #define NSS_CS_Pin LL_GPIO_PIN_13
 #define NSS_CS_GPIO_Port GPIOB
+#define BUZZER_Pin LL_GPIO_PIN_15
+#define BUZZER_GPIO_Port GPIOA
 #define T_OUT_Pin LL_GPIO_PIN_4
 #define T_OUT_GPIO_Port GPIOB
 #define ENCODER_SW_Pin LL_GPIO_PIN_8

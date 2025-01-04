@@ -19,7 +19,9 @@
 			"calibrate_touch.h": "c",
 			"gps.h": "c",
 			"main.h": "c",
-			"encoderdriver.h": "c"
+			"encoderdriver.h": "c",
+			"jammer_Thread.h": "c",
+			"frequencychannelstable.h": "c"
 		}
 	}
 }

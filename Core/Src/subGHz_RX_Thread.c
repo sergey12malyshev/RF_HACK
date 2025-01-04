@@ -21,7 +21,7 @@
 #include "demo.h"
 
 
-#define MAX_PACKET_LENGTH   25U  // указываем максимальный размер принимаемой строки
+#define MAX_PACKET_LENGTH   25U  // specify the maximum size of the accepted string
 
 extern volatile uint8_t GDO0_FLAG;
 
@@ -49,7 +49,7 @@ static void CC1101_DataScreen(void)
 }
 
 /*
- * Протопоток subGHz_RX_Thread
+ * Protothread subGHz_RX_Thread
  *
  */
 PT_THREAD(subGHz_RX_Thread(struct pt *pt))
@@ -91,7 +91,7 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
     if (!(status & 0x7f))
       continue;
 
-    uint8_t LQI = TI_read_status(CCxxx0_LQI);
+    uint8_t LQI = CC1101_getLqi();
 
     if (LQI & 0x80 /*CRC_OK*/)
     {
