@@ -39,9 +39,9 @@ Performs:
 ## MCU
 STM32F401CC, High-performance access line, Arm Cortex-M4 core with DSP and FPU, 256 Kbytes of Flash memory, 84 MHz CPU, ART Accelerator
 
-Batch Runner - для запуска из VScode
+Batch Runner - to run from VSCode
 
-Как включить поддержку флоат для std вывода:
+How to enable float support for std withdrawal:
 https://stackoverflow.com/questions/54534700/enabling-floating-point-emulation-in-gcc-arm-none-eabi
 
 Частоту шины APB1 (SPI2) снизил в четыре раза, иначе были проблемы с мощностью передачи CC1101 (частота обмена с CC1101 не более 10 Mhz)
@@ -64,7 +64,7 @@ https://github.com/xpack-dev-tools/windows-build-tools-xpack/releases/
 
 3. Add paths to the PATH environment variable in Windows
 
-Подробная статья: https://habr.com/ru/articles/673522/
+Detailed article: https://habr.com/ru/articles/673522/
 
 ### RTOS
 Prototreads AD v1.4
