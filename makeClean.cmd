@@ -2,8 +2,9 @@
 rem clean project
 CLS
 
+echo Clean project...
 make clean
 
-echo "Clean Ok..."
+
 
 TIMEOUT /T 2

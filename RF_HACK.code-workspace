@@ -1,0 +1,27 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"application_Thread.h": "c",
+			"cli_thread.h": "c",
+			"cli_driver.h": "c",
+			"pt.h": "c",
+			"displayinit.h": "c",
+			"dw_stm32_delay.h": "c",
+			"cc1101.h": "c",
+			"stm32f4xx_hal_conf.h": "c",
+			"xpt2046.h": "c",
+			"subghz_tx_thread.h": "c",
+			"calibrate_touch.h": "c",
+			"gps.h": "c",
+			"main.h": "c",
+			"encoderdriver.h": "c",
+			"jammer_Thread.h": "c",
+			"frequencychannelstable.h": "c"
+		}
+	}
+}

@@ -3,15 +3,32 @@
 
 #include "main.h"
 #include "runBootloader.h" 
+#include "cli_driver.h"
+#include "iwdg.h"
 
+#include "application_Thread.h"
+
+//https://stm32f4-discovery.net/2017/04/tutorial-jump-system-memory-software-stm32/
 
 /**
  * Function to perform jump to system memory boot from user application
  *
  * Call function when you want to jump to system memory
  */
+
+void hardwareDeinit(void)
+{ 
+  // TODO: пропадание подсветки связано с работой таймера
+  debugPrintf("Booting run..."CLI_NEW_LINE);
+  screen_bootload();
+  LL_mDelay(75);
+  IWDG_reload();
+}
+
 void runBootloader(void) 
 {
+	hardwareDeinit();
+
 	void (*SysMemBootJump)(void);
 	
 	/**

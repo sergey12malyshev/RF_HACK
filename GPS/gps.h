@@ -6,11 +6,12 @@
  */
 
 #define GPS_DEBUG	0
+
 #define	GPS_USART	&huart6
 #define GPSBUFSIZE  128       // GPS buffer size
 
-typedef struct{
-
+typedef struct
+{
     // calculated values
     float dec_longitude;
     float dec_latitude;
@@ -54,4 +55,6 @@ void GPS_UART_CallBack();
 int GPS_validate(char *nmeastr);
 void GPS_parse(char *GPSstrParse);
 float GPS_nmea_to_dec(float deg_coord, char nsew);
+
+extern GPS_t GPS;
 

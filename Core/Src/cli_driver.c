@@ -6,11 +6,9 @@
 
 #include "cli_driver.h"
 #include "usart.h"
+#include "configFile.h"
 
 extern UART_HandleTypeDef huart1;
-
-
-#define CLI_SHELL_MAX_LENGTH     250      // Shell max command line size
 
 static char printBufer[CLI_SHELL_MAX_LENGTH] = {0};
 
@@ -22,7 +20,10 @@ int debugPrintf(const char *serial_data, ...)
   va_end(arg);
 
   const uint8_t block_timeout_ms = 40u;
+
+#if (CLI_ENABLE)
   HAL_UART_Transmit(&huart1, (uint8_t *)printBufer, len, block_timeout_ms);
+#endif
 
   return len;
 }

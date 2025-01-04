@@ -3,9 +3,11 @@
 
 typedef enum 
 {
-  RX = 0, 
-  TX,
-  SCAN,
+  RX_MODE = 0, 
+  TX_MODE,
+  SCAN_MODE,
+  JAMMER_MODE,
+  GPS_MODE,
   NUMBER_STATE
 }Work_state;
 

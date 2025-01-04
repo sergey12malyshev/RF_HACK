@@ -6,4 +6,5 @@
 
 PT_THREAD(subGHz_TX_Thread(struct pt *pt));
 
+
 #endif /*__TX_TREAD_H__ */

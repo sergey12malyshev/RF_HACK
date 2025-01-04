@@ -29,7 +29,9 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
+#include "stm32f4xx_ll_adc.h"
 #include "stm32f4xx_ll_dma.h"
+#include "stm32f4xx_ll_iwdg.h"
 #include "stm32f4xx_ll_rcc.h"
 #include "stm32f4xx_ll_bus.h"
 #include "stm32f4xx_ll_system.h"
@@ -43,7 +45,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -65,7 +67,7 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-void CC1101_reinit(void);
+bool CC1101_reinit(void);
 
 void checkResetSourse(void);
 /* USER CODE END EFP */
@@ -95,17 +97,24 @@ void checkResetSourse(void);
 #define CC_GDO_EXTI_IRQn EXTI15_10_IRQn
 #define NSS_CS_Pin LL_GPIO_PIN_13
 #define NSS_CS_GPIO_Port GPIOB
+#define BUZZER_Pin LL_GPIO_PIN_15
+#define BUZZER_GPIO_Port GPIOA
 #define T_OUT_Pin LL_GPIO_PIN_4
 #define T_OUT_GPIO_Port GPIOB
+#define ENCODER_SW_Pin LL_GPIO_PIN_8
+#define ENCODER_SW_GPIO_Port GPIOB
+#define ENCODER_SW_EXTI_IRQn EXTI9_5_IRQn
 /* USER CODE BEGIN Private defines */
 
 #define SOFTWARE_VERSION_MAJOR  0
-#define SOFTWARE_VERSION_MINOR  1
+#define SOFTWARE_VERSION_MINOR  2
 #define SOFTWARE_VERSION_PATCH  0
 
 
 #define quoting(a) prequoting(a)
 #define prequoting(a) #a
+
+#define __UNUSED __attribute__((unused))
 
 /* USER CODE END Private defines */
 
