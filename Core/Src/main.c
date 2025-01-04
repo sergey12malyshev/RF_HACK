@@ -142,15 +142,15 @@ bool CC1101_reinit(void)
 
 static void stm32_cacheEnable(void)
 {
-#if (INSTRUCTION_CACHE_ENABLE != 0U) /* Включаем кэширование инструкций */
+#if (INSTRUCTION_CACHE_ENABLE != 0U) /* Enable caching instructions */
   ((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (9U));
 #endif
 
-#if (DATA_CACHE_ENABLE != 0U) /* Включаем кэширование данных */
+#if (DATA_CACHE_ENABLE != 0U) /* Enabling data caching */
   ((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (10U));
 #endif
 
-#if (PREFETCH_ENABLE != 0U) /* Включаем систему предварительной выборки инструкций */
+#if (PREFETCH_ENABLE != 0U) /* Enabling the instruction prefetch system */
   ((FLASH_TypeDef *) ((0x40000000UL + 0x00020000UL) + 0x3C00UL))->ACR |= (0x1UL << (8U));
 #endif
 }
@@ -180,7 +180,7 @@ int main(void)
 
   /* USER CODE BEGIN SysInit */
   
-  SysTick_Config(SystemCoreClock/1000); //Настраиваем системный таймер (прерывания 1000 раз в секунду)
+  SysTick_Config(SystemCoreClock/1000); //Setting up the system timer (interrupts 1000 times per second)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -196,11 +196,11 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
-  /* Настройка дисплея */
+  /* Setting up the display */
   LCD_SPI_Connected_data spi_con =     
   { 
     .spi        = SPI1,
-    .dma_tx     = dma_tx_1,        // Данные DMA
+    .dma_tx     = dma_tx_1,        // data DMA
     .reset_port = LCD_RESET_GPIO_Port,
     .reset_pin  = LCD_RESET_Pin,
     .dc_port    = LCD_DC_GPIO_Port,
@@ -212,7 +212,7 @@ int main(void)
 #ifndef  LCD_DYNAMIC_MEM
   LCD_Handler lcd1;
 #endif
-   //Cоздаем обработчик дисплея ILI9341
+   // Creating a display handler ILI9341
    LCD = LCD_DisplayAdd(LCD,
 #ifndef  LCD_DYNAMIC_MEM
             &lcd1,
@@ -221,9 +221,9 @@ int main(void)
              320,
              ILI9341_CONTROLLER_WIDTH,
              ILI9341_CONTROLLER_HEIGHT,
-             //Задаем смещение по ширине и высоте для нестандартных или бракованных дисплеев:
-             0,    //смещение по ширине дисплейной матрицы
-             0,    //смещение по высоте дисплейной матрицы
+             //Setting the width and height offset for non-standard or defective displays:
+             0,    //offset in width of the display matrix
+             0,    //height offset of the display matrix
              PAGE_ORIENTATION_PORTRAIT,
              ILI9341_Init,
              ILI9341_SetWindow,
@@ -233,12 +233,12 @@ int main(void)
              LCD_DATA_16BIT_BUS,
              bkl_data);
 
-  lcd = LCD;     //Указатель на первый дисплей в списке
+  lcd = LCD;     //Pointer to the first display in the list
   LCD_Init(lcd);
   LCD_Fill(lcd, COLOR_RED);
 
 
-  XPT2046_InitTouch(&touch1, 20, &cnt_touch);   // инициализация обработчика XPT2046
+  XPT2046_InitTouch(&touch1, 20, &cnt_touch);   //initializing the handler XPT2046
 
 #if !CALIBRATE_EN
   tCoef coef = {.D   = 0x00022b4253626d37,
@@ -255,8 +255,8 @@ calibrateTouchEnable();
 
 #if RUN_DEMO
   LCD_Fill(lcd, COLOR_WHITE);
-  Draw_TouchPenDemo(&touch1, lcd); //Демка для рисования на экране с помощью тачскрина.
-  RoadCircleDemo(&touch1, lcd);    //Демка рисует примитивы, отображает температуру и позволяет перемещать круг по дисплею.
+  Draw_TouchPenDemo(&touch1, lcd); //A demo for drawing on the screen using a touchscreen
+  RoadCircleDemo(&touch1, lcd);    //The demo draws primitives, displays the temperature, and allows you to move the circle around the display
 #endif
 
   LCD_Fill(lcd, COLOR_BLACK);
