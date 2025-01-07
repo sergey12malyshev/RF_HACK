@@ -10,7 +10,7 @@ Currently supports:
 - GPS module GY-NEO-6M-V2
 - 2.4GHz NRF24L01+ (under implementation)
 
-Interaction with the software takes place through the CLI and the ILI9341 display + xpt2046 touchscreen
+Interaction with the software takes place through the ILI9341 display + xpt2046 touchscreen + encoder or CLI interface
 
 Performs:
 
@@ -28,7 +28,7 @@ Performs:
 - GPS модуль GY-NEO-6M-V2
 - 2.4 ГГц nrf24l01+ (в процессе реализации)
 
-Взаимодействие с ПО происходит через CLI и дисплей ILI9341 + тачскрин xpt2046
+Взаимодействие с ПО происходит через дисплей ILI9341 + тачскрин xpt2046 + энкодер мли CLI.
 
 Осуществляет:
 
