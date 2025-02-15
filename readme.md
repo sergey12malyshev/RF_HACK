@@ -40,7 +40,7 @@ Performs:
 
 Video on youtube:
 
-[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/krAb-4GRXaA/0.jpg)](http://www.youtube.com/watch?v=youtu.be/krAb-4GRXaA)
+[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/krAb-4GRXaA/0.jpg)](http://www.youtube.com/watch?v=krAb-4GRXaA)
 
 
 ## MCU
