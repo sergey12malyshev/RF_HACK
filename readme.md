@@ -40,7 +40,8 @@ Performs:
 
 Video on youtube:
 
-[[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](http://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)](https://youtu.be/krAb-4GRXaA)
+[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/krAb-4GRXaA/0.jpg)](http://www.youtube.com/watch?v=youtu.be/krAb-4GRXaA)
+
 
 ## MCU
 STM32F401CC, High-performance access line, Arm Cortex-M4 core with DSP and FPU, 256 Kbytes of Flash memory, 84 MHz CPU, ART Accelerator
