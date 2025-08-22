@@ -285,7 +285,7 @@ PT_THREAD(Button_Thread(struct pt *pt))
 
   allButtonClearState();
 
-  PT_DELAY_MS(pt, &timer1, screen_booting_get_time());
+  PT_DELAY_MS(pt, &timer1, screen_booting_get_time() + 100);
 
   button_logoClear();
 

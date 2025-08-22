@@ -109,7 +109,8 @@ Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c \
 Core/Src/adc.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c \
 Core/Src/iwdg.c \
-Core/Src/frequencyChannelsTable.c
+Core/Src/frequencyChannelsTable.c \
+Core/Src/sheduler.c
 
 ASM_SOURCES = \
 startup_stm32f401xc.s \
