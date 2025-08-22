@@ -46,8 +46,7 @@ Batch Runner - to run from VSCode
 How to enable float support for std withdrawal:
 https://stackoverflow.com/questions/54534700/enabling-floating-point-emulation-in-gcc-arm-none-eabi
 
-Частоту шины APB1 (SPI2) снизил в четыре раза, иначе были проблемы с мощностью передачи CC1101 (частота обмена с CC1101 не более 10 Mhz)
-(TODO: установить предделитель боадрейта в настройках SPI)
+The frequency of the APB1 (SPI2) bus was reduced four times, otherwise there were problems with the transmission power of CC1101 (the frequency of exchange with CC1101 is no more than 10 Mhz)
 
 ## Tools
 
@@ -77,6 +76,9 @@ https://dunkels.com/adam/pt/
 *VS Code* file Pac-ManGame.code-workspace
 
 ## Build 
+
+The build can be started via VSCode Tasks
+
 To make the release project run **makeProject.bat** (OR *make -j* cmd command)
 
 To make the debug project run **makeProjectDebug.bat** (OR *make -j1 debug* cmd command)
