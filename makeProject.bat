@@ -1,5 +1,5 @@
 @echo off
-rem соборка проекта
+rem build project
 CLS
 
 echo Clean project...
