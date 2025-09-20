@@ -44,7 +44,7 @@
 #define PORT_GDO GPIOB
 #define PIN_GDO LL_GPIO_PIN_12
 
-volatile uint8_t GDO0_FLAG;
+volatile uint8_t GDO0_flag;
 
 static SPI_HandleTypeDef* hal_spi;
 static uint16_t CS_Pin;

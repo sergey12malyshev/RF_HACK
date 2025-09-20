@@ -21,7 +21,7 @@
 #include "encoderDriver.h"
 #include "frequencyChannelsTable.h"
 
-extern volatile uint8_t GDO0_FLAG;
+extern volatile uint8_t GDO0_flag;
 
 extern RF_t CC1101;
 
@@ -171,7 +171,7 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
 
   LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
   NVIC_EnableIRQ(EXTI15_10_IRQn); //GDO
-  GDO0_FLAG = 0;
+  GDO0_flag = 0;
 
   CC1101_reinit();
 

@@ -21,7 +21,7 @@
 #include "displayInit.h"
 #include "ili9341.h"
 
-extern volatile uint8_t GDO0_FLAG;
+extern volatile uint8_t GDO0_flag;
 
 
 /*
@@ -52,7 +52,7 @@ PT_THREAD(jammer_Thread(struct pt *pt))
 
   CC1101_setMHZ(LPD17 - DIFFERENCE_WITH_CARRIER);
 
-  GDO0_FLAG = 0;
+  GDO0_flag = 0;
 
   encoder_init();
   encoder_setRotaryNum(16);
@@ -92,8 +92,8 @@ PT_THREAD(jammer_Thread(struct pt *pt))
       s = CC1101_transmittRF(packet, sizeof(packet)); // sending the data
       LCD_WriteString(lcd, 15, 65, packet, &Font_12x20, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
       
-      PT_WAIT_UNTIL(pt, (GDO0_FLAG)); //GDO low lowel - end transmitt
-      GDO0_FLAG = 0;
+      PT_WAIT_UNTIL(pt, (GDO0_flag)); //GDO low lowel - end transmitt
+      GDO0_flag = 0;
     }
     else
     {

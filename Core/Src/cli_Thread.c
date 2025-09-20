@@ -214,8 +214,8 @@ static void monitorParser(void)
         LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
         NVIC_DisableIRQ(EXTI15_10_IRQn); //GDO
 
-        extern volatile uint8_t GDO0_FLAG;
-        GDO0_FLAG = 0;
+        extern volatile uint8_t GDO0_flag;
+        GDO0_flag = 0;
 
         LL_mDelay(1);
         CC1101_reinit();
