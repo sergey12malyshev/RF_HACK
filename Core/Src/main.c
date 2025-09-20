@@ -238,8 +238,8 @@ calibrateTouchEnable();
 
 #if RUN_DEMO
   LCD_Fill(lcd, COLOR_WHITE);
-  Draw_TouchPenDemo(&touch1, lcd); //A demo for drawing on the screen using a touchscreen
-  RoadCircleDemo(&touch1, lcd);    //The demo draws primitives, displays the temperature, and allows you to move the circle around the display
+  Draw_TouchPenDemo(&touch1, lcd);
+  RoadCircleDemo(&touch1, lcd);
 #endif
 
   LCD_Fill(lcd, COLOR_BLACK);
@@ -265,7 +265,7 @@ calibrateTouchEnable();
 
   bool error_state = CC1101_power_up_reset();
 
-  if(error_state)
+  if (error_state)
   {
     LCD_WriteString(lcd, 5, 55, "CC1101 not found!",
             &Font_8x13, COLOR_WHITE, COLOR_RED, LCD_SYMBOL_PRINT_FAST);
@@ -280,7 +280,7 @@ calibrateTouchEnable();
   TI_setDevAddress(1); 
 #endif
   error_state = CC1101_reinit();
-  if(!error_state) debugPrintf(CLI_OK"CC1101 init pass"CLI_NEW_LINE);
+  if (!error_state) debugPrintf(CLI_OK"CC1101 init pass"CLI_NEW_LINE);
 
   encoder_init();
   
