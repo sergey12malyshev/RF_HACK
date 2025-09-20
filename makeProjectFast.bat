@@ -1,5 +1,5 @@
 @echo off
-rem соборка проекта
+rem fast build project
 CLS
 
 echo Build fast...
