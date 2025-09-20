@@ -23,7 +23,6 @@
 
 extern volatile uint8_t GDO0_flag;
 
-
 /*
  * Protothread jammer_Thread
  *
@@ -78,21 +77,25 @@ PT_THREAD(jammer_Thread(struct pt *pt))
     }
 
 
-    static char packet[7] = "om5q3z"; // Резерв одного символа под нуль-терминатор!!
+    static char packet[7] = "om5q3z"; // Reserve one character for a null terminator!!
 
     static uint8_t i;
     packet[i++] = generateRandomChar();
 
-    if (i > 5) i = 0;
+    if (i > 5) 
+    {
+      i = 0;
+    }
 
     if (runJamm)
     {
-      //debugPrintf("%s %d"CLI_NEW_LINE, packet, packet[i]);
-
+#if 0
+      debugPrintf("%s %d"CLI_NEW_LINE, packet, packet[i]);
+#endif
       s = CC1101_transmittRF(packet, sizeof(packet)); // sending the data
       LCD_WriteString(lcd, 15, 65, packet, &Font_12x20, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
       
-      PT_WAIT_UNTIL(pt, (GDO0_flag)); //GDO low lowel - end transmitt
+      PT_WAIT_UNTIL(pt, (GDO0_flag)); // GDO low lowel - end transmitt
       GDO0_flag = 0;
     }
     else
