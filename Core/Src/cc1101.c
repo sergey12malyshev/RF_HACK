@@ -37,7 +37,7 @@
 #define PKTSTATUS_CS            0x40
 
 #include "stm32f4xx_ll_gpio.h"
-// TODO: сделать настройку портов через вызов функции!!!
+// TODO: configure ports via a function call !!!
 #define PORT_MISO GPIOB
 #define PIN_MISO LL_GPIO_PIN_14
 
@@ -193,11 +193,11 @@ void TI_send_packet(uint8_t* txBuffer, UINT8 size)
     TI_strobe(CCxxx0_STX);
 }
 
-
-// FSK лучше GFSK по дальности
-// 4FSK - чтобы получить самую высокую скорость передачи данных, но вы потеряете дальность действия.
-// Полоса для 2FSK: bitrate + 2* deviation
-
+/*
+  FSK is better than GFSK in range
+  4FSK - to get the highest data transfer rate, but you will lose the range.
+  The band for 2FSK: bitrate + 2* deviation
+*/
 void TI_write_settings(void)
 {
 // Address Config = No address check 
@@ -476,7 +476,9 @@ bool TI_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t cs_pin)
 }
 
 
-//////// New driver function: /////////////////////////////
+/*
+ New driver function:
+*/
 void CC1101_customSetCSpin(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint16_t cs_pin)
 {
   hal_spi = hspi;
@@ -502,7 +504,7 @@ bool CC1101_power_up_reset(void)
 
   while(LL_GPIO_IsInputPinSet(PORT_MISO, PIN_MISO))
   {
-    if(HAL_GetTick() - timeStamp > waiting)
+    if (HAL_GetTick() - timeStamp > waiting)
     {
       return true;
     }
@@ -601,7 +603,7 @@ uint8_t CC1101_transmittRF(const char *packet_loc, uint8_t len)
 
   status = TI_read_status(CCxxx0_VERSION);       // it is for checking only (it must be 0x14)
   status = TI_read_status(CCxxx0_TXBYTES);       // it is too
-  TI_strobe(CCxxx0_SFTX);                  // flush the buffer
+  TI_strobe(CCxxx0_SFTX);                        // flush the buffer
 
   __ASM volatile ("NOP");
 
@@ -618,9 +620,7 @@ uint8_t CC1101_transmittRF(const char *packet_loc, uint8_t len)
     __ASM volatile ("NOP");
   }
 
-  status = TI_read_status(CCxxx0_TXBYTES); // it is checking to send the data
-  
-  // userLEDHide();
+  status = TI_read_status(CCxxx0_TXBYTES);     // it is checking to send the data
 
   return status;
 }
