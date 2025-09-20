@@ -1,3 +1,4 @@
+#pragma once
 #ifndef __CLI_DRIVER_H
 #define __CLI_DRIVER_H
 

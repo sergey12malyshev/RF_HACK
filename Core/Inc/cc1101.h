@@ -4,7 +4,7 @@
  *  Created on: Mar 11, 2020
  *      Author: suleyman.eskil
  */
-
+#pragma once
 #ifndef INC_CC1101_H_
 #define INC_CC1101_H_
 

@@ -4,7 +4,7 @@
  *  Created on: Mar 11, 2020
  *      Author: suleyman.eskil
  */
-
+#pragma once
 #ifndef INC_DW_STM32_DELAY_H_
 #define INC_DW_STM32_DELAY_H_
 

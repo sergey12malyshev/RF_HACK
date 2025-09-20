@@ -1,3 +1,4 @@
+#pragma once
 #ifndef __WORK_STATES_H
 #define __WORK_STATES_H
 
