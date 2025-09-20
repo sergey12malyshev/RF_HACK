@@ -18,7 +18,7 @@
 
 void hardwareDeinit(void)
 { 
-  // TODO: пропадание подсветки связано с работой таймера
+  // TODO: The backlight loss is due to the timer operation.
   debugPrintf("Booting run..."CLI_NEW_LINE);
   screen_bootload();
   LL_mDelay(75);
