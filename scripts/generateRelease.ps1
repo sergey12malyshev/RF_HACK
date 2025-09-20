@@ -1,25 +1,25 @@
-# Получаем текущий Git-тег
+# Getting the current Git tag
 $tag = git describe --tags --abbrev=0
 
 $filename = "RF_HACK"
 
-# Проверяем, установлен ли Git-тег
+# Checking if the Git tag is installed
 if ($tag -ne "") {
-  # Создаем имя архива с использованием тега
+  # Creating an archive name using a tag
   $archiveName = "$filename$tag.zip"
   
 
-  # Путь к файлу, который нужно архивировать
+  # The path to the file to archive
   $filePathHex = "build/$filename.hex"
   $filePathBin = "build/$filename.bin"
 
-  # Архивируем файл в ZIP-архив
+  # Archiving the file to a ZIP archive
   Compress-Archive -Update -Path $filePathHex -DestinationPath $archiveName
   Compress-Archive -Update -Path $filePathBin -DestinationPath $archiveName
 
-  # Вывод сообщения об успешном архивировании
+  # The output of the successful archiving message
   Write-Host "The file was successfully archived $archiveName"
 } else {
-  # Вывод сообщения об отсутствии тега
+  # Displaying a message about the absence of a tag
   Write-Host "Error: Git tag is not set. Unable to create archive!"
 }
