@@ -150,6 +150,7 @@ __UNUSED static void waterfallDraw(void)
 /*
  * Protothread spectrumScan_Thread
  *
+ * implementation of the spectrum analyzer mode
  */
 PT_THREAD(spectrumScan_Thread(struct pt *pt))
 {
