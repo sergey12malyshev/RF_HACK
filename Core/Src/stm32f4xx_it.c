@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "display.h"
 #include "xpt2046.h"
+#include "cc1101.h"
 
 #include "encoderDriver.h"
 /* USER CODE END Includes */

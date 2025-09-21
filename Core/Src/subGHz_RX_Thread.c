@@ -80,7 +80,7 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
     PT_WAIT_UNTIL(pt, CC1101_GDO0_flag_get()); // 0 - highLevel
 
     CC1101_GDO0_flag_clear();
-    uint8_t errorData = 0;
+    __UNUSED uint8_t errorData = 0;
 
     uint8_t status = TI_read_status(CCxxx0_RXBYTES);
 
