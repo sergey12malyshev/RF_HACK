@@ -1,3 +1,4 @@
+#pragma once
 #ifndef __APPL_THREAD_H__
 #define __APPL_THREAD_H__
 

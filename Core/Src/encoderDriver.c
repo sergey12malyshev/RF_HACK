@@ -62,14 +62,16 @@ void encoder_process(void)
 
   currCounter = 32767 - ((currCounter-1) & 0xFFFF);
 
-  if(currCounter != prevCounter) 
+  if (currCounter != prevCounter) 
   {
-    //debugPrintf("%d"CLI_NEW_LINE, currCounter);
+#if 0
+    debugPrintf("%d"CLI_NEW_LINE, currCounter);
+#endif
     prevCounter = currCounter;
   }
   
- // https://istarik.ru/blog/stm32/148.html
-  if(encoderSwitchIRQ && (HAL_GetTick() - encoderTimeSwitch) > 200)
+   // https://istarik.ru/blog/stm32/148.html
+  if (encoderSwitchIRQ && (HAL_GetTick() - encoderTimeSwitch) > 200)
   {
     encoderSwitch = true;
     encoderSwitchIRQ = false;

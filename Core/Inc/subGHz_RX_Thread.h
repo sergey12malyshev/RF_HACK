@@ -1,3 +1,4 @@
+#pragma once
 #ifndef __RF_TREAD_H__
 #define __RF_TREAD_H__
 

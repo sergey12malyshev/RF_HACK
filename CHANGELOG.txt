@@ -1,3 +1,8 @@
-0.1.0
+# 0.3.0 
+-Refactoring the project, without changing the functionality
+-Add Vscode tasks
+-Revision of the software release archive generation script
 
-0.2.0 
+# 0.2.0
+
+# 0.1.0 

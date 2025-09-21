@@ -1,0 +1,120 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build project",
+            "type": "shell",
+            "windows": {
+                "command": [
+                  ".//makeProject.bat"
+                ]
+            },
+
+            "icon": {
+              "id": "debug-alt",
+              "color": "terminal.ansiGreen"
+            },
+
+            "args": [],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "clean",
+            "type": "shell",
+            "windows": {
+                "command": [
+                  ".//makeClean.cmd",
+                ]
+            },
+            
+            "icon": {
+              "id": "debug-alt",
+              "color": "terminal.ansiGreen"
+            },
+
+            "args": [],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true
+            },
+            "problemMatcher": "$gcc"
+        },
+
+            {
+            "label": "run cppcheck",
+            "type": "shell",
+            "windows": {
+                "command": [
+                    "$env:PATH = $env:PATH + 'C:\\cygwin64\\bin;C:\\Program Files\\Cppcheck;'+$env:PATH;",
+                    
+                    ".//runStaticAnalysis.cmd;",
+                ]
+            },
+            
+            "icon": {
+              "id": "search",
+              "color": "terminal.ansiGreen"
+            },
+
+            "args": [],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "genearate release",
+            "type": "shell",
+            "windows": {
+                "command": [
+                    ".//generateRelease.bat",
+                ]
+            },
+
+            "icon": {
+              "id": "run-all",
+              "color": "terminal.ansiGreen"
+            },
+
+            "args": [],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "update firmware USB",
+            "type": "shell",
+            "windows": {
+                "command": [
+                    ".//updateFirmware.cmd",
+                ]
+            },
+
+            "icon": {
+              "id": "arrow-down",
+              "color": "terminal.ansiGreen"
+            },
+
+            "args": [],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true
+            },
+            "problemMatcher": "$gcc"
+        } 
+    ]  
+}

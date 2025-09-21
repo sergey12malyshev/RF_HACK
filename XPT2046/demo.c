@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern uint32_t millis;
+static uint32_t millis = 0;
 
 /*
  * Демка рисования на дисплее с помощью тачскрина (возможность смены цвета пера)

@@ -62,7 +62,7 @@ void adc_enable(void)
   {
     wait_loop_index--;
   }
-  // калибровка ADC для серии F4 не нужна
+  // ADC calibration is not required for the stm32F4 series
 }
 
 static uint16_t adc_convertData(void)
@@ -80,7 +80,7 @@ static uint32_t adc_convertVDDA(uint16_t adcData)
 }
 
 /* 
-* Экспоненциальное бегущее среднее  filt = (A * filt + signal) >> k, https://alexgyver.ru/lessons/filters/ 
+* Exponential running average  filt = (A * filt + signal) >> k, https://alexgyver.ru/lessons/filters/ 
 */
 static uint32_t filt = 0;
 
@@ -95,7 +95,7 @@ uint16_t expRunningAverageFilter(uint16_t input)
 }
 
 /*
-Предустановка фильтра, для ускорения получения правильного значения
+* Preset the filter to speed up getting the correct value
 */
 void setDefaultValueFilter(uint16_t defValue)
 {

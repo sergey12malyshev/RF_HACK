@@ -1,9 +1,9 @@
 cls
 @echo off
-rem автоматическая сборка релизного архива с установкой имени архива согласно последнему GIT-тегу
+rem automatic assembly of the release archive with the archive name set according to the latest GIT tag
 chcp 1251
 
-echo generateRelease...
+echo start generate release...
 
 PowerShell.exe -noexit -executionpolicy bypass -executionpolicy bypass -File "scripts/generateRelease.ps1"
 

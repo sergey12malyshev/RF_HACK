@@ -1,3 +1,4 @@
+#pragma once
 #ifndef __GPS_TREAD_H__
 #define __GPS_TREAD_H__
 
@@ -5,6 +6,5 @@
 #include "pt.h"
 
 PT_THREAD(gps_Thread(struct pt *pt));
-
 
 #endif /*__GPS_TREAD_H__ */

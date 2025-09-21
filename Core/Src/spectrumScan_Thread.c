@@ -21,8 +21,6 @@
 #include "encoderDriver.h"
 #include "frequencyChannelsTable.h"
 
-extern volatile uint8_t GDO0_FLAG;
-
 extern RF_t CC1101;
 
 
@@ -37,7 +35,7 @@ static float startFreq = LPD1 - DIFFERENCE_WITH_CARRIER; // LPD 1 start - BASE Ð
 
 static uint16_t cursor_x;
 
-void scanRSSI(float freqSet)
+static void scanRSSI(float freqSet)
 {
   for (uint8_t i = 0; i < 128; i++)
   {
@@ -80,7 +78,7 @@ static void cursorProcess(void)
   drawCursor(cursor_x);
 }
 
-void spectumDraw(void)
+static void spectumDraw(void)
 {
   const int16_t min_RSSI = 138;
 
@@ -152,6 +150,7 @@ __UNUSED static void waterfallDraw(void)
 /*
  * Protothread spectrumScan_Thread
  *
+ * implementation of the spectrum analyzer mode
  */
 PT_THREAD(spectrumScan_Thread(struct pt *pt))
 {
@@ -169,9 +168,7 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
   LCD_WriteString(lcd, 15, 25, str, &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
 
-  LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
-  NVIC_EnableIRQ(EXTI15_10_IRQn); //GDO
-  GDO0_FLAG = 0;
+  CC1101_GDO0_flag_clear();
 
   CC1101_reinit();
 

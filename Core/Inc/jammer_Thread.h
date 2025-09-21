@@ -1,3 +1,4 @@
+#pragma once
 #ifndef __JAMMER_H__
 #define __JAMMER_H__
 

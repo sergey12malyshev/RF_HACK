@@ -71,7 +71,7 @@ static void screen_booting(void)
 
 uint16_t screen_booting_get_time(void)
 {
-  return 2500;
+  return 2500u;
 }
 
 static void screen_voltage(uint32_t voltage)

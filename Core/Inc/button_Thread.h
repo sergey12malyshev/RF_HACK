@@ -1,3 +1,4 @@
+#pragma once
 #ifndef BUTTON_THREAD_H__
 #define BUTTON_THREAD_H__
 

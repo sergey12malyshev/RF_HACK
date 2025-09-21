@@ -1,3 +1,4 @@
+#pragma once
 #ifndef __TX_TREAD_H__
 #define __TX_TREAD_H__
 

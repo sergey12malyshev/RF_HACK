@@ -17,7 +17,6 @@
 #include "displayInit.h"
 #include "ili9341.h"
 
-extern volatile uint8_t GDO0_FLAG;
 
 static char packet[7] = "QWERTY";; // Reserve one character for a null terminator!
 
@@ -39,14 +38,11 @@ PT_THREAD(subGHz_TX_Thread(struct pt *pt))
   screen_clear();
   LCD_WriteString(lcd, 0, 0, "TX mode", &Font_8x13, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
-  LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
-  NVIC_EnableIRQ(EXTI15_10_IRQn); //GDO
-
+  CC1101_GDO0_flag_clear();
   CC1101_reinit();
 
   setTime(&timer1);
-  
-  GDO0_FLAG = 0;
+
 
   while (1)
   {       
@@ -64,8 +60,8 @@ PT_THREAD(subGHz_TX_Thread(struct pt *pt))
     
     LCD_WriteString(lcd, 15, 40, packet, &Font_12x20, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
-    PT_WAIT_UNTIL(pt, (GDO0_FLAG)); // TODO: уточнить работу GDO (low lowel - end transmitt)
-    GDO0_FLAG = 0;
+    PT_WAIT_UNTIL(pt, (CC1101_GDO0_flag_get())); // TODO: уточнить работу GDO (low lowel - end transmitt)
+    CC1101_GDO0_flag_clear();
 
     PT_YIELD(pt);
   }

@@ -1,3 +1,4 @@
+#pragma once
 #ifndef __SPC_THREAD_H__
 #define __SPC_THREAD_H__
 

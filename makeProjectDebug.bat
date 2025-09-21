@@ -1,5 +1,5 @@
 @echo off
-rem cборка debug проекта
+rem build debug project
 CLS
 
 echo Clean project...

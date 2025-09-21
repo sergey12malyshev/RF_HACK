@@ -1,3 +1,4 @@
+#pragma once
 #ifndef DISPLAY_INIT_H__
 #define DISPLAY_INIT_H__
 

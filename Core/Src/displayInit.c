@@ -12,43 +12,46 @@
 #include "cli_driver.h"
 #include "iwdg.h"
 
-LCD_Handler *lcd = NULL;     //Указатель на первый дисплей в списке
+LCD_Handler *lcd = NULL;     // Pointer to the first display in the list
 
 XPT2046_Handler touch1;
 
-//Данные DMA
+//Data DMA
 LCD_DMA_TypeDef dma_tx_1 = 
 { 
-  .dma    = DMA2,           // Контроллер DMA
-  .stream = LL_DMA_STREAM_3 // Поток контроллера DMA
+  .dma    = DMA2,           // DMA controller
+  .stream = LL_DMA_STREAM_3 // stream DMA
 };  
 
-//Данные подсветки
+//Backlight Data
 LCD_BackLight_data bkl_data = 
 {
-  .htim_bk        = TIM3,       // Таймер - для подсветки с PWM (изменение яркости подсветки)
-  .channel_htim_bk = LL_TIM_CHANNEL_CH1, // Канал таймера - для подсветки с PWM (изменение яркости подсветки)
-  .blk_port       = 0,          // Порт gpio - подсветка по типу вкл./выкл.
-  .blk_pin        = 0,          // Вывод порта - подсветка по типу вкл./выкл.
-  .bk_percent     = 60          // Яркость подсветки, в %
+  .htim_bk        = TIM3,       // Timer - for backlight with PWM (changing the backlight brightness)
+  .channel_htim_bk = LL_TIM_CHANNEL_CH1, // Timer channel - for backlight with PWM (changing backlight brightness)
+  .blk_port       = 0,          // GPIO port - on/off backlight
+  .blk_pin        = 0,          // The port output is an on/off backlight
+  .bk_percent     = 60          // Backlight brightness, in %
 }; 
 
-  /* ----------------------------------- Настройка тачскрина ------------------------------------------*/
-  //Будем обмениваться данными с XPT2046 на скорости 2.625 Мбит/с (по спецификации максимум 2.0 Мбит/с).
+/*
+  Setting up the touchscreen
+  We will exchange data with XPT2046 at a speed of 2.625 Mbit/s (according to the specification, a maximum of 2.0 Mbit/s).
+*/
+
 XPT2046_ConnectionData cnt_touch = 
 { 
-  .spi    = SPI1,              //используемый spi
-  .speed    = 4,               //Скорость spi 0...7 (0 - clk/2, 1 - clk/4, ..., 7 - clk/256)
-  .cs_port  = T_CS_GPIO_Port,  //Порт для управления T_CS
-  .cs_pin    = T_CS_Pin,       //Вывод порта для управления T_CS
-  .irq_port = T_IRQ_GPIO_Port, //Порт для управления T_IRQ
-  .irq_pin  = T_IRQ_Pin,       //Вывод порта для управления T_IRQ
-  .exti_irq = T_IRQ_EXTI_IRQn  //Канал внешнего прерывания
+  .spi    = SPI1,              //the SPI interface used
+  .speed    = 4,               //Speed SPI 0...7 (0 - clk/2, 1 - clk/4, ..., 7 - clk/256)
+  .cs_port  = T_CS_GPIO_Port,  //port T_CS
+  .cs_pin    = T_CS_Pin,       //pin T_CS
+  .irq_port = T_IRQ_GPIO_Port, //port T_IRQ
+  .irq_pin  = T_IRQ_Pin,       //pin T_IRQ
+  .exti_irq = T_IRQ_EXTI_IRQn  //exti channel
 };
 
 
-/* Для тех, кто не умеет пользоваться отладчиком или
-тех, у кого он не работает */
+/* For those who don't know how to use the debugger or
+for those who don't have it working. */
 
 void convert64bit_to_hex(uint8_t *v, char *b)
 {
@@ -60,9 +63,9 @@ void convert64bit_to_hex(uint8_t *v, char *b)
   }
 }
 
-void calibrateTouchEnable(void)
+void calibrateTouchEnable(void) //Starting the calibration procedure
 {
-  XPT2046_CalibrateTouch(&touch1, lcd); //Запускаем процедуру калибровки
+  XPT2046_CalibrateTouch(&touch1, lcd);
 
   char b[100];
   convert64bit_to_hex((uint8_t*)(&touch1.coef.D), b);
@@ -86,7 +89,11 @@ void calibrateTouchEnable(void)
   convert64bit_to_hex((uint8_t*)(&touch1.coef.Dy3), b);
   LCD_WriteString(lcd, 0, 120, b, &Font_12x20, COLOR_YELLOW, COLOR_BLUE, LCD_SYMBOL_PRINT_FAST);
   debugPrintf(b);
-  while(1) { IWDG_reload(); } //Выведем коэффициенты на дисплей и в консоль
+
+  while(true)   //We will display the coefficients on the display and in the console
+  { 
+    IWDG_reload();
+  }
 }
 
 
