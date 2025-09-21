@@ -617,12 +617,12 @@ uint8_t CC1101_transmittRF(const char *packet_loc, uint8_t len)
   TI_send_packet((uint8_t *)packet_loc, len);
   //DEBUG_PRINT(CLI_TX"%s %d"CLI_NEW_LINE, packet, len);
 
-  while (HAL_GPIO_ReadPin(PORT_GDO, PIN_GDO)) // start transmitt
+  while (LL_GPIO_IsInputPinSet(PORT_GDO, PIN_GDO)) // start transmitt
   {
     __ASM volatile ("NOP");
   }
 
-  while (!HAL_GPIO_ReadPin(PORT_GDO, PIN_GDO)) // end transmitt
+  while (!LL_GPIO_IsInputPinSet(PORT_GDO, PIN_GDO)) // end transmitt
   {
     __ASM volatile ("NOP");
   }
