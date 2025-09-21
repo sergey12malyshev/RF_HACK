@@ -107,8 +107,8 @@ void checkResetSourse(void);
 /* USER CODE BEGIN Private defines */
 
 #define SOFTWARE_VERSION_MAJOR  0
-#define SOFTWARE_VERSION_MINOR  2
-#define SOFTWARE_VERSION_PATCH  0
+#define SOFTWARE_VERSION_MINOR  3
+#define SOFTWARE_VERSION_PATCH  1
 
 
 #define quoting(a) prequoting(a)
