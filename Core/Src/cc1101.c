@@ -11,12 +11,14 @@
  *  Attention! The speed of the SPI bus is no more than 10 MHz!
  */
 
+#include <stdbool.h>
+#include <stdint.h>
+
 #include "cc1101.h"
 #include "dw_stm32_delay.h"
 
-#include "cli_driver.h"
-#include <stdbool.h>
-#include <stdint.h>
+#include "stm32f4xx_ll_gpio.h"
+#include "stm32f4xx_ll_exti.h"
 
 #ifdef CC1101_CLI_ENABLE
   #include "cli_driver.h"
@@ -36,9 +38,7 @@
 #define PKTSTATUS_CCA           0x10
 #define PKTSTATUS_CS            0x40
 
-#include "stm32f4xx_ll_gpio.h"
-#include "stm32f4xx_ll_exti.h"
-// TODO: configure ports via a function call !!!
+// TODO: configure ports via a function call
 #define PORT_MISO GPIOB
 #define PIN_MISO LL_GPIO_PIN_14
 
