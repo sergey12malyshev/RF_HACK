@@ -282,6 +282,8 @@ typedef enum _Modulation
 }Modulation;
 
 void CC1101_GDO0_flag_clear(void);
+bool CC1101_GDO0_flag_get(void);
+void CC1101_GDO0_flag_set(void);
 
 void TI_setCarrierFreq(uint8_t f);
 void TI_setDevAddress(uint8_t a);

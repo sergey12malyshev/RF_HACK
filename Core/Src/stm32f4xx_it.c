@@ -31,7 +31,6 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN TD */
 
-extern volatile uint8_t GDO0_flag;
 /* USER CODE END TD */
 
 /* Private define ------------------------------------------------------------*/
@@ -289,9 +288,9 @@ void EXTI15_10_IRQHandler(void)
   {
     LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12);
     /* USER CODE BEGIN LL_EXTI_LINE_12 */
-    if(HAL_GPIO_ReadPin(CC_GDO_GPIO_Port, CC_GDO_Pin) == GPIO_PIN_RESET)
+    if (HAL_GPIO_ReadPin(CC_GDO_GPIO_Port, CC_GDO_Pin) == GPIO_PIN_RESET)
     {
-      GDO0_flag = 1;
+      CC1101_GDO0_flag_set();
     }
 
     /* USER CODE END LL_EXTI_LINE_12 */

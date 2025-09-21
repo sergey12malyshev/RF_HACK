@@ -45,17 +45,27 @@
 #define PORT_GDO GPIOB
 #define PIN_GDO LL_GPIO_PIN_12
 
-volatile uint8_t GDO0_flag;
-
 static SPI_HandleTypeDef* hal_spi;
 static uint16_t CS_Pin;
 static GPIO_TypeDef* CS_GPIO_Port;
+
+static volatile bool GDO0_flag;
 
 void CC1101_GDO0_flag_clear(void)
 {
   LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
   NVIC_EnableIRQ(EXTI15_10_IRQn); //GDO
-  GDO0_flag = 0;
+  GDO0_flag = false;
+}
+
+bool CC1101_GDO0_flag_get(void)
+{
+  return GDO0_flag;
+}
+
+void CC1101_GDO0_flag_set(void)
+{
+  GDO0_flag = true;
 }
 
 HAL_StatusTypeDef __spi_write(uint8_t *addr, uint8_t *pData, uint16_t size)

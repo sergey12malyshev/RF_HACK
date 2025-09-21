@@ -23,7 +23,6 @@
 
 #define MAX_PACKET_LENGTH   25U  // specify the maximum size of the accepted string
 
-extern volatile uint8_t GDO0_flag;
 
 RF_t CC1101 = {0};
 
@@ -78,9 +77,9 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
     TI_strobe(CCxxx0_SFRX); // Flush the buffer
     TI_strobe(CCxxx0_SRX);  // Set RX Mode
 
-    PT_WAIT_UNTIL(pt, GDO0_flag); // 0 - highLevel
+    PT_WAIT_UNTIL(pt, CC1101_GDO0_flag_get()); // 0 - highLevel
 
-    GDO0_flag = 0;
+    CC1101_GDO0_flag_clear();
     uint8_t errorData = 0;
 
     uint8_t status = TI_read_status(CCxxx0_RXBYTES);
@@ -126,7 +125,7 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
     else
     {
       status = TI_read_status(CCxxx0_PKTSTATUS);
-      GDO0_flag = 0;
+      CC1101_GDO0_flag_clear();
       debugPrintf(CLI_ERROR "CRC" CLI_NEW_LINE);
       counter_Error++;
     }

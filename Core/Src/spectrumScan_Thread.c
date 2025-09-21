@@ -21,8 +21,6 @@
 #include "encoderDriver.h"
 #include "frequencyChannelsTable.h"
 
-extern volatile uint8_t GDO0_flag;
-
 extern RF_t CC1101;
 
 
