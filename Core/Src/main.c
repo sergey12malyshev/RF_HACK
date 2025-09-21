@@ -2,7 +2,7 @@
 
 /*
  * RF_HACK project 2024
- * Malyshev Sergey
+ * Malyshev Sergey UB8CGJ
  * 
  * https://github.com/sergey12malyshev/RF_HACK
  * 
