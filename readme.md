@@ -10,7 +10,7 @@ Currently supports:
 - GPS module GY-NEO-6M-V2
 - 2.4GHz NRF24L01+ (under implementation)
 
-Interaction with the software takes place through the CLI and the ILI9341 display + xpt2046 touchscreen
+Interaction with the software takes place through the ILI9341 display + xpt2046 touchscreen + encoder or CLI interface
 
 Performs:
 
@@ -28,7 +28,7 @@ Performs:
 - GPS модуль GY-NEO-6M-V2
 - 2.4 ГГц nrf24l01+ (в процессе реализации)
 
-Взаимодействие с ПО происходит через CLI и дисплей ILI9341 + тачскрин xpt2046
+Взаимодействие с ПО происходит через дисплей ILI9341 + тачскрин xpt2046 + энкодер мли CLI.
 
 Осуществляет:
 
@@ -37,6 +37,11 @@ Performs:
 - режим сканирования диапазона с выводом спектра
 
 <img src="https://github.com/sergey12malyshev/RF_HACK/blob/develop/shematic/photo_1.jpg" width=15% height=15%>  <img src="https://github.com/sergey12malyshev/RF_HACK/blob/develop/shematic/photo_2.jpg" width=20% height=20%> 
+
+Video on youtube:
+
+[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/krAb-4GRXaA/0.jpg)](http://www.youtube.com/watch?v=krAb-4GRXaA)
+
 
 ## MCU
 STM32F401CC, High-performance access line, Arm Cortex-M4 core with DSP and FPU, 256 Kbytes of Flash memory, 84 MHz CPU, ART Accelerator

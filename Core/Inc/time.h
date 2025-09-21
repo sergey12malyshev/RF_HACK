@@ -1,9 +1,10 @@
+#pragma once
 #ifndef __TIME_H__
 #define __TIME_H__
 
 
 /*
-* Модуль работы со временем
+* The time management module
 */
 
 #define PT_DELAY_MS(pt, var, t_ms)  {setTime(var); PT_WAIT_UNTIL(pt, timer(var, t_ms));}

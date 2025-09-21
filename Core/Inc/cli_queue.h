@@ -1,3 +1,4 @@
+#pragma once
 #ifndef __CLI_QUEUE_H
 #define __CLI_QUEUE_H
 

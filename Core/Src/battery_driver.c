@@ -1,4 +1,5 @@
-
+#include <stdbool.h>
+#include <stdio.h>
 
 /*
 * Battery driver
@@ -10,7 +11,7 @@ typedef struct _Battery
   uint16_t voltage;
   uint8_t charge_prc;
   uint32_t timeDischarge;
-}Battery;
+}Battery_t;
 
 
 uint8_t battery_getChargePrecent(uint16_t vbat)

@@ -24,15 +24,14 @@
 /* USER CODE BEGIN Includes */
 #include "display.h"
 #include "xpt2046.h"
+#include "cc1101.h"
 
 #include "encoderDriver.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN TD */
-extern uint32_t millis;
 
-extern volatile uint8_t GDO0_FLAG;
 /* USER CODE END TD */
 
 /* Private define ------------------------------------------------------------*/
@@ -290,9 +289,9 @@ void EXTI15_10_IRQHandler(void)
   {
     LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12);
     /* USER CODE BEGIN LL_EXTI_LINE_12 */
-    if(HAL_GPIO_ReadPin(CC_GDO_GPIO_Port, CC_GDO_Pin) == GPIO_PIN_RESET)
+    if (HAL_GPIO_ReadPin(CC_GDO_GPIO_Port, CC_GDO_Pin) == GPIO_PIN_RESET)
     {
-      GDO0_FLAG = 1;
+      CC1101_GDO0_flag_set();
     }
 
     /* USER CODE END LL_EXTI_LINE_12 */

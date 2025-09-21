@@ -4,7 +4,7 @@
  *  Created on: Mar 11, 2020
  *      Author: suleyman.eskil
  */
-
+#pragma once
 #ifndef INC_CC1101_H_
 #define INC_CC1101_H_
 
@@ -280,6 +280,10 @@ typedef enum _Modulation
  ,_4_FSK
  ,_MSK
 }Modulation;
+
+void CC1101_GDO0_flag_clear(void);
+bool CC1101_GDO0_flag_get(void);
+void CC1101_GDO0_flag_set(void);
 
 void TI_setCarrierFreq(uint8_t f);
 void TI_setDevAddress(uint8_t a);

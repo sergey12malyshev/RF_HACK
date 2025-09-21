@@ -9,5 +9,5 @@ echo Upload project run...
 
 D:\CubeProgrammer\bin\STM32_Programmer_CLI.exe -c port=%comport% br=115200 -w build\RF_HACK.hex --go
 
-
 pause
+exit

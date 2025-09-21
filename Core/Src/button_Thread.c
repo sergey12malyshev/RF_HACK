@@ -71,11 +71,11 @@ static void allButtonClearState(void)
 static void buttonTx_logo(uint32_t color)
 {
   int x = BUTTON_TX_X, y = BUTTON_TX_Y;
-  int hw = LCD_GetHeight(lcd) / BUTTON_H; // Сторона квадрата с цветом пера
+  int hw = LCD_GetHeight(lcd) / BUTTON_H; // The side of the square with the pen color
 
-  LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE);     // Черный контур вокруг текущего цвета
+  LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE);   // A black outline around the current color
   LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); 
-  // Кнопка "TX" в квадрате с белым цветом
+  //Square button " TX" in white color
   LCD_WriteString(lcd, x + hw / 2 - 10, y + hw / 2 - 5, "TX", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
 }
 
@@ -86,7 +86,7 @@ static void buttonScan_logo(uint32_t color)
 
   LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE);     
   LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); 
-  // Кнопка "SCAN" в квадрате с белым цветом
+  // The "SCAN" button is in a square with white color
   LCD_WriteString(lcd, x + hw / 2 - 15, y + hw / 2 - 5, "SCAN", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
 }
 
@@ -97,7 +97,7 @@ static void buttonJamm_logo(uint32_t color)
 
   LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE);     
   LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); 
-  // Кнопка "JAMM" в квадрате с белым цветом
+  // "JAMM" button in a square with white color
   LCD_WriteString(lcd, x + hw / 2 - 15, y + hw / 2 - 5, "JAMM", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
 }
 
@@ -108,7 +108,7 @@ static void buttonBoot_logo(uint32_t color)
 
   LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE);     
   LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); 
-  // Кнопка "BOOT" в квадрате с белым цветом
+  // The "BOOT" button is in a square with white color
   LCD_WriteString(lcd, x + hw / 2 - 15, y + hw / 2 - 5, "BOOT", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
 }
 
@@ -119,7 +119,7 @@ static void buttonGPS_logo(uint32_t color)
 
   LCD_DrawRectangle(lcd, x, y, x + hw - 2, y + hw - 2, COLOR_WHITE);     
   LCD_DrawFilledRectangle(lcd, x + 2, y + 2, x + hw - 4, y + hw - 4, color); 
-  // Кнопка "GPS" в квадрате с белым цветом
+  // "GPS" button in a square with white color
   LCD_WriteString(lcd, x + hw / 2 - 15, y + hw / 2 - 5, "GPS", &Font_8x13, COLOR_BLACK, COLOR_BLACK, LCD_SYMBOL_PRINT_PSETBYPSET);
 }
 
@@ -142,15 +142,15 @@ static bool buttonHandler(XPT2046_Handler *t)
 
   static bool noClick;
 
-  (void)XPT2046_GetTouch(t); // Опрос тачскрина (на всякий случай, вдруг запрещено опрашивать тачскрин в прерывании)
+  (void)XPT2046_GetTouch(t); // Touchscreen polling (just in case it's forbidden to poll the touchscreen during an interruption)
 
-  if (t->click) // Есть касание тачскрина
+  if (t->click) // There is a touch of the touchscreen
   {
-    XPT2046_ConvertPoint(&point_d, &t->point, &t->coef); // Преобразуем координаты тачскрина в дисплейные
-    x = point_d.x;  // Получаем значения дисплейных координат
+    XPT2046_ConvertPoint(&point_d, &t->point, &t->coef); // Converting the touchscreen coordinates to display coordinates
+    x = point_d.x;  // We get the values of the display coordinates
     y = point_d.y;
     if (x < 0)
-      x = 0; // Проверяем координаты за выход за границы
+      x = 0; // We check the coordinates for going beyond the borders
     if (y < 0)
       y = 0;
     if (x >= lcd->Width)
@@ -158,8 +158,8 @@ static bool buttonHandler(XPT2046_Handler *t)
     if (y >= lcd->Height)
       y = lcd->Height - 1;
 
-    // debugPrintf("%d, %d"CLI_NEW_LINE, x, y);
-    int hw = LCD_GetHeight(lcd) / BUTTON_H; // Сторона квадрата с цветом пера
+
+    int hw = LCD_GetHeight(lcd) / BUTTON_H; // The side of the square with the pen color
     
 
     if (x >= BUTTON_TX_X && x < (hw + BUTTON_TX_X) && y >= BUTTON_TX_Y && y < (hw + BUTTON_TX_Y))
@@ -289,9 +289,10 @@ PT_THREAD(Button_Thread(struct pt *pt))
 
   button_logoClear();
 
-  while (1)
+  while (true)
   {
     PT_WAIT_UNTIL(pt, timer(&timer1, 150));
+
     buttonHandler(&touch1);
 
     PT_YIELD(pt);

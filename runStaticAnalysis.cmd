@@ -1,13 +1,14 @@
 @echo off
-rem срипт запускает статический анализ кода проекта используюя утилиту Cppcheck
-rem для работы необходимо установить https://cppcheck.sourceforge.io/ и прописать путь в PATH
-rem Гайд: https://habr.com/ru/articles/210256/
+rem Script launches a static analysis of the project code using the Cppcheck utility
+rem To work, you need to install https://cppcheck.sourceforge.io / and specify the path in the PATH
+rem The Guide: https://habr.com/ru/articles/210256/
 echo Run static analysis...
 @echo on
 
-@rem вывод результата в консоль
+@rem output of the result to the console:
 cppcheck -q -j4 --enable=all --inconclusive -I ./Core/Inc ./Core/Src
-@rem вывод результата в файл
+@rem output of the result to a file:
 rem cppcheck -q -j4 --enable=all --inconclusive --output-file=checkReport.txt  ./Src
 
-PAUSE
+pause
+exit

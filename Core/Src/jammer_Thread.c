@@ -21,9 +21,6 @@
 #include "displayInit.h"
 #include "ili9341.h"
 
-extern volatile uint8_t GDO0_FLAG;
-
-
 /*
  * Protothread jammer_Thread
  *
@@ -43,16 +40,12 @@ PT_THREAD(jammer_Thread(struct pt *pt))
   LCD_WriteString(lcd, 0, 0, "Jammer mode", &Font_8x13, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
   LCD_WriteString(lcd, 0, 30, "Push the encoder!", &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
-  LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
-  NVIC_EnableIRQ(EXTI15_10_IRQn); //GDO
-
+  CC1101_GDO0_flag_clear();
   CC1101_reinit();
 
   setTime(&timer1);
 
   CC1101_setMHZ(LPD17 - DIFFERENCE_WITH_CARRIER);
-
-  GDO0_FLAG = 0;
 
   encoder_init();
   encoder_setRotaryNum(16);
@@ -78,22 +71,26 @@ PT_THREAD(jammer_Thread(struct pt *pt))
     }
 
 
-    static char packet[7] = "om5q3z"; // Резерв одного символа под нуль-терминатор!!
+    static char packet[7] = "om5q3z"; // Reserve one character for a null terminator!!
 
     static uint8_t i;
     packet[i++] = generateRandomChar();
 
-    if (i > 5) i = 0;
+    if (i > 5) 
+    {
+      i = 0;
+    }
 
     if (runJamm)
     {
-      //debugPrintf("%s %d"CLI_NEW_LINE, packet, packet[i]);
-
+#if 0
+      debugPrintf("%s %d"CLI_NEW_LINE, packet, packet[i]);
+#endif
       s = CC1101_transmittRF(packet, sizeof(packet)); // sending the data
       LCD_WriteString(lcd, 15, 65, packet, &Font_12x20, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
       
-      PT_WAIT_UNTIL(pt, (GDO0_FLAG)); //GDO low lowel - end transmitt
-      GDO0_FLAG = 0;
+      PT_WAIT_UNTIL(pt, (CC1101_GDO0_flag_get())); // GDO low lowel - end transmitt
+      CC1101_GDO0_flag_clear();
     }
     else
     {
