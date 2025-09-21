@@ -70,10 +70,7 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
   LCD_WriteString(lcd, 0, 20, "CC1101 Data:", &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
   CC1101_DataScreen();
 
-  LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
-  NVIC_EnableIRQ(EXTI15_10_IRQn); //GDO
-  GDO0_flag = 0;
-
+  CC1101_GDO0_flag_clear();
   CC1101_reinit();
 
   while (1)

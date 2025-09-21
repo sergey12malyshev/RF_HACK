@@ -37,6 +37,7 @@
 #define PKTSTATUS_CS            0x40
 
 #include "stm32f4xx_ll_gpio.h"
+#include "stm32f4xx_ll_exti.h"
 // TODO: configure ports via a function call !!!
 #define PORT_MISO GPIOB
 #define PIN_MISO LL_GPIO_PIN_14
@@ -50,6 +51,12 @@ static SPI_HandleTypeDef* hal_spi;
 static uint16_t CS_Pin;
 static GPIO_TypeDef* CS_GPIO_Port;
 
+void CC1101_GDO0_flag_clear(void)
+{
+  LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
+  NVIC_EnableIRQ(EXTI15_10_IRQn); //GDO
+  GDO0_flag = 0;
+}
 
 HAL_StatusTypeDef __spi_write(uint8_t *addr, uint8_t *pData, uint16_t size)
 {

@@ -39,14 +39,11 @@ PT_THREAD(subGHz_TX_Thread(struct pt *pt))
   screen_clear();
   LCD_WriteString(lcd, 0, 0, "TX mode", &Font_8x13, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
-  LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
-  NVIC_EnableIRQ(EXTI15_10_IRQn); //GDO
-
+  CC1101_GDO0_flag_clear();
   CC1101_reinit();
 
   setTime(&timer1);
-  
-  GDO0_flag = 0;
+
 
   while (1)
   {       

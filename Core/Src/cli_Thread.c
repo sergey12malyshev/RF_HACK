@@ -211,11 +211,7 @@ static void monitorParser(void)
       { // enter TX [msg]
         debugPrintf_OK();
 
-        LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
-        NVIC_DisableIRQ(EXTI15_10_IRQn); //GDO
-
-        extern volatile uint8_t GDO0_flag;
-        GDO0_flag = 0;
+        CC1101_GDO0_flag_clear();
 
         LL_mDelay(1);
         CC1101_reinit();

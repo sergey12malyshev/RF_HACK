@@ -42,16 +42,12 @@ PT_THREAD(jammer_Thread(struct pt *pt))
   LCD_WriteString(lcd, 0, 0, "Jammer mode", &Font_8x13, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
   LCD_WriteString(lcd, 0, 30, "Push the encoder!", &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
-  LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
-  NVIC_EnableIRQ(EXTI15_10_IRQn); //GDO
-
+  CC1101_GDO0_flag_clear();
   CC1101_reinit();
 
   setTime(&timer1);
 
   CC1101_setMHZ(LPD17 - DIFFERENCE_WITH_CARRIER);
-
-  GDO0_flag = 0;
 
   encoder_init();
   encoder_setRotaryNum(16);
