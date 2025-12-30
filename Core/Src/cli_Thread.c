@@ -59,8 +59,6 @@ CLI_PROMPT_STR;
 _Static_assert((sizeof(mon_comand) + 1U) < CLI_SHELL_MAX_LENGTH, "Print buffer size is smaller than help command!");
 
 
-static char input_mon_buff[CLI_INPUT_BUFF_LENGTH] = {0};
-
 /* queue UART */
 static char queueOutMsg = {0};
 
@@ -83,7 +81,9 @@ static Command cli_getTest(void)
 }
 
 //-------------- UART RX start ------------------
-static uint8_t input_mon[1] = {0};
+static char input_mon_buff[CLI_INPUT_BUFF_LENGTH] = {0};
+
+static uint8_t uart_cli_data[1] = {0};
 
 static void uart_clear_buff(void)
 {
@@ -92,16 +92,16 @@ static void uart_clear_buff(void)
 
 static void uart_receve_IT(void)
 {
-  HAL_UART_Receive_IT(&huart1, (uint8_t *)input_mon, 1);
+  HAL_UART_Receive_IT(&huart1, (uint8_t *)uart_cli_data, 1);
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 
 {
   if (huart == &huart1) 
   {
-    if (HAL_UART_Receive_IT(&huart1, (uint8_t*)&input_mon, 1U) == HAL_OK)
+    if (HAL_UART_Receive_IT(&huart1, (uint8_t*)&uart_cli_data, 1U) == HAL_OK)
     {
-      cli_enque((uint8_t*)&input_mon); // add it to the queue
+      cli_enque((uint8_t*)&uart_cli_data); // add it to the queue
 #if DEBUG_QUEUE
       debugPrintf("e_ l:%d e:%d b:%d\r\n", queue1.current_load, queue1.begin, queue1.end);
 #endif
@@ -116,24 +116,24 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 //---------------------------------------
 
-static void debugPrintf_symbolTerm(void)
+static void cli_send_symbolTerm(void)
 {
   debugPrintf(CLI_PROMPT_STR);
 }
 
-static void sendSNversion(void)
+static void cli_send_SN_version(void)
 {
- debugPrintf("Version SW: %d.%d.%d"CLI_NEW_LINE, SOFTWARE_VERSION_MAJOR, SOFTWARE_VERSION_MINOR, SOFTWARE_VERSION_PATCH);
+  debugPrintf("Version SW: %d.%d.%d"CLI_NEW_LINE, SOFTWARE_VERSION_MAJOR, SOFTWARE_VERSION_MINOR, SOFTWARE_VERSION_PATCH);
 }
 
-static void debugPrintf_hello(void)
+static void cli_send_hello(void)
 {
   debugPrintf("RF_HACK project started!"CLI_NEW_LINE);
-  sendSNversion();
+  cli_send_SN_version();
   DEBUG_PRINT(YEL_CLR"Debug Version"RST_CLR CLI_NEW_LINE);
   debugPrintf("Enter 'HELP' for list of commands...."CLI_NEW_LINE);
   checkResetSourse();
-  debugPrintf_symbolTerm();
+  cli_send_symbolTerm();
 }
 
 static void cli_clearScreen(void)
@@ -142,27 +142,27 @@ static void cli_clearScreen(void)
   CLI_DISPLAY_CLEAR();
 }
 
-static void debugPrintf_help(void)
+static void cli_send_help(void)
 {
   debugPrintf(mon_comand);
 }
 
-static void debugPrintf_OK(void)
+static void cli_send_ok(void)
 {
   debugPrintf("Ok"CLI_NEW_LINE);
 }
 
-static void debugPrintf_r_n(void)
+static void cli_new_line(void)
 {
   debugPrintf(CLI_NEW_LINE);
 }
 
-static void debugPrintf_error(void)
+static void cli_incorrect_enter(void)
 {
   debugPrintf("incorrect enter"CLI_NEW_LINE);
 }
 
-static void sendBackspaceStr(void)
+static void cli_backspace(void)
 {
   debugPrintf(" \b");
 }
@@ -192,10 +192,10 @@ static void monitorParser(uint8_t input_char)
     if (input_char == enter)
     {
       convertToUppercase();
-      debugPrintf_r_n();
+      cli_new_line();
       if (MON_STRCMP(input_mon_buff, "HELP"))
       {
-        debugPrintf_help();
+        cli_send_help();
       }
       else if (MON_STRCMP(input_mon_buff, "CLS"))
       {
@@ -204,11 +204,11 @@ static void monitorParser(uint8_t input_char)
       else if (MON_STRCMP(input_mon_buff, "TEST"))
       { // enter TEST
         cli_setTest(TEST);
-        debugPrintf_OK();
+        cli_send_ok();
       }
       else if (memcmp(input_mon_buff, "TX", 2) == 0)
       { // enter TX [msg]
-        debugPrintf_OK();
+        cli_send_ok();
 
         CC1101_GDO0_flag_clear();
 
@@ -229,37 +229,37 @@ static void monitorParser(uint8_t input_char)
       }
        else if (MON_STRCMP(input_mon_buff, "ADC"))
       {
-        debugPrintf_OK();
+        cli_send_ok();
         cli_setTest(ADC_T);
       }
       else if ((input_mon_buff[0] == 'R')&&(input_mon_buff[1] == 0))
       { // enter R
-        debugPrintf_OK();
+        cli_send_ok();
         while (1);
       }
       else if (MON_STRCMP(input_mon_buff, "RST"))
       {
-        debugPrintf_OK();
+        cli_send_ok();
         HAL_NVIC_SystemReset();
       }
       else if (MON_STRCMP(input_mon_buff, "BOOT"))
       {
-        debugPrintf_OK();
+        cli_send_ok();
         runBootloader();
       }
       else if (MON_STRCMP(input_mon_buff, "GPS"))
       {
-        debugPrintf_OK();
+        cli_send_ok();
         cli_setTest(GPS_C);
       }
       else if (MON_STRCMP(input_mon_buff, "INFO"))
       {
-        debugPrintf_OK();
+        cli_send_ok();
         debugPrintf("https://github.com/sergey12malyshev/RF_HACK.git"CLI_NEW_LINE);
-        debugPrintf_r_n();
+        cli_new_line();
         debugPrintf("HAL: ");
         debugPrintf("%d", HAL_GetHalVersion());
-        debugPrintf_r_n();
+        cli_new_line();
         debugPrintf("Data build: "__DATE__ CLI_NEW_LINE);
         debugPrintf("Time build: "__TIME__ CLI_NEW_LINE CLI_PROMPT_STR);
       }
@@ -267,15 +267,15 @@ static void monitorParser(uint8_t input_char)
       {
         if (input_mon_buff[0] == 0)
         {
-          debugPrintf_symbolTerm();
+          cli_send_symbolTerm();
           uart_clear_buff();
           rec_len = 0;
           cli_resetTest();
         }
         else
         {
-          debugPrintf_error();
-          debugPrintf_symbolTerm();
+          cli_incorrect_enter();
+          cli_send_symbolTerm();
         }
       }
       uart_clear_buff();
@@ -289,7 +289,7 @@ static void monitorParser(uint8_t input_char)
         {
           input_mon_buff[rec_len - 1] = 0;
           rec_len--;
-          sendBackspaceStr();
+          cli_backspace();
         }
       }
       else
@@ -362,7 +362,7 @@ PT_THREAD(CLI_Thread(struct pt *pt))
   uart_receve_IT();
   cli_init_queue();
   cli_resetTest();
-  debugPrintf_hello();
+  cli_send_hello();
 
   while (1)
   {
