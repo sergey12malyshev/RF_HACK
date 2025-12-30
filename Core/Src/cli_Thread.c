@@ -62,7 +62,6 @@ _Static_assert((sizeof(mon_comand) + 1U) < CLI_SHELL_MAX_LENGTH, "Print buffer s
 static char input_mon_buff[CLI_INPUT_BUFF_LENGTH] = {0};
 
 /* queue UART */
-static QUEUE queue1 = {0};
 static char queueOutMsg = {0};
 
 /* Test API */
@@ -98,18 +97,18 @@ static void uart_receve_IT(void)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 
 {
-  if(huart == &huart1) 
+  if (huart == &huart1) 
   {
-    if(HAL_UART_Receive_IT(&huart1, (uint8_t*)&input_mon, 1U) == HAL_OK)
+    if (HAL_UART_Receive_IT(&huart1, (uint8_t*)&input_mon, 1U) == HAL_OK)
     {
-      cli_enque(&queue1,(MESSAGE*)&input_mon); // Запишем в очередь 
+      cli_enque((uint8_t*)&input_mon); // add it to the queue
 #if DEBUG_QUEUE
       debugPrintf("e_ l:%d e:%d b:%d\r\n", queue1.current_load, queue1.begin, queue1.end);
 #endif
     }
   }
 
-  if(huart == &huart6) 
+  if (huart == &huart6) 
   {
     GPS_UART_CallBack();
   }
@@ -354,7 +353,7 @@ PT_THREAD(CLI_Thread(struct pt *pt))
   
   uart_clear_buff();
   uart_receve_IT();
-  cli_init_queue(&queue1);
+  cli_init_queue();
   cli_resetTest();
   debugPrintf_hello();
 
@@ -362,7 +361,7 @@ PT_THREAD(CLI_Thread(struct pt *pt))
   {
     PT_WAIT_UNTIL(pt, timer(&timer1, 50));
 
-    if(cli_deque(&queue1, (MESSAGE*)&queueOutMsg))
+    if (cli_deque((uint8_t*)&queueOutMsg))
     {
       monitorParser();
     }

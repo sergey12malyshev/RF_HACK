@@ -3,46 +3,33 @@
 #include <string.h>
 
 #include "cli_queue.h"
+#include "queue.h"
 
-/*
-Portable array-based cyclic FIFO queue. https://stackoverflow.com/questions/52783068/how-to-implement-a-message-queue-in-standard-c
-*/
-void cli_init_queue(QUEUE *queue) 
+#define MESSAGE_SIZE    1U     /* The size of the received message is 1 byte for the UART */
+#define QUEUE_SIZE      64     /* Queue size (number of buffer cells) */
+
+typedef struct 
 {
-  queue->begin = 0;
-  queue->end = 0;
-  queue->current_load = 0;
-  memset(&queue->messages[0], 0, QUEUE_SIZE * sizeof(MESSAGE));
+  uint8_t data_uart[MESSAGE_SIZE];
+} queue_type_t;
+
+QUEUE(cli_uart, queue_type_t, QUEUE_SIZE)
+
+static cli_uart cli_queue;
+
+
+void cli_init_queue(void) 
+{
+  cli_uart_init_queue(&cli_queue);
 }
 
-bool cli_enque(QUEUE *queue, MESSAGE *message) 
+bool cli_enque(uint8_t *message_in) 
 {
-  if (queue->current_load < QUEUE_SIZE) 
-  {
-    if (queue->end == QUEUE_SIZE)
-    {
-      queue->end = 0;
-    }
-    queue->messages[queue->end] = *message;
-    queue->end++;
-    queue->current_load++;
-
-    return true;
-  } 
-  return false;
+  return cli_uart_enque(&cli_queue, (queue_type_t*)message_in);
 }
 
-bool cli_deque(QUEUE *queue, MESSAGE *message) 
+bool cli_deque(uint8_t *message_out) 
 {
-  if (queue->current_load > 0) 
-  {
-    *message = queue->messages[queue->begin];
-    memset(&queue->messages[queue->begin], 0, sizeof(MESSAGE));
-    queue->begin = (queue->begin + 1) % QUEUE_SIZE;
-    queue->current_load--;
-
-    return true;
-  } 
-  return false;
+  return (cli_uart_deque(&cli_queue, (queue_type_t*)message_out));
 }
 
