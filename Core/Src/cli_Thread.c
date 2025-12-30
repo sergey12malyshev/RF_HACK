@@ -179,7 +179,7 @@ static void convertToUppercase(void)
   }
 }
 
-static void monitorParser(void)
+static void monitorParser(uint8_t input_char)
 {
   static uint8_t rec_len = 0U;
   const uint8_t enter = 13U;
@@ -187,9 +187,9 @@ static void monitorParser(void)
   const uint8_t backspacePuTTY = 127U;
 
 #if LOCAL_ECHO_EN
-    HAL_UART_Transmit(&huart1, (uint8_t*)&queueOutMsg, 1, 25); // Local echo
+    HAL_UART_Transmit(&huart1, (uint8_t*)&input_char, 1, 25); // Local echo
 #endif
-    if (queueOutMsg == enter)
+    if (input_char == enter)
     {
       convertToUppercase();
       debugPrintf_r_n();
@@ -283,7 +283,7 @@ static void monitorParser(void)
     }
     else
     {
-      if ((queueOutMsg == backspace)||(queueOutMsg == backspacePuTTY))
+      if ((input_char == backspace)||(input_char == backspacePuTTY))
       {
         if (rec_len != 0)
         {
@@ -296,9 +296,9 @@ static void monitorParser(void)
       {
         if (rec_len < CLI_INPUT_BUFF_LENGTH)
         {
-          if((queueOutMsg > 0) && (queueOutMsg <= 127)) // ASCII check
+          if((input_char > 0) && (input_char <= 127)) // ASCII check
           {
-            input_mon_buff[rec_len++] = queueOutMsg; // load char do string
+            input_mon_buff[rec_len++] = input_char; // load char do string
           }
           else
           {
@@ -363,7 +363,7 @@ PT_THREAD(CLI_Thread(struct pt *pt))
 
     if (cli_deque((uint8_t*)&queueOutMsg))
     {
-      monitorParser();
+      monitorParser(queueOutMsg);
     }
     monitor_out_test();
 
