@@ -95,22 +95,14 @@ static void uart_receve_IT(void)
   HAL_UART_Receive_IT(&huart1, (uint8_t *)uart_cli_data, 1);
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 
+void cli_uart_callBack(void) 
 {
-  if (huart == &huart1) 
+  if (HAL_UART_Receive_IT(&huart1, (uint8_t*)&uart_cli_data, 1U) == HAL_OK)
   {
-    if (HAL_UART_Receive_IT(&huart1, (uint8_t*)&uart_cli_data, 1U) == HAL_OK)
-    {
-      cli_enque((uint8_t*)&uart_cli_data); // add it to the queue
+    cli_enque((uint8_t*)&uart_cli_data); // add it to the queue
 #if DEBUG_QUEUE
-      debugPrintf("e_ l:%d e:%d b:%d\r\n", queue1.current_load, queue1.begin, queue1.end);
+    debugPrintf("e_ l:%d e:%d b:%d\r\n", queue1.current_load, queue1.begin, queue1.end);
 #endif
-    }
-  }
-
-  if (huart == &huart6) 
-  {
-    GPS_UART_CallBack();
   }
 }
 

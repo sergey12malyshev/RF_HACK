@@ -21,6 +21,8 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
+#include "cli_thread.h"
+#include "gps.h"
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
@@ -193,7 +195,18 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 
+{
+  if (huart == &huart1) 
+  {
+    cli_uart_callBack();
+  }
 
+  if (huart == &huart6) 
+  {
+    GPS_UART_CallBack();
+  }
+}
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
