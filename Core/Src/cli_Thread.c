@@ -23,7 +23,6 @@
 */
 
 #define LOCAL_ECHO_EN  true
-#define DEBUG_QUEUE    false
 
 #define MON_STRCMP(ptr, cmd) (!strcmp(ptr, cmd))
 
@@ -101,9 +100,6 @@ void cli_uart_callBack(void)
   if (HAL_UART_Receive_IT(&huart1, (uint8_t*)&uart_cli_data, 1U) == HAL_OK)
   {
     cli_enque((uint8_t*)&uart_cli_data); // add it to the queue
-#if DEBUG_QUEUE
-    debugPrintf("e_ l:%d e:%d b:%d"CLI_NEW_LINE, queue1.current_load, queue1.begin, queue1.end);
-#endif
   }
 }
 
