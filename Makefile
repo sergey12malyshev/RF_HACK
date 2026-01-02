@@ -50,13 +50,13 @@ C_SOURCES =  \
 Core/Src/main.c \
 Core/Src/stm32f4xx_it.c \
 Core/Src/system_stm32f4xx.c \
-XPT2046/calibrate_touch.c \
-XPT2046/demo.c \
-XPT2046/xpt2046.c \
-Display/display.c \
-Display/fonts.c \
-Display/ili9341.c \
-Display/st7789.c \
+application/XPT2046/calibrate_touch.c \
+application/XPT2046/demo.c \
+application/XPT2046/xpt2046.c \
+application/Display/display.c \
+application/Display/fonts.c \
+application/Display/ili9341.c \
+application/Display/st7789.c \
 Core/Src/gpio.c \
 Core/Src/dma.c \
 Core/Src/spi.c \
@@ -67,7 +67,7 @@ Core/Src/cli_driver.c \
 Core/Src/cli_Thread.c \
 Core/Src/application_Thread.c \
 Core/Src/cli_queue.c \
-GPS/gps.c \
+application/GPS/gps.c \
 Core/Src/gps_Thread.c \
 Core/Src/cc1101.c \
 Core/Src/dw_stm32_delay.c \
@@ -166,10 +166,10 @@ AS_INCLUDES =
 # C includes
 C_INCLUDES =  \
 -ICore/Inc \
--IDisplay \
--IXPT2046 \
--IGPS \
--IPt_1.4  \
+-Iapplication/Display \
+-Iapplication/XPT2046 \
+-Iapplication/GPS \
+-Iapplication/Pt_1.4  \
 -IDrivers/STM32F4xx_HAL_Driver/Inc \
 -IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy \
 -IDrivers/CMSIS/Device/ST/STM32F4xx/Include \
