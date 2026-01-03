@@ -63,24 +63,24 @@ Core/Src/spi.c \
 Core/Src/tim.c \
 Core/Src/usart.c \
 Core/Src/stm32f4xx_hal_msp.c \
-Core/Src/cli_driver.c \
-Core/Src/cli_Thread.c \
-Core/Src/application_Thread.c \
-Core/Src/cli_queue.c \
+application/cli_driver.c \
+application/cli_Thread.c \
+application/application_Thread.c \
+application/cli_queue.c \
 application/GPS/gps.c \
-Core/Src/gps_Thread.c \
+application/gps_Thread.c \
 application/CC1101/cc1101.c \
-Core/Src/dw_stm32_delay.c \
-Core/Src/subGHz_RX_Thread.c \
-Core/Src/subGHz_TX_Thread.c \
-Core/Src/button_Thread.c \
-Core/Src/spectrumScan_Thread.c \
-Core/Src/jammer_Thread.c \
-Core/Src/workStates.c \
-Core/Src/runBootloader.c \
-Core/Src/displayInit.c \
-Core/Src/encoderDriver.c \
-Core/Src/buzzer_driver.c \
+application/dw_stm32_delay.c \
+application/subGHz_RX_Thread.c \
+application/subGHz_TX_Thread.c \
+application/button_Thread.c \
+application/spectrumScan_Thread.c \
+application/jammer_Thread.c \
+application/workStates.c \
+application/runBootloader.c \
+application/displayInit.c \
+application/encoderDriver.c \
+application/buzzer_driver.c \
 Core/Src/stm32f4xx_hal_timebase_tim.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.c \
@@ -109,8 +109,8 @@ Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c \
 Core/Src/adc.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c \
 Core/Src/iwdg.c \
-Core/Src/frequencyChannelsTable.c \
-Core/Src/sheduler.c
+application/frequencyChannelsTable.c \
+application/sheduler.c
 
 ASM_SOURCES = \
 startup_stm32f401xc.s \
