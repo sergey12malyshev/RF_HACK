@@ -28,7 +28,7 @@
 PT_THREAD(jammer_Thread(struct pt *pt))
 {
   static uint32_t timer1;
-  __attribute__((unused)) uint8_t s;
+  __UNUSED uint8_t s;
   char str[25] = {0};
 
 
