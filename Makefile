@@ -69,7 +69,7 @@ Core/Src/application_Thread.c \
 Core/Src/cli_queue.c \
 application/GPS/gps.c \
 Core/Src/gps_Thread.c \
-Core/Src/cc1101.c \
+application/CC1101/cc1101.c \
 Core/Src/dw_stm32_delay.c \
 Core/Src/subGHz_RX_Thread.c \
 Core/Src/subGHz_TX_Thread.c \
@@ -170,6 +170,7 @@ C_INCLUDES =  \
 -Iapplication/XPT2046 \
 -Iapplication/GPS \
 -Iapplication/Pt_1.4  \
+-Iapplication/CC1101 \
 -IDrivers/STM32F4xx_HAL_Driver/Inc \
 -IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy \
 -IDrivers/CMSIS/Device/ST/STM32F4xx/Include \
