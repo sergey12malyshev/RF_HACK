@@ -166,6 +166,7 @@ AS_INCLUDES =
 # C includes
 C_INCLUDES =  \
 -ICore/Inc \
+-Iapplication \
 -Iapplication/Display \
 -Iapplication/XPT2046 \
 -Iapplication/GPS \
