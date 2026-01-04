@@ -50,37 +50,12 @@ C_SOURCES =  \
 Core/Src/main.c \
 Core/Src/stm32f4xx_it.c \
 Core/Src/system_stm32f4xx.c \
-application/XPT2046/calibrate_touch.c \
-application/XPT2046/demo.c \
-application/XPT2046/xpt2046.c \
-application/Display/display.c \
-application/Display/fonts.c \
-application/Display/ili9341.c \
-application/Display/st7789.c \
 Core/Src/gpio.c \
 Core/Src/dma.c \
 Core/Src/spi.c \
 Core/Src/tim.c \
 Core/Src/usart.c \
 Core/Src/stm32f4xx_hal_msp.c \
-application/cli_driver.c \
-application/cli_Thread.c \
-application/application_Thread.c \
-application/cli_queue.c \
-application/GPS/gps.c \
-application/gps_Thread.c \
-application/CC1101/cc1101.c \
-application/dw_stm32_delay.c \
-application/subGHz_RX_Thread.c \
-application/subGHz_TX_Thread.c \
-application/button_Thread.c \
-application/spectrumScan_Thread.c \
-application/jammer_Thread.c \
-application/workStates.c \
-application/runBootloader.c \
-application/displayInit.c \
-application/encoderDriver.c \
-application/buzzer_driver.c \
 Core/Src/stm32f4xx_hal_timebase_tim.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_gpio.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_dma.c \
@@ -108,9 +83,37 @@ Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_tim.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c \
 Core/Src/adc.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_adc.c \
-Core/Src/iwdg.c \
+Core/Src/iwdg.c
+
+# C sources user
+C_SOURCES +=  \
 application/frequencyChannelsTable.c \
-application/sheduler.c
+application/sheduler.c \
+application/XPT2046/calibrate_touch.c \
+application/XPT2046/demo.c \
+application/XPT2046/xpt2046.c \
+application/Display/display.c \
+application/Display/fonts.c \
+application/Display/ili9341.c \
+application/Display/st7789.c \
+application/cli_driver.c \
+application/cli_Thread.c \
+application/application_Thread.c \
+application/cli_queue.c \
+application/GPS/gps.c \
+application/gps_Thread.c \
+application/CC1101/cc1101.c \
+application/dw_stm32_delay.c \
+application/subGHz_RX_Thread.c \
+application/subGHz_TX_Thread.c \
+application/button_Thread.c \
+application/spectrumScan_Thread.c \
+application/jammer_Thread.c \
+application/workStates.c \
+application/runBootloader.c \
+application/displayInit.c \
+application/encoderDriver.c \
+application/buzzer_driver.c
 
 ASM_SOURCES = \
 startup_stm32f401xc.s \
