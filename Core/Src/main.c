@@ -61,6 +61,8 @@
 #include "jammer_Thread.h"
 #include "configFile.h"
 
+#include "test.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -243,6 +245,12 @@ calibrateTouchEnable();
 #endif
 
   LCD_Fill(lcd, COLOR_BLACK);
+  
+  // test C++
+  bool result_cpp = test_cpp_function();
+  uint32_t sum = test_cpp_add_numbers(10, 20);
+  debugPrintf("C++ result: %d, sum: %lu"CLI_NEW_LINE, sum, result_cpp);
+  
   /* USER CODE END 2 */
 
   /* Infinite loop */
