@@ -108,7 +108,7 @@ void checkResetSourse(void);
 
 #define SOFTWARE_VERSION_MAJOR  0
 #define SOFTWARE_VERSION_MINOR  3
-#define SOFTWARE_VERSION_PATCH  1
+#define SOFTWARE_VERSION_PATCH  2
 
 
 #define quoting(a) prequoting(a)
