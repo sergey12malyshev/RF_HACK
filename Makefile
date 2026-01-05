@@ -116,7 +116,8 @@ application/encoderDriver.c \
 application/buzzer_driver.c
 
 # C++ sources
-CXX_SOURCES = application/test.cpp
+CXX_SOURCES = application/test.cpp \
+application/power.cpp
 
 ASM_SOURCES = \
 startup_stm32f401xc.s \

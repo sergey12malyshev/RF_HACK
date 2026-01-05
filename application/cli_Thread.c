@@ -16,6 +16,8 @@
 #include "time.h"
 #include "adc.h"
 
+#include "power.h"
+
 /*
   UART CLI 115200 Baud
   PA10 - RX
@@ -224,12 +226,12 @@ static void monitorParser(uint8_t input_char)
       else if ((input_mon_buff[0] == 'R')&&(input_mon_buff[1] == 0))
       { // enter R
         cli_send_ok();
-        while (1);
+        power_wdtReset();
       }
       else if (MON_STRCMP(input_mon_buff, "RST"))
       {
         cli_send_ok();
-        HAL_NVIC_SystemReset();
+        power_systemReset();
       }
       else if (MON_STRCMP(input_mon_buff, "BOOT"))
       {
