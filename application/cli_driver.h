@@ -7,7 +7,7 @@
 
 
 /* Config CLI: */
-#define CLI_SHELL_MAX_LENGTH     300U      // Shell out max command line size
+#define CLI_SHELL_MAX_LENGTH     350U      // Shell out max command line size
 
 #define CLI_INPUT_BUFF_LENGTH    12U      // CLI input max line size
 ////

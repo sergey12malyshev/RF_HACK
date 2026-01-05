@@ -16,6 +16,8 @@
 #include "time.h"
 #include "adc.h"
 
+#include "power.h"
+
 /*
   UART CLI 115200 Baud
   PA10 - RX
@@ -50,7 +52,7 @@ static const char mon_comand[] =\
 "BOOT"CLI_TAB2    "Run bootloader"CLI_NEW_LINE
 "TX [msg]"CLI_TAB "Transmitt massage"CLI_NEW_LINE
 "TEST"CLI_TAB2    "Switch test"CLI_NEW_LINE
-"ADC"CLI_TAB2     "Show ADC chanel"CLI_NEW_LINE
+"ADC"CLI_TAB2     "Show VDDA chanel: adc, mV, av mV"CLI_NEW_LINE
 "GPS"CLI_TAB2     "Show data gps"CLI_NEW_LINE
 "INFO"CLI_TAB2    "Read about project"CLI_NEW_LINE
 "-----------------------------------"CLI_NEW_LINE
@@ -224,12 +226,12 @@ static void monitorParser(uint8_t input_char)
       else if ((input_mon_buff[0] == 'R')&&(input_mon_buff[1] == 0))
       { // enter R
         cli_send_ok();
-        while (1);
+        power_wdtReset();
       }
       else if (MON_STRCMP(input_mon_buff, "RST"))
       {
         cli_send_ok();
-        HAL_NVIC_SystemReset();
+        power_systemReset();
       }
       else if (MON_STRCMP(input_mon_buff, "BOOT"))
       {

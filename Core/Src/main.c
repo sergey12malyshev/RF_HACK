@@ -61,6 +61,8 @@
 #include "jammer_Thread.h"
 #include "configFile.h"
 
+#include "test.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -243,6 +245,10 @@ calibrateTouchEnable();
 #endif
 
   LCD_Fill(lcd, COLOR_BLACK);
+  
+  // test C++
+  debugPrintf("C++ test: %s"CLI_NEW_LINE, test_cpp_function() ? "true" : "false");
+  
   /* USER CODE END 2 */
 
   /* Infinite loop */
