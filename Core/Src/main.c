@@ -247,9 +247,7 @@ calibrateTouchEnable();
   LCD_Fill(lcd, COLOR_BLACK);
   
   // test C++
-  bool result_cpp = test_cpp_function();
-  uint32_t sum = test_cpp_add_numbers(10, 20);
-  debugPrintf("C++ result: %d, sum: %lu"CLI_NEW_LINE, sum, result_cpp);
+  debugPrintf("C++ test: %s"CLI_NEW_LINE, test_cpp_function() ? "true" : "false");
   
   /* USER CODE END 2 */
 
