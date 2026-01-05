@@ -52,7 +52,7 @@ static const char mon_comand[] =\
 "BOOT"CLI_TAB2    "Run bootloader"CLI_NEW_LINE
 "TX [msg]"CLI_TAB "Transmitt massage"CLI_NEW_LINE
 "TEST"CLI_TAB2    "Switch test"CLI_NEW_LINE
-"ADC"CLI_TAB2     "Show ADC chanel"CLI_NEW_LINE
+"ADC"CLI_TAB2     "Show VDDA chanel: adc, mV, av mV"CLI_NEW_LINE
 "GPS"CLI_TAB2     "Show data gps"CLI_NEW_LINE
 "INFO"CLI_TAB2    "Read about project"CLI_NEW_LINE
 "-----------------------------------"CLI_NEW_LINE
