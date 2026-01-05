@@ -28,7 +28,7 @@ static char packet[7] = "QWERTY";; // Reserve one character for a null terminato
 PT_THREAD(subGHz_TX_Thread(struct pt *pt))
 {
   static uint32_t timer1;
-  __attribute__((unused)) uint8_t s;
+  __UNUSED uint8_t s;
 
 
   PT_BEGIN(pt);

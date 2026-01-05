@@ -6,7 +6,7 @@ echo Run static analysis...
 @echo on
 
 @rem output of the result to the console:
-cppcheck -q -j4 --enable=all --inconclusive -I ./Core/Inc ./Core/Src
+cppcheck -q -j4 --enable=all --inconclusive -I ./Core/Inc -I ./application ./Core/Src ./application
 @rem output of the result to a file:
 rem cppcheck -q -j4 --enable=all --inconclusive --output-file=checkReport.txt  ./Src
 

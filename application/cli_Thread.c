@@ -16,6 +16,8 @@
 #include "time.h"
 #include "adc.h"
 
+#include "power.h"
+
 /*
   UART CLI 115200 Baud
   PA10 - RX
@@ -50,7 +52,7 @@ static const char mon_comand[] =\
 "BOOT"CLI_TAB2    "Run bootloader"CLI_NEW_LINE
 "TX [msg]"CLI_TAB "Transmitt massage"CLI_NEW_LINE
 "TEST"CLI_TAB2    "Switch test"CLI_NEW_LINE
-"ADC"CLI_TAB2     "Show ADC chanel"CLI_NEW_LINE
+"ADC"CLI_TAB2     "Show VDDA chanel: adc, mV, av mV"CLI_NEW_LINE
 "GPS"CLI_TAB2     "Show data gps"CLI_NEW_LINE
 "INFO"CLI_TAB2    "Read about project"CLI_NEW_LINE
 "-----------------------------------"CLI_NEW_LINE
@@ -59,10 +61,7 @@ CLI_PROMPT_STR;
 _Static_assert((sizeof(mon_comand) + 1U) < CLI_SHELL_MAX_LENGTH, "Print buffer size is smaller than help command!");
 
 
-static char input_mon_buff[CLI_INPUT_BUFF_LENGTH] = {0};
-
 /* queue UART */
-static QUEUE queue1 = {0};
 static char queueOutMsg = {0};
 
 /* Test API */
@@ -84,7 +83,9 @@ static Command cli_getTest(void)
 }
 
 //-------------- UART RX start ------------------
-static uint8_t input_mon[1] = {0};
+static char input_mon_buff[CLI_INPUT_BUFF_LENGTH] = {0};
+
+static uint8_t uart_cli_data[1] = {0};
 
 static void uart_clear_buff(void)
 {
@@ -93,48 +94,37 @@ static void uart_clear_buff(void)
 
 static void uart_receve_IT(void)
 {
-  HAL_UART_Receive_IT(&huart1, (uint8_t *)input_mon, 1);
+  HAL_UART_Receive_IT(&huart1, (uint8_t *)uart_cli_data, 1);
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 
+void cli_uart_callBack(void) 
 {
-  if(huart == &huart1) 
+  if (HAL_UART_Receive_IT(&huart1, (uint8_t*)&uart_cli_data, 1U) == HAL_OK)
   {
-    if(HAL_UART_Receive_IT(&huart1, (uint8_t*)&input_mon, 1U) == HAL_OK)
-    {
-      cli_enque(&queue1,(MESSAGE*)&input_mon); // Запишем в очередь 
-#if DEBUG_QUEUE
-      debugPrintf("e_ l:%d e:%d b:%d\r\n", queue1.current_load, queue1.begin, queue1.end);
-#endif
-    }
-  }
-
-  if(huart == &huart6) 
-  {
-    GPS_UART_CallBack();
+    cli_enque((uint8_t*)&uart_cli_data); // add it to the queue
   }
 }
 
 //---------------------------------------
 
-static void debugPrintf_symbolTerm(void)
+static void cli_send_symbolTerm(void)
 {
   debugPrintf(CLI_PROMPT_STR);
 }
 
-static void sendSNversion(void)
+static void cli_send_SN_version(void)
 {
- debugPrintf("Version SW: %d.%d.%d"CLI_NEW_LINE, SOFTWARE_VERSION_MAJOR, SOFTWARE_VERSION_MINOR, SOFTWARE_VERSION_PATCH);
+  debugPrintf("Version SW: %d.%d.%d"CLI_NEW_LINE, SOFTWARE_VERSION_MAJOR, SOFTWARE_VERSION_MINOR, SOFTWARE_VERSION_PATCH);
 }
 
-static void debugPrintf_hello(void)
+static void cli_send_hello(void)
 {
   debugPrintf("RF_HACK project started!"CLI_NEW_LINE);
-  sendSNversion();
+  cli_send_SN_version();
   DEBUG_PRINT(YEL_CLR"Debug Version"RST_CLR CLI_NEW_LINE);
   debugPrintf("Enter 'HELP' for list of commands...."CLI_NEW_LINE);
   checkResetSourse();
-  debugPrintf_symbolTerm();
+  cli_send_symbolTerm();
 }
 
 static void cli_clearScreen(void)
@@ -143,27 +133,27 @@ static void cli_clearScreen(void)
   CLI_DISPLAY_CLEAR();
 }
 
-static void debugPrintf_help(void)
+static void cli_send_help(void)
 {
   debugPrintf(mon_comand);
 }
 
-static void debugPrintf_OK(void)
+static void cli_send_ok(void)
 {
   debugPrintf("Ok"CLI_NEW_LINE);
 }
 
-static void debugPrintf_r_n(void)
+static void cli_new_line(void)
 {
   debugPrintf(CLI_NEW_LINE);
 }
 
-static void debugPrintf_error(void)
+static void cli_incorrect_enter(void)
 {
   debugPrintf("incorrect enter"CLI_NEW_LINE);
 }
 
-static void sendBackspaceStr(void)
+static void cli_backspace(void)
 {
   debugPrintf(" \b");
 }
@@ -180,7 +170,7 @@ static void convertToUppercase(void)
   }
 }
 
-static void monitorParser(void)
+static void monitorParser(uint8_t input_char)
 {
   static uint8_t rec_len = 0U;
   const uint8_t enter = 13U;
@@ -188,15 +178,15 @@ static void monitorParser(void)
   const uint8_t backspacePuTTY = 127U;
 
 #if LOCAL_ECHO_EN
-    HAL_UART_Transmit(&huart1, (uint8_t*)&queueOutMsg, 1, 25); // Local echo
+    HAL_UART_Transmit(&huart1, (uint8_t*)&input_char, 1, 25); // Local echo
 #endif
-    if (queueOutMsg == enter)
+    if (input_char == enter)
     {
       convertToUppercase();
-      debugPrintf_r_n();
+      cli_new_line();
       if (MON_STRCMP(input_mon_buff, "HELP"))
       {
-        debugPrintf_help();
+        cli_send_help();
       }
       else if (MON_STRCMP(input_mon_buff, "CLS"))
       {
@@ -205,11 +195,11 @@ static void monitorParser(void)
       else if (MON_STRCMP(input_mon_buff, "TEST"))
       { // enter TEST
         cli_setTest(TEST);
-        debugPrintf_OK();
+        cli_send_ok();
       }
       else if (memcmp(input_mon_buff, "TX", 2) == 0)
       { // enter TX [msg]
-        debugPrintf_OK();
+        cli_send_ok();
 
         CC1101_GDO0_flag_clear();
 
@@ -230,37 +220,37 @@ static void monitorParser(void)
       }
        else if (MON_STRCMP(input_mon_buff, "ADC"))
       {
-        debugPrintf_OK();
+        cli_send_ok();
         cli_setTest(ADC_T);
       }
       else if ((input_mon_buff[0] == 'R')&&(input_mon_buff[1] == 0))
       { // enter R
-        debugPrintf_OK();
-        while (1);
+        cli_send_ok();
+        power_wdtReset();
       }
       else if (MON_STRCMP(input_mon_buff, "RST"))
       {
-        debugPrintf_OK();
-        HAL_NVIC_SystemReset();
+        cli_send_ok();
+        power_systemReset();
       }
       else if (MON_STRCMP(input_mon_buff, "BOOT"))
       {
-        debugPrintf_OK();
+        cli_send_ok();
         runBootloader();
       }
       else if (MON_STRCMP(input_mon_buff, "GPS"))
       {
-        debugPrintf_OK();
+        cli_send_ok();
         cli_setTest(GPS_C);
       }
       else if (MON_STRCMP(input_mon_buff, "INFO"))
       {
-        debugPrintf_OK();
+        cli_send_ok();
         debugPrintf("https://github.com/sergey12malyshev/RF_HACK.git"CLI_NEW_LINE);
-        debugPrintf_r_n();
+        cli_new_line();
         debugPrintf("HAL: ");
         debugPrintf("%d", HAL_GetHalVersion());
-        debugPrintf_r_n();
+        cli_new_line();
         debugPrintf("Data build: "__DATE__ CLI_NEW_LINE);
         debugPrintf("Time build: "__TIME__ CLI_NEW_LINE CLI_PROMPT_STR);
       }
@@ -268,15 +258,15 @@ static void monitorParser(void)
       {
         if (input_mon_buff[0] == 0)
         {
-          debugPrintf_symbolTerm();
+          cli_send_symbolTerm();
           uart_clear_buff();
           rec_len = 0;
           cli_resetTest();
         }
         else
         {
-          debugPrintf_error();
-          debugPrintf_symbolTerm();
+          cli_incorrect_enter();
+          cli_send_symbolTerm();
         }
       }
       uart_clear_buff();
@@ -284,22 +274,22 @@ static void monitorParser(void)
     }
     else
     {
-      if ((queueOutMsg == backspace)||(queueOutMsg == backspacePuTTY))
+      if ((input_char == backspace)||(input_char == backspacePuTTY))
       {
         if (rec_len != 0)
         {
           input_mon_buff[rec_len - 1] = 0;
           rec_len--;
-          sendBackspaceStr();
+          cli_backspace();
         }
       }
       else
       {
         if (rec_len < CLI_INPUT_BUFF_LENGTH)
         {
-          if((queueOutMsg > 0) && (queueOutMsg <= 127)) // ASCII check
+          if((input_char > 0) && (input_char <= 127)) // ASCII check
           {
-            input_mon_buff[rec_len++] = queueOutMsg; // load char do string
+            input_mon_buff[rec_len++] = input_char; // load char do string
           }
           else
           {
@@ -325,20 +315,27 @@ static void monitor_out_test(void)
   switch (cli_getTest())
   {
     case ADC_T:
+    {
       debugPrintf(CLI_CLEAR_LINE"%ld"CLI_TAB, getAdcVDDA());
       debugPrintf("%d"CLI_TAB, getVoltageVDDA());
       debugPrintf("%d", getVoltageVDDA_Av());
       break;
+    }
     case GPS_C:
+    {
       GPSTest();
       break;
+    }
     case TEST:
+    {
       debugPrintf("Test OK");
       cli_resetTest();
       break;
-
+    }
     default:
+    {
       break;
+    }
   }
 }
 
@@ -354,17 +351,17 @@ PT_THREAD(CLI_Thread(struct pt *pt))
   
   uart_clear_buff();
   uart_receve_IT();
-  cli_init_queue(&queue1);
+  cli_init_queue();
   cli_resetTest();
-  debugPrintf_hello();
+  cli_send_hello();
 
   while (1)
   {
     PT_WAIT_UNTIL(pt, timer(&timer1, 50));
 
-    if(cli_deque(&queue1, (MESSAGE*)&queueOutMsg))
+    if (cli_deque((uint8_t*)&queueOutMsg))
     {
-      monitorParser();
+      monitorParser(queueOutMsg);
     }
     monitor_out_test();
 
