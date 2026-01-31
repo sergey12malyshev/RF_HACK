@@ -16,13 +16,6 @@ LCD_Handler *lcd = NULL;     // Pointer to the first display in the list
 
 XPT2046_Handler touch1;
 
-//Data DMA
-LCD_DMA_TypeDef dma_tx_1 = 
-{ 
-  .dma    = DMA2,           // DMA controller
-  .stream = LL_DMA_STREAM_3 // stream DMA
-};  
-
 //Backlight Data
 LCD_BackLight_data bkl_data = 
 {
@@ -49,6 +42,38 @@ XPT2046_ConnectionData cnt_touch =
   .exti_irq = T_IRQ_EXTI_IRQn  //exti channel
 };
 
+/* Setting up the display */
+static LCD_SPI_Connected_data spi_con =     
+{ 
+  .spi        = SPI1,
+  .dma_tx     = {DMA2, LL_DMA_STREAM_3},        // data DMA
+  .reset_port = LCD_RESET_GPIO_Port,
+  .reset_pin  = LCD_RESET_Pin,
+  .dc_port    = LCD_DC_GPIO_Port,
+  .dc_pin     = LCD_DC_Pin,
+  .cs_port    = LCD_CS_GPIO_Port,
+  .cs_pin     = LCD_CS_Pin
+};
+
+LCD_SPI_Connected_data * displayInit_getSpiPortSettings(void)
+{
+  return &spi_con;
+}
+
+static tCoef coef = 
+{ .D = 0x00022b4253626d37,
+  .Dx1 = 0xffffd9e9e85d81b6,
+  .Dx2 = 0x0000005a555c98ab,
+  .Dx3 = 0x022dd7f0419e66b7,
+  .Dy1 = 0xffffff6065e10c98,
+  .Dy2 = 0x0000343b820dc8bf,
+  .Dy3 = 0xff9cc25725238e55 
+};
+
+tCoef * displayInit_getCalibrationCoefficient(void)
+{
+  return &coef;
+}
 
 /* For those who don't know how to use the debugger or
 for those who don't have it working. */
@@ -95,6 +120,3 @@ void calibrateTouchEnable(void) //Starting the calibration procedure
     IWDG_reload();
   }
 }
-
-
-

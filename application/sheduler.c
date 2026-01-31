@@ -150,7 +150,7 @@ static void execute_current_mode_thread(void)
   }
 }
 
-noreturn void scheduler(void)
+noreturn void scheduler_run(void)
 {
   initProtothreads();
 

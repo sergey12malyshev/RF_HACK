@@ -181,24 +181,11 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
-  /* Setting up the display */
-  LCD_SPI_Connected_data spi_con =     
-  { 
-    .spi        = SPI1,
-    .dma_tx     = dma_tx_1,        // data DMA
-    .reset_port = LCD_RESET_GPIO_Port,
-    .reset_pin  = LCD_RESET_Pin,
-    .dc_port    = LCD_DC_GPIO_Port,
-    .dc_pin     = LCD_DC_Pin,
-    .cs_port    = LCD_CS_GPIO_Port,
-    .cs_pin     = LCD_CS_Pin
-  };
-
 #ifndef  LCD_DYNAMIC_MEM
   LCD_Handler lcd1;
 #endif
-   // Creating a display handler ILI9341
-   LCD = LCD_DisplayAdd(LCD,
+
+  LCD = LCD_DisplayAdd(LCD,
 #ifndef  LCD_DYNAMIC_MEM
             &lcd1,
 #endif
@@ -214,7 +201,7 @@ int main(void)
              ILI9341_SetWindow,
              ILI9341_SleepIn,
              ILI9341_SleepOut,
-             &spi_con,
+             displayInit_getSpiPortSettings(),
              LCD_DATA_16BIT_BUS,
              bkl_data);
 
@@ -222,37 +209,26 @@ int main(void)
   LCD_Init(lcd);
   LCD_Fill(lcd, COLOR_RED);
 
-
   XPT2046_InitTouch(&touch1, 20, &cnt_touch);   //initializing the handler XPT2046
 
 #if !CALIBRATE_EN
-  tCoef coef = {.D   = 0x00022b4253626d37,
-                .Dx1 = 0xffffd9e9e85d81b6,
-                .Dx2 = 0x0000005a555c98ab,
-                .Dx3 = 0x022dd7f0419e66b7,
-                .Dy1 = 0xffffff6065e10c98,
-                .Dy2 = 0x0000343b820dc8bf,
-                .Dy3 = 0xff9cc25725238e55 };
-  touch1.coef = coef;
+  touch1.coef = *displayInit_getCalibrationCoefficient();
 #else
-calibrateTouchEnable();
+  calibrateTouchEnable();
 #endif
 
-#if RUN_DEMO
+#if RUN_LCD_DEMO
   LCD_Fill(lcd, COLOR_WHITE);
   Draw_TouchPenDemo(&touch1, lcd);
   RoadCircleDemo(&touch1, lcd);
 #endif
-
   LCD_Fill(lcd, COLOR_BLACK);
-  
-  // test C++
-  debugPrintf("C++ test: %s"CLI_NEW_LINE, test_cpp_function() ? "true" : "false");
-  
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  debugPrintf("C++ test: %s"CLI_NEW_LINE, test_cpp_function() ? "true" : "false");
 
   buzzer_init(BUZZER_GPIO_Port, BUZZER_Pin);
   buzzer_soundOn(BUZZ_SOUND_TEST);
@@ -279,12 +255,15 @@ calibrateTouchEnable();
     }
   }
 
-#if CUSTOM_OLD_CONFIG
+#if CC1101_CUSTOM_OLD_CONFIG
   TI_setCarrierFreq(CFREQ_433);
   TI_setDevAddress(1); 
 #endif
   error_state = CC1101_reinit();
-  if (!error_state) debugPrintf(CLI_OK"CC1101 init pass"CLI_NEW_LINE);
+  if (!error_state)
+  {
+    debugPrintf(CLI_OK"CC1101 init pass"CLI_NEW_LINE);
+  }
 
   encoder_init();
   
@@ -292,7 +271,7 @@ calibrateTouchEnable();
 
     /* USER CODE BEGIN 3 */
     
-  scheduler();
+  scheduler_run();
 
   /* USER CODE END 3 */
 }
