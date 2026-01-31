@@ -255,9 +255,7 @@ calibrateTouchEnable();
   /* USER CODE BEGIN WHILE */
 
   buzzer_init(BUZZER_GPIO_Port, BUZZER_Pin);
-  buzzer_enable();
-  LL_mDelay(9);
-  buzzer_disable();
+  buzzer_soundOn(BUZZ_SOUND_TEST);
   debugPrintf("Buzzer test..."CLI_NEW_LINE);
 
   adc_enable();

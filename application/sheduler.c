@@ -20,6 +20,7 @@
 #include "subGHz_TX_Thread.h"
 #include "spectrumScan_Thread.h"
 #include "jammer_Thread.h"
+#include "buzzer_driver.h"
 
 #include "button_Thread.h"
 #include "gps_Thread.h"
@@ -31,7 +32,7 @@
 #include "cli_driver.h"
 #include "cli_thread.h"
 
-static struct pt application_pt, cli_pt, rf_pt, sub_tx_pt, button_pt, specrum_pt, jammer_pt, gps_pt;
+static struct pt application_pt, cli_pt, rf_pt, sub_tx_pt, button_pt, specrum_pt, jammer_pt, gps_pt, buzzer_pt;
 
 static void initProtothreads(void)
 {
@@ -43,6 +44,7 @@ static void initProtothreads(void)
   PT_INIT(&specrum_pt);
   PT_INIT(&jammer_pt);
   PT_INIT(&gps_pt);
+  PT_INIT(&buzzer_pt);
 }
 
 static Work_state_t determine_work_mode(void) 
@@ -77,6 +79,7 @@ void setting_the_operating_mode(Work_state_t new_mode)
   else
   {
     current_mode = new_mode;
+    buzzer_soundOn(BUZZ_SOUND_FAST);
   }
 
   switch (new_mode)
@@ -162,6 +165,7 @@ noreturn void scheduler(void)
 
     Application_Thread(&application_pt);
     Button_Thread(&button_pt);
+    Buzzer_Thread(&buzzer_pt);
 #if(CLI_ENABLE)
     CLI_Thread(&cli_pt);
 #endif
