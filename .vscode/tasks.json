@@ -115,6 +115,28 @@
                 "clear": true
             },
             "problemMatcher": "$gcc"
+        },
+                {
+            "label": "program j-link",
+            "type": "shell",
+            "windows": {
+                "command": [
+                    ".//programFlash_Jlink.cmd",
+                ]
+            },
+
+            "icon": {
+              "id": "arrow-down",
+              "color": "terminal.ansiGreen"
+            },
+
+            "args": [],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true
+            },
+            "problemMatcher": "$gcc"
         } 
     ]  
 }

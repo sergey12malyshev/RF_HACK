@@ -45,6 +45,9 @@
 #define PORT_GDO GPIOB
 #define PIN_GDO LL_GPIO_PIN_12
 
+
+#define TIMEOUT_SPI_MS          250U
+
 static SPI_HandleTypeDef* hal_spi;
 static uint16_t CS_Pin;
 static GPIO_TypeDef* CS_GPIO_Port;
@@ -71,14 +74,22 @@ void CC1101_GDO0_flag_set(void)
 HAL_StatusTypeDef __spi_write(uint8_t *addr, uint8_t *pData, uint16_t size)
 {
   HAL_StatusTypeDef status;
+  uint32_t tickstart = HAL_GetTick();
 
   LL_GPIO_ResetOutputPin(CS_GPIO_Port, CS_Pin);
-  while(LL_GPIO_IsInputPinSet(PORT_MISO, PIN_MISO)){};
 
-  status = HAL_SPI_Transmit(hal_spi, addr, 1, 0xFFFF);
+  while(LL_GPIO_IsInputPinSet(PORT_MISO, PIN_MISO))
+  {
+    if (((HAL_GetTick() - tickstart) >= (uint32_t) TIMEOUT_SPI_MS))
+    {
+      return HAL_TIMEOUT;
+    }
+  };
+
+  status = HAL_SPI_Transmit(hal_spi, addr, 1, (uint32_t) TIMEOUT_SPI_MS);
   if (status == HAL_OK && pData != NULL)
   {
-    status = HAL_SPI_Transmit(hal_spi, pData, size, 0xFFFF);
+    status = HAL_SPI_Transmit(hal_spi, pData, size, (uint32_t) TIMEOUT_SPI_MS);
   }
     
   LL_GPIO_SetOutputPin(CS_GPIO_Port, CS_Pin);
@@ -89,13 +100,19 @@ HAL_StatusTypeDef __spi_write(uint8_t *addr, uint8_t *pData, uint16_t size)
 HAL_StatusTypeDef __spi_read(uint8_t *addr, uint8_t *pData, uint16_t size)
 {
   HAL_StatusTypeDef status;
+  uint32_t tickstart = HAL_GetTick();
 
   LL_GPIO_ResetOutputPin(CS_GPIO_Port, CS_Pin);
-  while(LL_GPIO_IsInputPinSet(PORT_MISO, PIN_MISO)){};
+  while(LL_GPIO_IsInputPinSet(PORT_MISO, PIN_MISO))
+  {
+    if (((HAL_GetTick() - tickstart) >= (uint32_t) TIMEOUT_SPI_MS))
+    {
+      return HAL_TIMEOUT;
+    }
+  };
 
-
-  status = HAL_SPI_Transmit(hal_spi, addr, 1, 0xFFFF);
-  status = HAL_SPI_Receive(hal_spi, pData, size, 0xFFFF);
+  status = HAL_SPI_Transmit(hal_spi, addr, 1, (uint32_t) TIMEOUT_SPI_MS);
+  status = HAL_SPI_Receive(hal_spi, pData, size, (uint32_t) TIMEOUT_SPI_MS);
 
 
   LL_GPIO_SetOutputPin(CS_GPIO_Port, CS_Pin);
@@ -627,14 +644,26 @@ uint8_t CC1101_transmittRF(const char *packet_loc, uint8_t len)
   TI_send_packet((uint8_t *)packet_loc, len);
   //DEBUG_PRINT(CLI_TX"%s %d"CLI_NEW_LINE, packet, len);
 
+  uint32_t tickstart = HAL_GetTick();
   while (LL_GPIO_IsInputPinSet(PORT_GDO, PIN_GDO)) // start transmitt
   {
     __ASM volatile ("NOP");
+
+    if (((HAL_GetTick() - tickstart) >= (uint32_t) TIMEOUT_SPI_MS))
+    {
+      return HAL_TIMEOUT;
+    }
   }
 
+  tickstart = HAL_GetTick();
   while (!LL_GPIO_IsInputPinSet(PORT_GDO, PIN_GDO)) // end transmitt
   {
     __ASM volatile ("NOP");
+
+    if (((HAL_GetTick() - tickstart) >= (uint32_t) TIMEOUT_SPI_MS))
+    {
+      return HAL_TIMEOUT;
+    }
   }
 
   status = TI_read_status(CCxxx0_TXBYTES);     // it is checking to send the data
