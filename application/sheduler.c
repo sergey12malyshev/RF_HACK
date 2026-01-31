@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdnoreturn.h>
 
 #include "sheduler.h"
 #include "main.h"
@@ -44,7 +45,7 @@ static void initProtothreads(void)
   PT_INIT(&gps_pt);
 }
 
-void scheduler(void)
+noreturn void scheduler(void)
 {
   initProtothreads();
 
