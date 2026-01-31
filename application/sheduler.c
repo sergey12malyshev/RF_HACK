@@ -45,52 +45,105 @@ static void initProtothreads(void)
   PT_INIT(&gps_pt);
 }
 
-void settingTheOperatingMode(void)
+static Work_state_t determine_work_mode(void) 
 {
-  if (getTxButtonState() || TX_MODE_ALWAYS)
+  if (getTxButtonState() || TX_MODE_ALWAYS) 
   {
-    if (getWorkState() != TX_MODE)
+    return TX_MODE;
+  } 
+  else if (getjammButtonState()) 
+  {
+    return JAMMER_MODE;
+  } 
+  else if (getScanButtonState()) 
+  {
+    return SCAN_MODE;
+  } 
+  else if (getGpsButtonState()) 
+  {
+    return GPS_MODE;
+  }
+  return RX_MODE;
+}
+
+void setting_the_operating_mode(Work_state_t new_mode)
+{
+  static Work_state_t current_mode = NUMBER_STATE;
+    
+  if (current_mode == new_mode) 
+  {
+    return;
+  }
+  else
+  {
+    current_mode = new_mode;
+  }
+
+  switch (new_mode)
+  {
+    case TX_MODE:
     {
       PT_INIT(&sub_tx_pt);
       setWorkSate(TX_MODE);
       debugPrintf("TX Mode"CLI_NEW_LINE);
+      break;
     }
-  }
-  else if (getjammButtonState())
-  {
-    if (getWorkState() != JAMMER_MODE)
-    {
-      PT_INIT(&jammer_pt);
-      setWorkSate(JAMMER_MODE);
-      debugPrintf("JAMMER Mode"CLI_NEW_LINE);
-    }
-  }
-  else if (getScanButtonState())
-  {
-    if (getWorkState() != SCAN_MODE)
-    {
-      PT_INIT(&specrum_pt);
-      setWorkSate(SCAN_MODE);
-      debugPrintf("SCAN Mode"CLI_NEW_LINE);
-    }
-  }
-  else if (getGpsButtonState())
-  {
-    if (getWorkState() != GPS_MODE)
-    {
-      PT_INIT(&gps_pt);
-      setWorkSate(GPS_MODE);
-      debugPrintf("GPS Mode"CLI_NEW_LINE);
-    }
-  }
-  else
-  {
-    if (getWorkState() != RX_MODE)
+    case RX_MODE:
     {
       PT_INIT(&rf_pt);
       setWorkSate(RX_MODE);
       debugPrintf("RX Mode"CLI_NEW_LINE);
+      break;
     }
+    case SCAN_MODE:
+    {
+      PT_INIT(&specrum_pt);
+      setWorkSate(SCAN_MODE);
+      debugPrintf("SCAN Mode"CLI_NEW_LINE);
+      break;
+    }
+    case JAMMER_MODE:
+    {
+      PT_INIT(&jammer_pt);
+      setWorkSate(JAMMER_MODE);
+      debugPrintf("JAMMER Mode"CLI_NEW_LINE);
+      break;
+    }
+    case GPS_MODE:
+    {
+      PT_INIT(&gps_pt);
+      setWorkSate(GPS_MODE);
+      debugPrintf("GPS Mode"CLI_NEW_LINE);
+      break;
+    }
+    default:
+      assert_param(0U);
+    break;
+  }
+}
+
+static void execute_current_mode_thread(void)
+{
+  switch (getWorkState())
+  {
+    case TX_MODE:
+      subGHz_TX_Thread(&sub_tx_pt);
+      break;
+    case RX_MODE:
+      subGHz_RX_Thread(&rf_pt);
+      break;
+    case SCAN_MODE:
+      spectrumScan_Thread(&specrum_pt);
+      break;
+    case JAMMER_MODE:
+      jammer_Thread(&jammer_pt);
+      break;
+    case GPS_MODE:
+      gps_Thread(&gps_pt);
+      break;
+    default:
+      assert_param(0U);
+    break;
   }
 }
 
@@ -115,27 +168,8 @@ noreturn void scheduler(void)
 
     if (getBootingScreenMode() == false)
     {
-      switch (getWorkState())
-      {
-        case TX_MODE:
-          subGHz_TX_Thread(&sub_tx_pt);
-          break;
-        case RX_MODE:
-          subGHz_RX_Thread(&rf_pt);
-          break;
-        case SCAN_MODE:
-          spectrumScan_Thread(&specrum_pt);
-          break;
-        case JAMMER_MODE:
-          jammer_Thread(&jammer_pt);
-          break;
-        case GPS_MODE:
-          gps_Thread(&gps_pt);
-          break;
-        default:
-          assert_param(0U);
-        break;
-      }
+      setting_the_operating_mode(determine_work_mode());
+      execute_current_mode_thread();
     }
   }
 }
