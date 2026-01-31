@@ -45,6 +45,55 @@ static void initProtothreads(void)
   PT_INIT(&gps_pt);
 }
 
+void settingTheOperatingMode(void)
+{
+  if (getTxButtonState() || TX_MODE_ALWAYS)
+  {
+    if (getWorkState() != TX_MODE)
+    {
+      PT_INIT(&sub_tx_pt);
+      setWorkSate(TX_MODE);
+      debugPrintf("TX Mode"CLI_NEW_LINE);
+    }
+  }
+  else if (getjammButtonState())
+  {
+    if (getWorkState() != JAMMER_MODE)
+    {
+      PT_INIT(&jammer_pt);
+      setWorkSate(JAMMER_MODE);
+      debugPrintf("JAMMER Mode"CLI_NEW_LINE);
+    }
+  }
+  else if (getScanButtonState())
+  {
+    if (getWorkState() != SCAN_MODE)
+    {
+      PT_INIT(&specrum_pt);
+      setWorkSate(SCAN_MODE);
+      debugPrintf("SCAN Mode"CLI_NEW_LINE);
+    }
+  }
+  else if (getGpsButtonState())
+  {
+    if (getWorkState() != GPS_MODE)
+    {
+      PT_INIT(&gps_pt);
+      setWorkSate(GPS_MODE);
+      debugPrintf("GPS Mode"CLI_NEW_LINE);
+    }
+  }
+  else
+  {
+    if (getWorkState() != RX_MODE)
+    {
+      PT_INIT(&rf_pt);
+      setWorkSate(RX_MODE);
+      debugPrintf("RX Mode"CLI_NEW_LINE);
+    }
+  }
+}
+
 noreturn void scheduler(void)
 {
   initProtothreads();
@@ -52,52 +101,6 @@ noreturn void scheduler(void)
   while (true)
   {
     IWDG_reload();
-
-    if (getTxButtonState() || TX_MODE_ALWAYS)
-    {
-      if (getWorkState() != TX_MODE)
-      {
-        PT_INIT(&sub_tx_pt);
-        setWorkSate(TX_MODE);
-        debugPrintf("TX Mode"CLI_NEW_LINE);
-      }
-    }
-    else if (getjammButtonState())
-    {
-      if (getWorkState() != JAMMER_MODE)
-      {
-        PT_INIT(&jammer_pt);
-        setWorkSate(JAMMER_MODE);
-        debugPrintf("JAMMER Mode"CLI_NEW_LINE);
-      }
-    }
-    else if (getScanButtonState())
-    {
-      if (getWorkState() != SCAN_MODE)
-      {
-        PT_INIT(&specrum_pt);
-        setWorkSate(SCAN_MODE);
-        debugPrintf("SCAN Mode"CLI_NEW_LINE);
-      }
-    }
-    else if (getGpsButtonState())
-    {
-      if (getWorkState() != GPS_MODE)
-      {
-        PT_INIT(&gps_pt);
-        setWorkSate(GPS_MODE);
-        debugPrintf("GPS Mode"CLI_NEW_LINE);
-      }
-    }
-    else
-    {
-      if (getWorkState() != RX_MODE)
-      {
-        PT_INIT(&rf_pt);
-        setWorkSate(RX_MODE);
-        debugPrintf("RX Mode"CLI_NEW_LINE);
-      }
-    }
 
     if (getBootButtonState())
     {
