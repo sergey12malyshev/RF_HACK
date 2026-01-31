@@ -84,35 +84,35 @@ void setting_the_operating_mode(Work_state_t new_mode)
     case TX_MODE:
     {
       PT_INIT(&sub_tx_pt);
-      setWorkSate(TX_MODE);
+      setWorkState(TX_MODE);
       debugPrintf("TX Mode"CLI_NEW_LINE);
       break;
     }
     case RX_MODE:
     {
       PT_INIT(&rf_pt);
-      setWorkSate(RX_MODE);
+      setWorkState(RX_MODE);
       debugPrintf("RX Mode"CLI_NEW_LINE);
       break;
     }
     case SCAN_MODE:
     {
       PT_INIT(&specrum_pt);
-      setWorkSate(SCAN_MODE);
+      setWorkState(SCAN_MODE);
       debugPrintf("SCAN Mode"CLI_NEW_LINE);
       break;
     }
     case JAMMER_MODE:
     {
       PT_INIT(&jammer_pt);
-      setWorkSate(JAMMER_MODE);
+      setWorkState(JAMMER_MODE);
       debugPrintf("JAMMER Mode"CLI_NEW_LINE);
       break;
     }
     case GPS_MODE:
     {
       PT_INIT(&gps_pt);
-      setWorkSate(GPS_MODE);
+      setWorkState(GPS_MODE);
       debugPrintf("GPS Mode"CLI_NEW_LINE);
       break;
     }

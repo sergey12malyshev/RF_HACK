@@ -4,7 +4,7 @@
 
 static Work_state_t mainState;
 
-void setWorkSate(const Work_state_t s)
+void setWorkState(const Work_state_t s)
 {
   mainState = s;
 }

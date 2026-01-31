@@ -58,6 +58,8 @@ The frequency of the APB1 (SPI2) bus was reduced four times, otherwise there wer
 ### Compiler
 *GCC* (gcc-arm-none-eabi) version 5.4.1 20160919
 
+Program language: C11 and C++11
+
 #### Setting up the build system in WINDOWS10 
 
 1. Download GNU Arm Embedded Toolchain 
@@ -92,6 +94,8 @@ To clean the project run **makeClean.bat** (OR *make clean*)
 
 ## Programm firmware
 Connect ST-Link V2 to SWD connector. Run **programFlash.bat**
+
+Connect J-Link to SWD connector. Run **programFlash_Jlink.cmd**
 
 ## Update firmware use system bootloader (DFU Mode)
 
