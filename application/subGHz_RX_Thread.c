@@ -74,15 +74,15 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
 
   while (1)
   {
-    TI_strobe(CCxxx0_SFRX); // Flush the buffer
-    TI_strobe(CCxxx0_SRX);  // Set RX Mode
+    CC1101_strobe(CCxxx0_SFRX); // Flush the buffer
+    CC1101_strobe(CCxxx0_SRX);  // Set RX Mode
 
     PT_WAIT_UNTIL(pt, CC1101_GDO0_flag_get()); // 0 - highLevel
 
     CC1101_GDO0_flag_clear();
     __UNUSED uint8_t errorData = 0;
 
-    uint8_t status = TI_read_status(CCxxx0_RXBYTES);
+    uint8_t status = CC1101_read_status(CCxxx0_RXBYTES);
 
     if (!(status & 0x7f))
       continue;
@@ -93,7 +93,7 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
     {
       uint8_t length_packet = MAX_PACKET_LENGTH;
 
-      status = TI_receive_packet((uint8_t *)buffer, &length_packet);
+      status = CC1101_receive_packet((uint8_t *)buffer, &length_packet);
 
       if ((status == RX_ERR_LENGHT)||(status == RX_ERR_RX))
       {
@@ -119,12 +119,12 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
 
         uint16_t offset = CC1101_autoCalibrate1();
 
-        debugPrintf("%s, RSSI: %d, offset: %d" CLI_NEW_LINE, massage, CC1101_RSSIconvert(get_RSSI()), offset);
+        debugPrintf("%s, RSSI: %d, offset: %d" CLI_NEW_LINE, massage, CC1101_RSSIconvert(CC1101_get_RSSI()), offset);
       }
     }
     else
     {
-      status = TI_read_status(CCxxx0_PKTSTATUS);
+      status = CC1101_read_status(CCxxx0_PKTSTATUS);
       CC1101_GDO0_flag_clear();
       debugPrintf(CLI_ERROR "CRC" CLI_NEW_LINE);
       counter_Error++;
@@ -136,7 +136,7 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
       counter_RX = 0;
     }
     CC1101.countMessage = counter_RX;
-    CC1101.RSSI = CC1101_RSSIconvert(get_RSSI());
+    CC1101.RSSI = CC1101_RSSIconvert(CC1101_get_RSSI());
     CC1101.countError = counter_Error;
 
     CC1101_DataScreen();

@@ -172,8 +172,8 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
 
   CC1101_reinit();
 
-  TI_strobe(CCxxx0_SFRX); // Flush the buffer
-  TI_strobe(CCxxx0_SRX);  // Set RX Mod
+  CC1101_strobe(CCxxx0_SFRX); // Flush the buffer
+  CC1101_strobe(CCxxx0_SRX);  // Set RX Mod
   
   encoder_setRotaryNum(offset_x + 68);
 
@@ -214,8 +214,8 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
     LCD_WriteString(lcd, 15, 240, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
 
-    TI_strobe(CCxxx0_SFRX); // Flush the buffer
-    TI_strobe(CCxxx0_SRX);  // Set RX Mod
+    CC1101_strobe(CCxxx0_SFRX); // Flush the buffer
+    CC1101_strobe(CCxxx0_SRX);  // Set RX Mod
 
 
     PT_YIELD(pt);

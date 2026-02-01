@@ -122,7 +122,7 @@ void checkResetSourse(void)
 
 bool CC1101_reinit(void)
 {
-  return TI_init(&hspi2, NSS_CS_GPIO_Port, NSS_CS_Pin); // CS
+  return CC1101_init(&hspi2, NSS_CS_GPIO_Port, NSS_CS_Pin); // CS
 }
 
 static void stm32_cacheEnable(void)

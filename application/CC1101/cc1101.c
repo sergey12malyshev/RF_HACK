@@ -71,7 +71,7 @@ void CC1101_GDO0_flag_set(void)
   GDO0_flag = true;
 }
 
-HAL_StatusTypeDef __spi_write(uint8_t *addr, uint8_t *pData, uint16_t size)
+static HAL_StatusTypeDef __spi_write(uint8_t *addr, uint8_t *pData, uint16_t size)
 {
   HAL_StatusTypeDef status;
   uint32_t tickstart = HAL_GetTick();
@@ -97,7 +97,7 @@ HAL_StatusTypeDef __spi_write(uint8_t *addr, uint8_t *pData, uint16_t size)
   return status;
 }
 
-HAL_StatusTypeDef __spi_read(uint8_t *addr, uint8_t *pData, uint16_t size)
+static HAL_StatusTypeDef __spi_read(uint8_t *addr, uint8_t *pData, uint16_t size)
 {
   HAL_StatusTypeDef status;
   uint32_t tickstart = HAL_GetTick();
@@ -120,24 +120,24 @@ HAL_StatusTypeDef __spi_read(uint8_t *addr, uint8_t *pData, uint16_t size)
   return status;
 }
 
-void TI_write_reg(UINT8 addr, UINT8 value)
+static void TI_write_reg(UINT8 addr, UINT8 value)
 {
   __spi_write(&addr, &value, 1);
 }
 
-void TI_write_burst_reg(uint8_t addr, uint8_t* buffer, uint8_t count)
+static void TI_write_burst_reg(uint8_t addr, uint8_t* buffer, uint8_t count)
 {
   addr = (addr | WRITE_BURST);
   __spi_write(&addr, buffer, count);
 }
 
-void TI_strobe(uint8_t strobe)
+void CC1101_strobe(uint8_t strobe)
 {
   __spi_write(&strobe, 0, 0);
 }
 
 
-uint8_t TI_read_reg(uint8_t addr)
+static uint8_t TI_read_reg(uint8_t addr)
 {
   uint8_t data;
   addr = (addr | READ_SINGLE);
@@ -145,7 +145,7 @@ uint8_t TI_read_reg(uint8_t addr)
   return data;
 }
 
-uint8_t TI_read_status(uint8_t addr)
+uint8_t CC1101_read_status(uint8_t addr)
 {
   uint8_t data;
   addr = (addr | READ_BURST);
@@ -153,7 +153,7 @@ uint8_t TI_read_status(uint8_t addr)
   return data;
 }
 
-void TI_read_burst_reg(uint8_t addr, uint8_t* buffer, uint8_t count)
+static void TI_read_burst_reg(uint8_t addr, uint8_t* buffer, uint8_t count)
 {
   addr = (addr | READ_BURST);
   __spi_read(&addr, buffer, count);
@@ -161,18 +161,18 @@ void TI_read_burst_reg(uint8_t addr, uint8_t* buffer, uint8_t count)
 
 static uint8_t rssi = 0;
 
-unsigned char get_RSSI(void)
+unsigned char CC1101_get_RSSI(void)
 {
   return rssi;
 }
 
-ResiveSt TI_receive_packet(uint8_t* rxBuffer, UINT8 *length)
+ResiveState_t CC1101_receive_packet(uint8_t* rxBuffer, UINT8 *length)
 {
   uint8_t status[2];
   UINT8 packet_len;
   // This status register is safe to read since it will not be updated after
   // the packet has been received (See the CC1100 and 2500 Errata Note)
-  if (TI_read_status(CCxxx0_RXBYTES) & BYTES_IN_RXFIFO)
+  if (CC1101_read_status(CCxxx0_RXBYTES) & BYTES_IN_RXFIFO)
   {
     // Read length byte
     packet_len = TI_read_reg(CCxxx0_RXFIFO);
@@ -197,10 +197,10 @@ ResiveSt TI_receive_packet(uint8_t* rxBuffer, UINT8 *length)
 
       // Make sure that the radio is in IDLE state before flushing the FIFO
       // (Unless RXOFF_MODE has been changed, the radio should be in IDLE state at this point)
-      TI_strobe(CCxxx0_SIDLE);
+      CC1101_strobe(CCxxx0_SIDLE);
 
       // Flush RX FIFO
-      TI_strobe(CCxxx0_SFRX);
+      CC1101_strobe(CCxxx0_SFRX);
       return(RX_ERR_LENGHT);
     }
   }
@@ -210,21 +210,21 @@ ResiveSt TI_receive_packet(uint8_t* rxBuffer, UINT8 *length)
   } 
 }
 
-void TI_send_packet(uint8_t* txBuffer, UINT8 size)
+void CC1101_send_packet(uint8_t* txBuffer, UINT8 size)
 {
   __attribute__((unused)) uint8_t status;
 
-    TI_strobe(CCxxx0_SIDLE);
+  CC1101_strobe(CCxxx0_SIDLE);
 
-    TI_write_reg(CCxxx0_TXFIFO, size);
+  TI_write_reg(CCxxx0_TXFIFO, size);
 
-    status = TI_read_status(CCxxx0_TXBYTES);
+  status = CC1101_read_status(CCxxx0_TXBYTES);
 
-    TI_write_burst_reg(CCxxx0_TXFIFO, txBuffer, 7);
+  TI_write_burst_reg(CCxxx0_TXFIFO, txBuffer, 7);
 
-    status = TI_read_status(CCxxx0_TXBYTES);
+  status = CC1101_read_status(CCxxx0_TXBYTES);
 
-    TI_strobe(CCxxx0_STX);
+  CC1101_strobe(CCxxx0_STX);
 }
 
 /*
@@ -232,7 +232,7 @@ void TI_send_packet(uint8_t* txBuffer, UINT8 size)
   4FSK - to get the highest data transfer rate, but you will lose the range.
   The band for 2FSK: bitrate + 2* deviation
 */
-void TI_write_settings(void)
+void CC1101_write_settings(void)
 {
 // Address Config = No address check 
 // Base Frequency = 432.999817 
@@ -376,7 +376,7 @@ void TI_setDevAddress(uint8_t a)
   devAddress = a;
 }
 
-void TI_write_settingsOld(void)
+void CC1101_write_settingsOld(void)
 {
 #define ADRESS_CHECK_EN   0
 #define LOWSPEED_EN       1
@@ -471,7 +471,7 @@ void TI_write_settingsOld(void)
 }
 
 
-bool TI_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t cs_pin)
+bool CC1101_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t cs_pin)
 {
   uint8_t status;
 
@@ -481,7 +481,7 @@ bool TI_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t cs_pin)
 
   for(int i = 0; i < 20; i++)
   {
-    status = TI_read_status(CCxxx0_VERSION);
+    status = CC1101_read_status(CCxxx0_VERSION);
     if (status == 0x14)
     {
       break;
@@ -493,26 +493,23 @@ bool TI_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t cs_pin)
     }
   }
 
-  TI_strobe(CCxxx0_SFRX); //RX FIFO
-  TI_strobe(CCxxx0_SFTX); //TX FIFO
-  TI_write_settings();
+  CC1101_strobe(CCxxx0_SFRX); //RX FIFO
+  CC1101_strobe(CCxxx0_SFTX); //TX FIFO
+  CC1101_write_settings();
   TI_write_burst_reg(CCxxx0_PATABLE, paTable, 8);
 
   TI_write_reg(CCxxx0_FIFOTHR, 0x07);
 
-  TI_strobe(CCxxx0_SIDLE);
-  TI_strobe(CCxxx0_SFRX);
-  TI_strobe(CCxxx0_SFTX);
+  CC1101_strobe(CCxxx0_SIDLE);
+  CC1101_strobe(CCxxx0_SFRX);
+  CC1101_strobe(CCxxx0_SFTX);
 
-  TI_strobe(CCxxx0_SIDLE);
+  CC1101_strobe(CCxxx0_SIDLE);
 
   return false;
 }
 
 
-/*
- New driver function:
-*/
 void CC1101_customSetCSpin(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint16_t cs_pin)
 {
   hal_spi = hspi;
@@ -544,7 +541,7 @@ bool CC1101_power_up_reset(void)
     }
   }
 
-  TI_strobe(CCxxx0_SRES);
+  CC1101_strobe(CCxxx0_SRES);
   LL_GPIO_SetOutputPin(CS_GPIO_Port, CS_Pin);
 
   return false;
@@ -552,19 +549,19 @@ bool CC1101_power_up_reset(void)
 
 void CC1101_goSleep(void)
 {
-  TI_strobe(CCxxx0_SIDLE);
-  TI_strobe(CCxxx0_SPWD);
+  CC1101_strobe(CCxxx0_SIDLE);
+  CC1101_strobe(CCxxx0_SPWD);
 }
 
 uint8_t CC1101_getLqi(void)
 {
-  uint8_t lqi = TI_read_status(CCxxx0_LQI);
+  uint8_t lqi = CC1101_read_status(CCxxx0_LQI);
   return lqi;
 }
 
 uint8_t CC1101_getRssiRaw(void)
 {
-  uint8_t rssi_raw = TI_read_status(CCxxx0_RSSI);
+  uint8_t rssi_raw = CC1101_read_status(CCxxx0_RSSI);
   return rssi_raw;
 }
 
@@ -624,7 +621,6 @@ void CC1101_setMHZ(float mhz)
   TI_write_reg(CCxxx0_FREQ2, freq2);
   TI_write_reg(CCxxx0_FREQ1, freq1);
   TI_write_reg(CCxxx0_FREQ0, freq0);
-  // Calibrate();
 }
 
 
@@ -635,13 +631,13 @@ uint8_t CC1101_transmittRF(const char *packet_loc, uint8_t len)
   assert_param(packet_loc != NULL);
   assert_param(len > 0);
 
-  status = TI_read_status(CCxxx0_VERSION);       // it is for checking only (it must be 0x14)
-  status = TI_read_status(CCxxx0_TXBYTES);       // it is too
-  TI_strobe(CCxxx0_SFTX);                        // flush the buffer
+  status = CC1101_read_status(CCxxx0_VERSION);       // it is for checking only (it must be 0x14)
+  status = CC1101_read_status(CCxxx0_TXBYTES);       // it is too
+  CC1101_strobe(CCxxx0_SFTX);                        // flush the buffer
 
   __ASM volatile ("NOP");
 
-  TI_send_packet((uint8_t *)packet_loc, len);
+  CC1101_send_packet((uint8_t *)packet_loc, len);
   //DEBUG_PRINT(CLI_TX"%s %d"CLI_NEW_LINE, packet, len);
 
   uint32_t tickstart = HAL_GetTick();
@@ -666,7 +662,7 @@ uint8_t CC1101_transmittRF(const char *packet_loc, uint8_t len)
     }
   }
 
-  status = TI_read_status(CCxxx0_TXBYTES);     // it is checking to send the data
+  status = CC1101_read_status(CCxxx0_TXBYTES);     // it is checking to send the data
 
   return status;
 }
@@ -676,7 +672,7 @@ uint16_t CC1101_autoCalibrate1(void)
 {
   static uint16_t accumulatedOffset = 0;
 
-  uint16_t offset = TI_read_status(CCxxx0_FREQEST);
+  uint16_t offset = CC1101_read_status(CCxxx0_FREQEST);
   if (offset != 0)
   {
     accumulatedOffset += offset;
@@ -688,7 +684,7 @@ uint16_t CC1101_autoCalibrate1(void)
 
 uint16_t CC1101_autoCalibrate0(void)
 {
-  uint16_t offset = TI_read_status(CCxxx0_FREQEST);
+  uint16_t offset = CC1101_read_status(CCxxx0_FREQEST);
 
   if (offset != 0)
   {
@@ -705,7 +701,7 @@ uint16_t CC1101_autoCalibrate0(void)
 
 static uint8_t _PA_TABLE[8] = {0x00,0xC0,0x00,0x00,0x00,0x00,0x00,0x00};
 
-bool CC1101_setPower(int pa, float MHz, Modulation modulation)
+bool CC1101_setPower(int pa, float MHz, Modulation_t modulation)
 {
   assert_param(MHz >= 378 && MHz <= 464);
   assert_param(modulation <= _MSK);
