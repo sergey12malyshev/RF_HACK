@@ -28,7 +28,6 @@
 PT_THREAD(jammer_Thread(struct pt *pt))
 {
   static uint32_t timer1;
-  __UNUSED uint8_t s;
   char str[25] = {0};
 
 
@@ -86,7 +85,12 @@ PT_THREAD(jammer_Thread(struct pt *pt))
 #if 0
       debugPrintf("%s %d"CLI_NEW_LINE, packet, packet[i]);
 #endif
-      s = CC1101_transmittRF(packet, sizeof(packet)); // sending the data
+      uint8_t result = CC1101_transmitt_packet(packet, sizeof(packet)); // sending the data
+      
+      if (result > 0)
+      {
+        DEBUG_PRINT("JAMMER ERROR: %d"CLI_NEW_LINE, result);
+      }
       LCD_WriteString(lcd, 15, 65, packet, &Font_12x20, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
       
       PT_WAIT_UNTIL(pt, (CC1101_GDO0_flag_get())); // GDO low lowel - end transmitt

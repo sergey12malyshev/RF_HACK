@@ -5,6 +5,7 @@
  *      Author: suleyman.eskil
  */
 #pragma once
+
 #ifndef INC_CC1101_H_
 #define INC_CC1101_H_
 
@@ -20,22 +21,23 @@
 #endif
 
 
-// Data
+#define DIFFERENCE_WITH_CARRIER       0.985  // BASE and CARRIER have a shift
+
+
 typedef unsigned char       BYTE;
 typedef unsigned short      WORD;
 typedef unsigned long       DWORD;
 
-// Unsigned numbers
 typedef unsigned char       UINT8;
 typedef unsigned short      UINT16;
 typedef unsigned long       UINT32;
 
-// Signed numbers
+
 typedef signed char         INT8;
 typedef signed short        INT16;
 typedef signed long         INT32;
 
-// CC2500/CC1100 STROBE, CONTROL AND STATUS REGSITER
+/* CC2500/CC1100 STROBE, CONTROL AND STATUS REGSITER */
 #define CCxxx0_IOCFG2       0x00        // GDO2 output pin configuration
 #define CCxxx0_IOCFG1       0x01        // GDO1 output pin configuration
 #define CCxxx0_IOCFG0       0x02        // GDO0 output pin configuration
@@ -138,11 +140,9 @@ typedef signed long         INT32;
 #define TI_CCxxx0_READ_BURST   0xC0
 
 
-
-
 //-------------------------------------------------------------------------------------------------------
 // RF_SETTINGS is a data structure which contains all relevant CCxxx0 registers
-//i didnt use because i used with TI_write_settings() in cc1101.c
+//i didnt use because i used with CC1101_write_settings() in cc1101.c
 /*typedef struct S_RF_SETTINGS{
     uint8_t FSCTRL1;   // Frequency synthesizer control.
     uint8_t FSCTRL0;   // Frequency synthesizer control.
@@ -227,38 +227,7 @@ typedef enum
 {
   RX_ERR_LENGHT,
   RX_ERR_RX
-}ResiveSt;
-
-
-HAL_StatusTypeDef __spi_write(uint8_t* addr, uint8_t *pData, uint16_t size);
-HAL_StatusTypeDef __spi_read(uint8_t* addr, uint8_t *pData, uint16_t size);
-
-bool TI_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t cs_pin);
-
-void init_serial(UART_HandleTypeDef* huart);
-
-void TI_write_reg(UINT8 addr, UINT8 value);
-void TI_write_burst_reg(uint8_t addr, uint8_t * buffer, uint8_t count);
-void TI_write_burst_reg_c(uint8_t addr, uint8_t * buffer, uint8_t count);
-void TI_strobe(uint8_t strobe);
-uint8_t TI_read_reg(uint8_t addr);
-uint8_t TI_read_status(uint8_t addr);
-void TI_read_burst_reg(uint8_t addr, uint8_t * buffer, uint8_t count);
-ResiveSt TI_receive_packet(uint8_t * rxBuffer, UINT8 *length);
-void TI_send_packet(uint8_t * txBuffer, UINT8 size);
-void TI_write_settings();
-UINT8 get_random_byte(void);
-bool CC1101_power_up_reset(void);
-
-// nev:
-unsigned char get_RSSI(void);
-void CC1101_setMHZ(float mhz);
-void CC1101_customSetCSpin(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint16_t cs_pin);
-uint8_t CC1101_transmittRF(const char *packet_loc, uint8_t len);
-uint8_t CC1101_getRssiRaw(void);
-int CC1101_RSSIconvert(char raw_rssi);
-uint16_t CC1101_autoCalibrate1(void);
-uint8_t CC1101_getLqi(void);
+} ResiveState_t;
 
 /**
  * Carrier frequencies
@@ -274,20 +243,35 @@ enum CFREQ
 
 typedef enum _Modulation
 {
-  _2_FSK = 0
- ,_GFSK
- ,_ASK
- ,_4_FSK
- ,_MSK
-}Modulation;
+  _2_FSK = 0,
+  _GFSK,
+  _ASK,
+  _4_FSK,
+  _MSK
+} Modulation_t;
+
+bool CC1101_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t cs_pin);
+void CC1101_strobe(uint8_t strobe);
+uint8_t CC1101_read_status(uint8_t addr);
+
+ResiveState_t CC1101_receive_packet(uint8_t * rxBuffer, uint8_t *length);
+uint8_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len);
+
+void CC1101_write_settings();
+bool CC1101_power_up_reset(void);
+unsigned char CC1101_get_RSSI(void);
+void CC1101_setMHZ(float mhz);
+void CC1101_customSetCSpin(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint16_t cs_pin);
+uint8_t CC1101_getRssiRaw(void);
+int CC1101_RSSIconvert(char raw_rssi);
+uint16_t CC1101_autoCalibrate1(void);
+uint8_t CC1101_getLqi(void);
 
 void CC1101_GDO0_flag_clear(void);
 bool CC1101_GDO0_flag_get(void);
 void CC1101_GDO0_flag_set(void);
 
-void TI_setCarrierFreq(uint8_t f);
-void TI_setDevAddress(uint8_t a);
-
-#define DIFFERENCE_WITH_CARRIER 0.985  // BASE и CARRIER имеют сдвиг
+void CC1101_setCarrierFreq(uint8_t f);
+void CC1101_setDevAddress(uint8_t a);
 
 #endif /* INC_CC1101_H_ */

@@ -28,9 +28,7 @@ static char packet[7] = "QWERTY";; // Reserve one character for a null terminato
 PT_THREAD(subGHz_TX_Thread(struct pt *pt))
 {
   static uint32_t timer1;
-  __UNUSED uint8_t s;
-
-
+  
   PT_BEGIN(pt);
 
   PT_DELAY_MS(pt, &timer1, 250);
@@ -56,8 +54,13 @@ PT_THREAD(subGHz_TX_Thread(struct pt *pt))
     }
     sprintf(packet, "TST %02d", count_tx++);
 
-    s = CC1101_transmittRF(packet, sizeof(packet)); // the function is sending the data
-    
+    uint8_t result = CC1101_transmitt_packet(packet, sizeof(packet)); // the function is sending the data
+
+    if (result > 0)
+    {
+      DEBUG_PRINT("TX ERROR: %d"CLI_NEW_LINE, result);
+    }
+
     LCD_WriteString(lcd, 15, 40, packet, &Font_12x20, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
     PT_WAIT_UNTIL(pt, (CC1101_GDO0_flag_get())); // TODO: уточнить работу GDO (low lowel - end transmitt)

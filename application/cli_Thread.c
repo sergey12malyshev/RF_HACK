@@ -214,7 +214,7 @@ static void monitorParser(uint8_t input_char)
           packet[i] = input_mon_buff[a++];
         }
 
-        CC1101_transmittRF(packet, strlen(packet)); // the function is sending the data
+        CC1101_transmitt_packet(packet, strlen(packet)); // the function is sending the data
 
         debugPrintf("send: %s"CLI_NEW_LINE, packet);
       }

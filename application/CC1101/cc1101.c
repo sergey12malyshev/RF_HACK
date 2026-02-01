@@ -125,10 +125,10 @@ static void TI_write_reg(UINT8 addr, UINT8 value)
   __spi_write(&addr, &value, 1);
 }
 
-static void TI_write_burst_reg(uint8_t addr, uint8_t* buffer, uint8_t count)
+static HAL_StatusTypeDef TI_write_burst_reg(uint8_t addr, uint8_t* buffer, uint8_t count)
 {
   addr = (addr | WRITE_BURST);
-  __spi_write(&addr, buffer, count);
+  return __spi_write(&addr, buffer, count);
 }
 
 void CC1101_strobe(uint8_t strobe)
@@ -166,10 +166,10 @@ unsigned char CC1101_get_RSSI(void)
   return rssi;
 }
 
-ResiveState_t CC1101_receive_packet(uint8_t* rxBuffer, UINT8 *length)
+ResiveState_t CC1101_receive_packet(uint8_t* rxBuffer, uint8_t *length)
 {
   uint8_t status[2];
-  UINT8 packet_len;
+  uint8_t packet_len;
   // This status register is safe to read since it will not be updated after
   // the packet has been received (See the CC1100 and 2500 Errata Note)
   if (CC1101_read_status(CCxxx0_RXBYTES) & BYTES_IN_RXFIFO)
@@ -210,21 +210,41 @@ ResiveState_t CC1101_receive_packet(uint8_t* rxBuffer, UINT8 *length)
   } 
 }
 
-void CC1101_send_packet(uint8_t* txBuffer, UINT8 size)
+#define FIFO_LEN                64U
+
+static uint8_t CC1101_send_packet(uint8_t* txBuffer, uint8_t size)
 {
-  __attribute__((unused)) uint8_t status;
+  HAL_StatusTypeDef status;
+
+  if (txBuffer == NULL)
+  {
+    return 0xFC;
+  }
 
   CC1101_strobe(CCxxx0_SIDLE);
 
   TI_write_reg(CCxxx0_TXFIFO, size);
 
-  status = CC1101_read_status(CCxxx0_TXBYTES);
+  if (CC1101_read_status(CCxxx0_TXBYTES)  > FIFO_LEN) 
+  {
+    return 0xFF;
+  }
 
-  TI_write_burst_reg(CCxxx0_TXFIFO, txBuffer, 7);
+  status = TI_write_burst_reg(CCxxx0_TXFIFO, txBuffer, size);
 
-  status = CC1101_read_status(CCxxx0_TXBYTES);
+  if (status != HAL_OK) 
+  {
+    return status;
+  }
+
+  if (CC1101_read_status(CCxxx0_TXBYTES) > FIFO_LEN)
+  {
+    return 0xFD;
+  }
 
   CC1101_strobe(CCxxx0_STX);
+
+  return status;
 }
 
 /*
@@ -353,7 +373,7 @@ void setCarrierFreqRegister(const uint8_t freq)
 
 static uint8_t carrierFreq = CFREQ_433;
 
-void TI_setCarrierFreq(uint8_t f)
+void CC1101_setCarrierFreq(uint8_t f)
 {
   carrierFreq = f;
 }
@@ -365,13 +385,13 @@ void TI_setCarrierFreq(uint8_t f)
  * 
  * @param addr  Device address
  */
-void TI_setDevAddressRegister(uint8_t addr) 
+void CC1101_setDevAddressRegister(uint8_t addr) 
 {
   TI_write_reg(CCxxx0_ADDR, addr);    //Device Address
 }
 
 static uint8_t devAddress = 0;
-void TI_setDevAddress(uint8_t a) 
+void CC1101_setDevAddress(uint8_t a) 
 {
   devAddress = a;
 }
@@ -422,7 +442,7 @@ void CC1101_write_settingsOld(void)
 #endif
   TI_write_reg(CCxxx0_PKTCTRL0,0x05);//Packet Automation Control
 
-  TI_setDevAddressRegister(devAddress); //Device Address
+  CC1101_setDevAddressRegister(devAddress); //Device Address
 
   TI_write_reg(CCxxx0_CHANNR,0x00);  //Channel Number
   TI_write_reg(CCxxx0_FSCTRL1,0x08); //Frequency Synthesizer Control
@@ -624,21 +644,26 @@ void CC1101_setMHZ(float mhz)
 }
 
 
-uint8_t CC1101_transmittRF(const char *packet_loc, uint8_t len)
+uint8_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len)
 {
-  uint8_t status = 0;
+  HAL_StatusTypeDef status = HAL_OK;
   
   assert_param(packet_loc != NULL);
   assert_param(len > 0);
 
-  status = CC1101_read_status(CCxxx0_VERSION);       // it is for checking only (it must be 0x14)
-  status = CC1101_read_status(CCxxx0_TXBYTES);       // it is too
-  CC1101_strobe(CCxxx0_SFTX);                        // flush the buffer
+  uint8_t version  = CC1101_read_status(CCxxx0_VERSION);       // it is for checking only (it must be 0x14)
+  uint8_t tx_bytes = CC1101_read_status(CCxxx0_TXBYTES);       // it is too
+  
+  CC1101_strobe(CCxxx0_SFTX);                                  // flush the buffer
 
   __ASM volatile ("NOP");
 
-  CC1101_send_packet((uint8_t *)packet_loc, len);
-  //DEBUG_PRINT(CLI_TX"%s %d"CLI_NEW_LINE, packet, len);
+  status = CC1101_send_packet((uint8_t *)packet_loc, len);
+
+  if (status > HAL_OK)
+  {
+    return (uint8_t)status;
+  }
 
   uint32_t tickstart = HAL_GetTick();
   while (LL_GPIO_IsInputPinSet(PORT_GDO, PIN_GDO)) // start transmitt
@@ -662,9 +687,9 @@ uint8_t CC1101_transmittRF(const char *packet_loc, uint8_t len)
     }
   }
 
-  status = CC1101_read_status(CCxxx0_TXBYTES);     // it is checking to send the data
+  uint8_t status_tx = CC1101_read_status(CCxxx0_TXBYTES);     // it is checking to send the data
 
-  return status;
+  return (uint8_t)status;
 }
 
 

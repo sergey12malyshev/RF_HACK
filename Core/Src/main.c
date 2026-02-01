@@ -256,8 +256,8 @@ int main(void)
   }
 
 #if CC1101_CUSTOM_OLD_CONFIG
-  TI_setCarrierFreq(CFREQ_433);
-  TI_setDevAddress(1); 
+  CC1101_setCarrierFreq(CFREQ_433);
+  CC1101_setDevAddress(1); 
 #endif
   error_state = CC1101_reinit();
   if (!error_state)
