@@ -651,8 +651,8 @@ uint8_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len)
   assert_param(packet_loc != NULL);
   assert_param(len > 0);
 
-  uint8_t version  = CC1101_read_status(CCxxx0_VERSION);       // it is for checking only (it must be 0x14)
-  uint8_t tx_bytes = CC1101_read_status(CCxxx0_TXBYTES);       // it is too
+  __attribute__((unused)) uint8_t version  = CC1101_read_status(CCxxx0_VERSION);       // it is for checking only (it must be 0x14)
+  __attribute__((unused)) uint8_t tx_bytes = CC1101_read_status(CCxxx0_TXBYTES);       // it is too
   
   CC1101_strobe(CCxxx0_SFTX);                                  // flush the buffer
 
@@ -687,7 +687,7 @@ uint8_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len)
     }
   }
 
-  uint8_t status_tx = CC1101_read_status(CCxxx0_TXBYTES);     // it is checking to send the data
+  __attribute__((unused)) uint8_t status_tx = CC1101_read_status(CCxxx0_TXBYTES);     // it is checking to send the data
 
   return (uint8_t)status;
 }
