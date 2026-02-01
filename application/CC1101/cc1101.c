@@ -448,7 +448,7 @@ void CC1101_write_settingsOld(void)
   TI_write_reg(CCxxx0_FSCTRL1,0x08); //Frequency Synthesizer Control
   TI_write_reg(CCxxx0_FSCTRL0,0x00); //Frequency Synthesizer Control
 
-   setCarrierFreqRegister(carrierFreq);
+  setCarrierFreqRegister(carrierFreq);
 
 #define CCxxx0_DEFVAL_MDMCFG4_4800     0xC7   // Modem configuration. Speed = 4800 bps
 #define CCxxx0_DEFVAL_MDMCFG4_38400    0xCA   // Modem configuration. Speed = 38 Kbps
