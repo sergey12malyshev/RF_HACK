@@ -52,8 +52,8 @@ typedef struct {
 } CC1101_pin_t;
 
 static CC1101_pin_t cs_pin;
-
-
+static CC1101_pin_t miso_pin = {PORT_MISO, PIN_MISO};
+static CC1101_pin_t gdo_pin = {PORT_GDO, PIN_GDO};
 
 static volatile bool GDO0_flag;
 
@@ -86,12 +86,12 @@ static inline void __spi_cs_reset(void)
 
 static inline bool __spi_miso_isSet(void)
 {
-  return LL_GPIO_IsInputPinSet(PORT_MISO, PIN_MISO);
+  return LL_GPIO_IsInputPinSet(miso_pin.port, miso_pin.pin);
 }
 
 static inline bool __gdo_pin_isSet(void)
 {
-  return LL_GPIO_IsInputPinSet(PORT_GDO, PIN_GDO);
+  return LL_GPIO_IsInputPinSet(gdo_pin.port, gdo_pin.pin);
 }
 
 static HAL_StatusTypeDef __spi_write(uint8_t *addr, uint8_t *pData, uint16_t size)
