@@ -25,6 +25,28 @@
             },
             "problemMatcher": "$gcc"
         },
+                {
+            "label": "rebuild fast",
+            "type": "shell",
+            "windows": {
+                "command": [
+                  ".//makeProject.bat"
+                ]
+            },
+
+            "icon": {
+              "id": "debug-alt",
+              "color": "terminal.ansiGreen"
+            },
+
+            "args": [],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true
+            },
+            "problemMatcher": "$gcc"
+        },
         {
             "label": "clean",
             "type": "shell",

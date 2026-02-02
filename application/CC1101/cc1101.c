@@ -71,14 +71,34 @@ void CC1101_GDO0_flag_set(void)
   GDO0_flag = true;
 }
 
+static inline void __spi_cs_set(void)
+{
+  LL_GPIO_SetOutputPin(CS_GPIO_Port, CS_Pin);
+}
+
+static inline void __spi_cs_reset(void)
+{
+  LL_GPIO_ResetOutputPin(CS_GPIO_Port, CS_Pin);
+}
+
+static inline bool __spi_miso_isSet(void)
+{
+  return LL_GPIO_IsInputPinSet(PORT_MISO, PIN_MISO);
+}
+
+static inline bool __gdo_pin_isSet(void)
+{
+  return LL_GPIO_IsInputPinSet(PORT_GDO, PIN_GDO);
+}
+
 static HAL_StatusTypeDef __spi_write(uint8_t *addr, uint8_t *pData, uint16_t size)
 {
   HAL_StatusTypeDef status;
   uint32_t tickstart = HAL_GetTick();
 
-  LL_GPIO_ResetOutputPin(CS_GPIO_Port, CS_Pin);
+  __spi_cs_reset();
 
-  while(LL_GPIO_IsInputPinSet(PORT_MISO, PIN_MISO))
+  while(__spi_miso_isSet())
   {
     if (((HAL_GetTick() - tickstart) >= (uint32_t) TIMEOUT_SPI_MS))
     {
@@ -92,7 +112,7 @@ static HAL_StatusTypeDef __spi_write(uint8_t *addr, uint8_t *pData, uint16_t siz
     status = HAL_SPI_Transmit(hal_spi, pData, size, (uint32_t) TIMEOUT_SPI_MS);
   }
     
-  LL_GPIO_SetOutputPin(CS_GPIO_Port, CS_Pin);
+  __spi_cs_set();
   
   return status;
 }
@@ -102,8 +122,8 @@ static HAL_StatusTypeDef __spi_read(uint8_t *addr, uint8_t *pData, uint16_t size
   HAL_StatusTypeDef status;
   uint32_t tickstart = HAL_GetTick();
 
-  LL_GPIO_ResetOutputPin(CS_GPIO_Port, CS_Pin);
-  while(LL_GPIO_IsInputPinSet(PORT_MISO, PIN_MISO))
+  __spi_cs_reset();
+  while(__spi_miso_isSet())
   {
     if (((HAL_GetTick() - tickstart) >= (uint32_t) TIMEOUT_SPI_MS))
     {
@@ -115,7 +135,7 @@ static HAL_StatusTypeDef __spi_read(uint8_t *addr, uint8_t *pData, uint16_t size
   status = HAL_SPI_Receive(hal_spi, pData, size, (uint32_t) TIMEOUT_SPI_MS);
 
 
-  LL_GPIO_SetOutputPin(CS_GPIO_Port, CS_Pin);
+  __spi_cs_set();
 
   return status;
 }
@@ -542,18 +562,18 @@ bool CC1101_power_up_reset(void)
   const uint32_t waiting = 450;
 
   DWT_Delay_Init();
-  LL_GPIO_SetOutputPin(CS_GPIO_Port, CS_Pin);
+  __spi_cs_set();
   DWT_Delay_us(1);
-  LL_GPIO_ResetOutputPin(CS_GPIO_Port, CS_Pin);
+  __spi_cs_reset();
   DWT_Delay_us(1);
-  LL_GPIO_SetOutputPin(CS_GPIO_Port, CS_Pin);
+  __spi_cs_set();
   DWT_Delay_us(41);
 
-  LL_GPIO_ResetOutputPin(CS_GPIO_Port, CS_Pin);
+  __spi_cs_reset();
 
   uint32_t timeStamp = HAL_GetTick();
 
-  while(LL_GPIO_IsInputPinSet(PORT_MISO, PIN_MISO))
+  while(__spi_miso_isSet())
   {
     if (HAL_GetTick() - timeStamp > waiting)
     {
@@ -562,7 +582,7 @@ bool CC1101_power_up_reset(void)
   }
 
   CC1101_strobe(CCxxx0_SRES);
-  LL_GPIO_SetOutputPin(CS_GPIO_Port, CS_Pin);
+  __spi_cs_set();
 
   return false;
 }
@@ -666,7 +686,7 @@ uint8_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len)
   }
 
   uint32_t tickstart = HAL_GetTick();
-  while (LL_GPIO_IsInputPinSet(PORT_GDO, PIN_GDO)) // start transmitt
+  while (__gdo_pin_isSet()) // start transmitt
   {
     __ASM volatile ("NOP");
 
@@ -677,7 +697,7 @@ uint8_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len)
   }
 
   tickstart = HAL_GetTick();
-  while (!LL_GPIO_IsInputPinSet(PORT_GDO, PIN_GDO)) // end transmitt
+  while (!__gdo_pin_isSet()) // end transmitt
   {
     __ASM volatile ("NOP");
 
