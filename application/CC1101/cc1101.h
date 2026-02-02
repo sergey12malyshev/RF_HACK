@@ -3,11 +3,14 @@
  *
  *  Created on: Mar 11, 2020
  *      Author: suleyman.eskil
+ * 
+ *  Updated 2024 Malyshev Sergey
+ *      https://github.com/sergey12malyshev
  */
 #pragma once
 
-#ifndef INC_CC1101_H_
-#define INC_CC1101_H_
+#ifndef CC1101_H
+#define CC1101_H
 
 #include <string.h>
 #include <stdlib.h>
@@ -24,18 +27,6 @@
 #define DIFFERENCE_WITH_CARRIER       0.985  // BASE and CARRIER have a shift
 
 
-typedef unsigned char       BYTE;
-typedef unsigned short      WORD;
-typedef unsigned long       DWORD;
-
-typedef unsigned char       UINT8;
-typedef unsigned short      UINT16;
-typedef unsigned long       UINT32;
-
-
-typedef signed char         INT8;
-typedef signed short        INT16;
-typedef signed long         INT32;
 
 /* CC2500/CC1100 STROBE, CONTROL AND STATUS REGSITER */
 #define CCxxx0_IOCFG2       0x00        // GDO2 output pin configuration
@@ -274,4 +265,4 @@ void CC1101_GDO0_flag_set(void);
 void CC1101_setCarrierFreq(uint8_t f);
 void CC1101_setDevAddress(uint8_t a);
 
-#endif /* INC_CC1101_H_ */
+#endif /* CC1101_H */

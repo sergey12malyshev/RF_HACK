@@ -120,7 +120,7 @@ static HAL_StatusTypeDef __spi_read(uint8_t *addr, uint8_t *pData, uint16_t size
   return status;
 }
 
-static void TI_write_reg(UINT8 addr, UINT8 value)
+static void TI_write_reg(uint8_t addr, uint8_t value)
 {
   __spi_write(&addr, &value, 1);
 }
