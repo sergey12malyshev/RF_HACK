@@ -230,8 +230,6 @@ ResiveState_t CC1101_receive_packet(uint8_t* rxBuffer, uint8_t *length)
 
 static uint8_t CC1101_send_packet(uint8_t* txBuffer, uint8_t size)
 {
-  HAL_StatusTypeDef status;
-
   if (txBuffer == NULL)
   {
     return 0xFC;
@@ -246,7 +244,7 @@ static uint8_t CC1101_send_packet(uint8_t* txBuffer, uint8_t size)
     return 0xFF;
   }
 
-  status = cc1101_write_burst_reg(CCxxx0_TXFIFO, txBuffer, size);
+  HAL_StatusTypeDef status = cc1101_write_burst_reg(CCxxx0_TXFIFO, txBuffer, size);
 
   if (status != HAL_OK) 
   {
@@ -662,8 +660,6 @@ void CC1101_setMHZ(float mhz)
 
 uint8_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len)
 {
-  HAL_StatusTypeDef status = HAL_OK;
-  
   assert_param(packet_loc != NULL);
   assert_param(len > 0);
 
@@ -674,7 +670,7 @@ uint8_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len)
 
   __ASM volatile ("NOP");
 
-  status = CC1101_send_packet((uint8_t *)packet_loc, len);
+  HAL_StatusTypeDef status = CC1101_send_packet((uint8_t *)packet_loc, len);
 
   if (status > HAL_OK)
   {
