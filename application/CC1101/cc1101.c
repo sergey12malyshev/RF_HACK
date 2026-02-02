@@ -45,8 +45,15 @@
 #define TIMEOUT_SPI_MS          250U
 
 static SPI_HandleTypeDef* hal_spi;
-static uint16_t CS_Pin;
-static GPIO_TypeDef* CS_GPIO_Port;
+
+typedef struct {
+  GPIO_TypeDef *port;
+  uint32_t pin;
+} CC1101_pin_t;
+
+static CC1101_pin_t cs_pin;
+
+
 
 static volatile bool GDO0_flag;
 
@@ -69,12 +76,12 @@ void CC1101_GDO0_flag_set(void)
 
 static inline void __spi_cs_set(void)
 {
-  LL_GPIO_SetOutputPin(CS_GPIO_Port, CS_Pin);
+  LL_GPIO_SetOutputPin(cs_pin.port, cs_pin.pin);
 }
 
 static inline void __spi_cs_reset(void)
 {
-  LL_GPIO_ResetOutputPin(CS_GPIO_Port, CS_Pin);
+  LL_GPIO_ResetOutputPin(cs_pin.port, cs_pin.pin);
 }
 
 static inline bool __spi_miso_isSet(void)
@@ -505,13 +512,13 @@ void CC1101_write_settingsOld(void)
 }
 
 
-bool CC1101_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t cs_pin)
+bool CC1101_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t _cs_pin)
 {
   uint8_t status;
 
   hal_spi = hspi;
-  CS_GPIO_Port = cs_port;
-  CS_Pin = cs_pin;
+  cs_pin.port = cs_port;
+  cs_pin.pin = _cs_pin;
 
   for(int i = 0; i < 20; i++)
   {
@@ -544,11 +551,11 @@ bool CC1101_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t cs_pin
 }
 
 
-void CC1101_customSetCSpin(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint16_t cs_pin)
+void CC1101_customSetCSpin(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint16_t _cs_pin)
 {
   hal_spi = hspi;
-  CS_GPIO_Port = cs_port;
-  CS_Pin = cs_pin;
+  cs_pin.port = cs_port;
+  cs_pin.pin = _cs_pin;
 }
 
 bool CC1101_power_up_reset(void)
