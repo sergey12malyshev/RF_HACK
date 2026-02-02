@@ -20,10 +20,6 @@
 #include "stm32f4xx_ll_gpio.h"
 #include "stm32f4xx_ll_exti.h"
 
-#ifdef CC1101_CLI_ENABLE
-  #include "cli_driver.h"
-#endif //CC1101_CLI_ENABLE
-
 #define WRITE_BURST             0x40
 #define READ_SINGLE             0x80
 #define READ_BURST              0xC0
