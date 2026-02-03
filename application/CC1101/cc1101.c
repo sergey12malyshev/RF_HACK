@@ -519,13 +519,14 @@ void CC1101_write_settingsOld(void)
 }
 
 
-bool CC1101_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t _cs_pin)
+bool CC1101_init(void)
 {
-  uint8_t status;
+  if ((hal_spi == NULL) || (cs_pin.port == NULL) || (cs_pin.pin == 0))
+  {
+    return true;
+  }
 
-  hal_spi = hspi;
-  cs_pin.port = cs_port;
-  cs_pin.pin = _cs_pin;
+  uint8_t status;
 
   for(int i = 0; i < 20; i++)
   {
@@ -558,16 +559,21 @@ bool CC1101_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t _cs_pi
 }
 
 
-void CC1101_customSetCSpin(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint16_t _cs_pin)
+void CC1101_initPins(SPI_HandleTypeDef* hspi, GPIO_TypeDef* _cs_port, uint16_t _cs_pin)
 {
   hal_spi = hspi;
-  cs_pin.port = cs_port;
+  cs_pin.port = _cs_port;
   cs_pin.pin = _cs_pin;
 }
 
 bool CC1101_power_up_reset(void)
 {
   const uint32_t waiting = 450;
+
+  if ((hal_spi == NULL) || (cs_pin.port == NULL) || (cs_pin.pin == 0))
+  {
+    return true;
+  }
 
   DWT_Delay_Init();
   __spi_cs_set();
