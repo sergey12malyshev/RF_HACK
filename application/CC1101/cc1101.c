@@ -122,10 +122,15 @@ static HAL_StatusTypeDef __spi_write(uint8_t *addr, uint8_t *pData, uint16_t siz
 
 static HAL_StatusTypeDef __spi_read(uint8_t *addr, uint8_t *pData, uint16_t size)
 {
-  HAL_StatusTypeDef status;
-  uint32_t tickstart = HAL_GetTick();
+  if ((pData == NULL) || (size == 0U))
+  {
+    return HAL_ERROR;
+  }
 
   __spi_cs_reset();
+
+  uint32_t tickstart = HAL_GetTick();
+
   while(__spi_miso_isSet())
   {
     if (((HAL_GetTick() - tickstart) >= (uint32_t) TIMEOUT_SPI_MS))
@@ -134,9 +139,8 @@ static HAL_StatusTypeDef __spi_read(uint8_t *addr, uint8_t *pData, uint16_t size
     }
   };
 
-  status = HAL_SPI_Transmit(hal_spi, addr, 1, (uint32_t) TIMEOUT_SPI_MS);
+  HAL_StatusTypeDef status = HAL_SPI_Transmit(hal_spi, addr, 1, (uint32_t) TIMEOUT_SPI_MS);
   status = HAL_SPI_Receive(hal_spi, pData, size, (uint32_t) TIMEOUT_SPI_MS);
-
 
   __spi_cs_set();
 
@@ -191,8 +195,8 @@ unsigned char CC1101_get_RSSI(void)
 
 ResiveState_t CC1101_receive_packet(uint8_t* rxBuffer, uint8_t *length)
 {
-  uint8_t status[2];
-  uint8_t packet_len;
+  uint8_t status[2] = {0};
+  uint8_t packet_len = 0;
   // This status register is safe to read since it will not be updated after
   // the packet has been received (See the CC1100 and 2500 Errata Note)
   if (CC1101_read_status(CCxxx0_RXBYTES) & BYTES_IN_RXFIFO)
@@ -412,6 +416,7 @@ void CC1101_setDevAddressRegister(uint8_t addr)
 }
 
 static uint8_t devAddress = 0;
+
 void CC1101_setDevAddress(uint8_t a) 
 {
   devAddress = a;
