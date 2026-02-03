@@ -140,8 +140,10 @@ static HAL_StatusTypeDef __spi_read(uint8_t *addr, uint8_t *pData, uint16_t size
   };
 
   HAL_StatusTypeDef status = HAL_SPI_Transmit(hal_spi, addr, 1, (uint32_t) TIMEOUT_SPI_MS);
-  status = HAL_SPI_Receive(hal_spi, pData, size, (uint32_t) TIMEOUT_SPI_MS);
-
+  if (status == HAL_OK)
+  {
+    status = HAL_SPI_Receive(hal_spi, pData, size, (uint32_t) TIMEOUT_SPI_MS);
+  }
   __spi_cs_set();
 
   return status;
