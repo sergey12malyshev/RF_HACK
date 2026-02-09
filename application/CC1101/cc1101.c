@@ -304,45 +304,45 @@ void CC1101_write_settings(void)
 // TX Power = 10 
 // Whitening = false 
 // PA table 
-#define PA_TABLE {0xc0,0x00,0x00,0x00,0x00,0x00,0x00,0x00}
+#define PA_TABLE {0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
 //
 // Rf settings for CC1101
 //
-cc1101_write_reg(CCxxx0_IOCFG0,0x06);  //GDO0 Output Pin Configuration
-cc1101_write_reg(CCxxx0_FIFOTHR,0x47); //RX FIFO and TX FIFO Thresholds
-cc1101_write_reg(CCxxx0_SYNC1,0x7A);   //Sync Word, High Byte
-cc1101_write_reg(CCxxx0_SYNC0,0x0E);   //Sync Word, Low Byte
-cc1101_write_reg(CCxxx0_PKTLEN,0x14);  //Packet Length
-cc1101_write_reg(CCxxx0_PKTCTRL0,0x05);//Packet Automation Control
-cc1101_write_reg(CCxxx0_CHANNR,0x0A);  //Channel Number
-cc1101_write_reg(CCxxx0_FSCTRL1,0x06); //Frequency Synthesizer Control
-cc1101_write_reg(CCxxx0_FREQ2,0x10);   //Frequency Control Word, High Byte
-cc1101_write_reg(CCxxx0_FREQ1,0xA7);   //Frequency Control Word, Middle Byte
-cc1101_write_reg(CCxxx0_FREQ0,0x62);   //Frequency Control Word, Low Byte
-cc1101_write_reg(CCxxx0_MDMCFG4,0xF6); //Modem Configuration
-cc1101_write_reg(CCxxx0_MDMCFG3,0xE4); //Modem Configuration
-cc1101_write_reg(CCxxx0_MDMCFG2,0x06); //Modem Configuration
-cc1101_write_reg(CCxxx0_MDMCFG1,0x21); //Modem Configuration
-cc1101_write_reg(CCxxx0_DEVIATN,0x07); //Modem Deviation Setting
-cc1101_write_reg(CCxxx0_MCSM0,0x18);   //Main Radio Control State Machine Configuration
-cc1101_write_reg(CCxxx0_FOCCFG,0x16);  //Frequency Offset Compensation Configuration
-cc1101_write_reg(CCxxx0_AGCCTRL2,0x43);//AGC Control
-cc1101_write_reg(CCxxx0_AGCCTRL1,0x49);//AGC Control
-cc1101_write_reg(CCxxx0_WORCTRL,0xFB); //Wake On Radio Control
-cc1101_write_reg(CCxxx0_FSCAL3,0xE9);  //Frequency Synthesizer Calibration
-cc1101_write_reg(CCxxx0_FSCAL2,0x2A);  //Frequency Synthesizer Calibration
-cc1101_write_reg(CCxxx0_FSCAL1,0x00);  //Frequency Synthesizer Calibration
-cc1101_write_reg(CCxxx0_FSCAL0,0x1F);  //Frequency Synthesizer Calibration
-cc1101_write_reg(CCxxx0_TEST2,0x81);   //Various Test Settings
-cc1101_write_reg(CCxxx0_TEST1,0x35);   //Various Test Settings
-cc1101_write_reg(CCxxx0_TEST0,0x09);   //Various Test Settings
+cc1101_write_reg(CCxxx0_IOCFG0, 0x06);  //GDO0 Output Pin Configuration
+cc1101_write_reg(CCxxx0_FIFOTHR, 0x47); //RX FIFO and TX FIFO Thresholds
+cc1101_write_reg(CCxxx0_SYNC1, 0x7A);   //Sync Word, High Byte
+cc1101_write_reg(CCxxx0_SYNC0, 0x0E);   //Sync Word, Low Byte
+cc1101_write_reg(CCxxx0_PKTLEN, 0x14);  //Packet Length
+cc1101_write_reg(CCxxx0_PKTCTRL0, 0x05);//Packet Automation Control
+cc1101_write_reg(CCxxx0_CHANNR, 0x0A);  //Channel Number
+cc1101_write_reg(CCxxx0_FSCTRL1, 0x06); //Frequency Synthesizer Control
+cc1101_write_reg(CCxxx0_FREQ2, 0x10);   //Frequency Control Word, High Byte
+cc1101_write_reg(CCxxx0_FREQ1, 0xA7);   //Frequency Control Word, Middle Byte
+cc1101_write_reg(CCxxx0_FREQ0, 0x62);   //Frequency Control Word, Low Byte
+cc1101_write_reg(CCxxx0_MDMCFG4, 0xF6); //Modem Configuration
+cc1101_write_reg(CCxxx0_MDMCFG3, 0xE4); //Modem Configuration
+cc1101_write_reg(CCxxx0_MDMCFG2, 0x06); //Modem Configuration
+cc1101_write_reg(CCxxx0_MDMCFG1, 0x21); //Modem Configuration
+cc1101_write_reg(CCxxx0_DEVIATN, 0x07); //Modem Deviation Setting
+cc1101_write_reg(CCxxx0_MCSM0, 0x18);   //Main Radio Control State Machine Configuration
+cc1101_write_reg(CCxxx0_FOCCFG, 0x16);  //Frequency Offset Compensation Configuration
+cc1101_write_reg(CCxxx0_AGCCTRL2, 0x43);//AGC Control
+cc1101_write_reg(CCxxx0_AGCCTRL1, 0x49);//AGC Control
+cc1101_write_reg(CCxxx0_WORCTRL, 0xFB); //Wake On Radio Control
+cc1101_write_reg(CCxxx0_FSCAL3, 0xE9);  //Frequency Synthesizer Calibration
+cc1101_write_reg(CCxxx0_FSCAL2, 0x2A);  //Frequency Synthesizer Calibration
+cc1101_write_reg(CCxxx0_FSCAL1, 0x00);  //Frequency Synthesizer Calibration
+cc1101_write_reg(CCxxx0_FSCAL0, 0x1F);  //Frequency Synthesizer Calibration
+cc1101_write_reg(CCxxx0_TEST2, 0x81);   //Various Test Settings
+cc1101_write_reg(CCxxx0_TEST1, 0x35);   //Various Test Settings
+cc1101_write_reg(CCxxx0_TEST0, 0x09);   //Various Test Settings
 
 }
 
 
 //For 433MHz, +10dBm
 //it is also high
-//uint8_t paTable[] = {0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0,0xc0};
+//uint8_t paTable[] = {0xc0, 0xc0, 0xc0, 0xc0, 0xc0, 0xc0, 0xc0, 0xc0};
 
 uint8_t paTable[] = PA_TABLE;
 
@@ -456,25 +456,25 @@ void CC1101_write_settingsOld(void)
   //
 
   //i checked in smartRF studio 7 of Mr. ilynx's code // the setting is yours
-  cc1101_write_reg(CCxxx0_IOCFG2,0x29);  //GDO2 Output Pin Configuration
-  cc1101_write_reg(CCxxx0_IOCFG1,0x2E);  //GDO1 Output Pin Configuration
-  cc1101_write_reg(CCxxx0_IOCFG0,0x06);  //GDO0 Output Pin Configuration
-  cc1101_write_reg(CCxxx0_FIFOTHR,0x47); //RX FIFO and TX FIFO Thresholds
-  cc1101_write_reg(CCxxx0_SYNC1,0xD3);   //Sync Word, High Byte
-  cc1101_write_reg(CCxxx0_SYNC0,0x91);   //Sync Word, Low Byte
-  cc1101_write_reg(CCxxx0_PKTLEN,0xFF);  //Packet Length
+  cc1101_write_reg(CCxxx0_IOCFG2, 0x29);  //GDO2 Output Pin Configuration
+  cc1101_write_reg(CCxxx0_IOCFG1, 0x2E);  //GDO1 Output Pin Configuration
+  cc1101_write_reg(CCxxx0_IOCFG0, 0x06);  //GDO0 Output Pin Configuration
+  cc1101_write_reg(CCxxx0_FIFOTHR, 0x47); //RX FIFO and TX FIFO Thresholds
+  cc1101_write_reg(CCxxx0_SYNC1, 0xD3);   //Sync Word, High Byte
+  cc1101_write_reg(CCxxx0_SYNC0, 0x91);   //Sync Word, Low Byte
+  cc1101_write_reg(CCxxx0_PKTLEN, 0xFF);  //Packet Length
 #if ADRESS_CHECK_EN
-  cc1101_write_reg(CCxxx0_PKTCTRL1,0x06);//Packet Automation Control, Enable address check
+  cc1101_write_reg(CCxxx0_PKTCTRL1, 0x06);//Packet Automation Control, Enable address check
 #else
-  cc1101_write_reg(CCxxx0_PKTCTRL1,0x04);//Packet Automation Control, Disable address check
+  cc1101_write_reg(CCxxx0_PKTCTRL1, 0x04);//Packet Automation Control, Disable address check
 #endif
-  cc1101_write_reg(CCxxx0_PKTCTRL0,0x05);//Packet Automation Control
+  cc1101_write_reg(CCxxx0_PKTCTRL0, 0x05);//Packet Automation Control
 
   CC1101_setDevAddressRegister(devAddress); //Device Address
 
-  cc1101_write_reg(CCxxx0_CHANNR,0x00);  //Channel Number
-  cc1101_write_reg(CCxxx0_FSCTRL1,0x08); //Frequency Synthesizer Control
-  cc1101_write_reg(CCxxx0_FSCTRL0,0x00); //Frequency Synthesizer Control
+  cc1101_write_reg(CCxxx0_CHANNR, 0x00);  //Channel Number
+  cc1101_write_reg(CCxxx0_FSCTRL1, 0x08); //Frequency Synthesizer Control
+  cc1101_write_reg(CCxxx0_FSCTRL0, 0x00); //Frequency Synthesizer Control
 
   setCarrierFreqRegister(carrierFreq);
 
@@ -486,36 +486,36 @@ void CC1101_write_settingsOld(void)
 #else
   cc1101_write_reg(CCxxx0_MDMCFG4, CCxxx0_DEFVAL_MDMCFG4_38400); //Modem Configuration
 #endif
-  cc1101_write_reg(CCxxx0_MDMCFG3,0x83); //Modem Configuration
-  cc1101_write_reg(CCxxx0_MDMCFG2,0x93); //Modem Configuration
-  cc1101_write_reg(CCxxx0_MDMCFG1,0x22); //Modem Configuration
-  cc1101_write_reg(CCxxx0_MDMCFG0,0xF8); //Modem Configuration
-  cc1101_write_reg(CCxxx0_DEVIATN,0x34); //Modem Deviation Setting
-  cc1101_write_reg(CCxxx0_MCSM2,0x07);   //Main Radio Control State Machine Configuration
-  cc1101_write_reg(CCxxx0_MCSM1,0x30);   //Main Radio Control State Machine Configuration
-  cc1101_write_reg(CCxxx0_MCSM0,0x18);   //Main Radio Control State Machine Configuration
-  cc1101_write_reg(CCxxx0_FOCCFG,0x16);  //Frequency Offset Compensation Configuration
-  cc1101_write_reg(CCxxx0_BSCFG,0x6C);   //Bit Synchronization Configuration
-  cc1101_write_reg(CCxxx0_AGCCTRL2,0x43);//AGC Control
-  cc1101_write_reg(CCxxx0_AGCCTRL1,0x40);//AGC Control
-  cc1101_write_reg(CCxxx0_AGCCTRL0,0x91);//AGC Control
-  cc1101_write_reg(CCxxx0_WOREVT1,0x87); //High Byte Event0 Timeout
-  cc1101_write_reg(CCxxx0_WOREVT0,0x6B); //Low Byte Event0 Timeout
-  cc1101_write_reg(CCxxx0_WORCTRL,0xF8); //Wake On Radio Control
-  cc1101_write_reg(CCxxx0_FREND1,0x56);  //Front End RX Configuration
-  cc1101_write_reg(CCxxx0_FREND0,0x10);  //Front End TX Configuration
-  cc1101_write_reg(CCxxx0_FSCAL3,0xE9);  //Frequency Synthesizer Calibration
-  cc1101_write_reg(CCxxx0_FSCAL2,0x2A);  //Frequency Synthesizer Calibration
-  cc1101_write_reg(CCxxx0_FSCAL1,0x00);  //Frequency Synthesizer Calibration
-  cc1101_write_reg(CCxxx0_FSCAL0,0x1F);  //Frequency Synthesizer Calibration
-  cc1101_write_reg(CCxxx0_RCCTRL1,0x41); //RC Oscillator Configuration
-  cc1101_write_reg(CCxxx0_RCCTRL0,0x00); //RC Oscillator Configuration
-  cc1101_write_reg(CCxxx0_FSTEST,0x59);  //Frequency Synthesizer Calibration Control
-  cc1101_write_reg(CCxxx0_PTEST,0x7F);   //Production Test
-  cc1101_write_reg(CCxxx0_AGCTEST,0x3F); //AGC Test
-  cc1101_write_reg(CCxxx0_TEST2,0x81);   //Various Test Settings
-  cc1101_write_reg(CCxxx0_TEST1,0x35);   //Various Test Settings
-  cc1101_write_reg(CCxxx0_TEST0,0x09);   //Various Test Settings
+  cc1101_write_reg(CCxxx0_MDMCFG3, 0x83); //Modem Configuration
+  cc1101_write_reg(CCxxx0_MDMCFG2, 0x93); //Modem Configuration
+  cc1101_write_reg(CCxxx0_MDMCFG1, 0x22); //Modem Configuration
+  cc1101_write_reg(CCxxx0_MDMCFG0, 0xF8); //Modem Configuration
+  cc1101_write_reg(CCxxx0_DEVIATN, 0x34); //Modem Deviation Setting
+  cc1101_write_reg(CCxxx0_MCSM2, 0x07);   //Main Radio Control State Machine Configuration
+  cc1101_write_reg(CCxxx0_MCSM1, 0x30);   //Main Radio Control State Machine Configuration
+  cc1101_write_reg(CCxxx0_MCSM0, 0x18);   //Main Radio Control State Machine Configuration
+  cc1101_write_reg(CCxxx0_FOCCFG, 0x16);  //Frequency Offset Compensation Configuration
+  cc1101_write_reg(CCxxx0_BSCFG, 0x6C);   //Bit Synchronization Configuration
+  cc1101_write_reg(CCxxx0_AGCCTRL2, 0x43);//AGC Control
+  cc1101_write_reg(CCxxx0_AGCCTRL1, 0x40);//AGC Control
+  cc1101_write_reg(CCxxx0_AGCCTRL0, 0x91);//AGC Control
+  cc1101_write_reg(CCxxx0_WOREVT1, 0x87); //High Byte Event0 Timeout
+  cc1101_write_reg(CCxxx0_WOREVT0, 0x6B); //Low Byte Event0 Timeout
+  cc1101_write_reg(CCxxx0_WORCTRL, 0xF8); //Wake On Radio Control
+  cc1101_write_reg(CCxxx0_FREND1, 0x56);  //Front End RX Configuration
+  cc1101_write_reg(CCxxx0_FREND0, 0x10);  //Front End TX Configuration
+  cc1101_write_reg(CCxxx0_FSCAL3, 0xE9);  //Frequency Synthesizer Calibration
+  cc1101_write_reg(CCxxx0_FSCAL2, 0x2A);  //Frequency Synthesizer Calibration
+  cc1101_write_reg(CCxxx0_FSCAL1, 0x00);  //Frequency Synthesizer Calibration
+  cc1101_write_reg(CCxxx0_FSCAL0, 0x1F);  //Frequency Synthesizer Calibration
+  cc1101_write_reg(CCxxx0_RCCTRL1, 0x41); //RC Oscillator Configuration
+  cc1101_write_reg(CCxxx0_RCCTRL0, 0x00); //RC Oscillator Configuration
+  cc1101_write_reg(CCxxx0_FSTEST, 0x59);  //Frequency Synthesizer Calibration Control
+  cc1101_write_reg(CCxxx0_PTEST, 0x7F);   //Production Test
+  cc1101_write_reg(CCxxx0_AGCTEST, 0x3F); //AGC Test
+  cc1101_write_reg(CCxxx0_TEST2, 0x81);   //Various Test Settings
+  cc1101_write_reg(CCxxx0_TEST1, 0x35);   //Various Test Settings
+  cc1101_write_reg(CCxxx0_TEST0, 0x09);   //Various Test Settings
 }
 
 
@@ -756,7 +756,7 @@ uint16_t CC1101_autoCalibrate0(void)
 * PA Power set for 378 - 464 mhz!
 */
 
-static uint8_t _PA_TABLE[8] = {0x00,0xC0,0x00,0x00,0x00,0x00,0x00,0x00};
+static uint8_t _PA_TABLE[8] = {0x00, 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 bool CC1101_setPower(int pa, float MHz, Modulation_t modulation)
 {
