@@ -97,6 +97,14 @@ static inline bool __gdo_pin_isSet(void)
   return LL_GPIO_IsInputPinSet(gdo_pin.port, gdo_pin.pin);
 }
 
+void CC1101_IRQHandler(void)
+{
+  if (!__gdo_pin_isSet())
+  {
+    CC1101_GDO0_flag_set();
+  }
+}
+
 static HAL_StatusTypeDef __spi_write(uint8_t *addr, uint8_t *pData, uint16_t size)
 {
   HAL_StatusTypeDef status;

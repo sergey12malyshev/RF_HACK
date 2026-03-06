@@ -289,10 +289,7 @@ void EXTI15_10_IRQHandler(void)
   {
     LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12);
     /* USER CODE BEGIN LL_EXTI_LINE_12 */
-    if (HAL_GPIO_ReadPin(CC_GDO_GPIO_Port, CC_GDO_Pin) == GPIO_PIN_RESET)
-    {
-      CC1101_GDO0_flag_set();
-    }
+    CC1101_IRQHandler();
 
     /* USER CODE END LL_EXTI_LINE_12 */
   }

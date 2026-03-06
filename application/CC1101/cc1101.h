@@ -248,6 +248,7 @@ bool CC1101_init(SPI_HandleTypeDef* hspi,
 
 bool CC1101_reinit(void);
 bool CC1101_power_up_reset(void);
+void CC1101_IRQHandler(void);
 
 void CC1101_strobe(uint8_t strobe);
 uint8_t CC1101_read_status(uint8_t addr);
