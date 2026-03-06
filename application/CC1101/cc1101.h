@@ -242,6 +242,11 @@ typedef enum _Modulation
 } Modulation_t;
 
 bool CC1101_init(void);
+void CC1101_initPins(SPI_HandleTypeDef* hspi, 
+                    GPIO_TypeDef* cs_port, uint16_t cs_pin,
+                    GPIO_TypeDef* miso_port, uint16_t miso_pin,
+                    GPIO_TypeDef* gdo_port, uint16_t gdo_pin);
+                    
 void CC1101_strobe(uint8_t strobe);
 uint8_t CC1101_read_status(uint8_t addr);
 
@@ -252,7 +257,7 @@ void CC1101_write_settings();
 bool CC1101_power_up_reset(void);
 unsigned char CC1101_get_RSSI(void);
 void CC1101_setMHZ(float mhz);
-void CC1101_initPins(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint16_t cs_pin);
+
 uint8_t CC1101_getRssiRaw(void);
 int CC1101_RSSIconvert(char raw_rssi);
 uint16_t CC1101_autoCalibrate1(void);

@@ -34,14 +34,6 @@
 #define PKTSTATUS_CCA           0x10
 #define PKTSTATUS_CS            0x40
 
-// TODO: configure ports via a function call
-#define PORT_MISO GPIOB
-#define PIN_MISO LL_GPIO_PIN_14
-
-#define PORT_GDO GPIOB
-#define PIN_GDO LL_GPIO_PIN_12
-
-
 #define TIMEOUT_SPI_MS          250U
 
 static SPI_HandleTypeDef* hal_spi;
@@ -52,8 +44,8 @@ typedef struct {
 } CC1101_pin_t;
 
 static CC1101_pin_t cs_pin;
-static CC1101_pin_t miso_pin = {PORT_MISO, PIN_MISO};
-static CC1101_pin_t gdo_pin = {PORT_GDO, PIN_GDO};
+static CC1101_pin_t miso_pin;
+static CC1101_pin_t gdo_pin;
 
 static volatile bool GDO0_flag;
 
@@ -559,11 +551,21 @@ bool CC1101_init(void)
 }
 
 
-void CC1101_initPins(SPI_HandleTypeDef* hspi, GPIO_TypeDef* _cs_port, uint16_t _cs_pin)
+void CC1101_initPins(SPI_HandleTypeDef* hspi, 
+                    GPIO_TypeDef* cs_port, uint16_t _cs_pin,
+                    GPIO_TypeDef* miso_port, uint16_t _miso_pin,
+                    GPIO_TypeDef* gdo_port, uint16_t _gdo_pin)
 {
   hal_spi = hspi;
-  cs_pin.port = _cs_port;
+  
+  cs_pin.port = cs_port;
   cs_pin.pin = _cs_pin;
+  
+  miso_pin.port = miso_port;
+  miso_pin.pin = _miso_pin;
+  
+  gdo_pin.port = gdo_port;
+  gdo_pin.pin = _gdo_pin;
 }
 
 bool CC1101_power_up_reset(void)
