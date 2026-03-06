@@ -47,7 +47,7 @@ PT_THREAD(subGHz_TX_Thread(struct pt *pt))
 
     static uint8_t count_tx = 0;
 
-    if(count_tx >= 99)
+    if (count_tx >= 99)
     {
       count_tx = 0;
     }
@@ -62,7 +62,14 @@ PT_THREAD(subGHz_TX_Thread(struct pt *pt))
 
     LCD_WriteString(lcd, 15, 40, packet, &Font_12x20, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
-    PT_WAIT_UNTIL(pt, (CC1101_GDO0_flag_get())); // TODO: уточнить работу GDO (low lowel - end transmitt)
+    static uint32_t tx_timeout;
+    tx_timeout = HAL_GetTick() + 100;
+
+    PT_WAIT_UNTIL(pt, (CC1101_GDO0_flag_get() || (HAL_GetTick() > tx_timeout))); // (low lowel - end transmitt)
+    if (!CC1101_GDO0_flag_get())
+    {
+      DEBUG_PRINT("TX TIMEOUT"CLI_NEW_LINE);
+    }
     CC1101_GDO0_flag_clear();
 
     PT_YIELD(pt);

@@ -50,8 +50,10 @@ PT_THREAD(jammer_Thread(struct pt *pt))
 
   while (1)
   {
-      /*You can connect only GDO0, if you are using asynchronous serial mode. 
-      The pin will switch automatically from INPUT to OUTPUT when you call setTX() and vice versa.*/
+      /*
+      You can connect only GDO0, if you are using asynchronous serial mode. 
+      The pin will switch automatically from INPUT to OUTPUT when you call setTX() and vice versa.
+      */
     static bool runJamm;
     bool stateSwitch = encoder_getStateSwitch();
 
@@ -92,7 +94,15 @@ PT_THREAD(jammer_Thread(struct pt *pt))
       }
       LCD_WriteString(lcd, 15, 65, packet, &Font_12x20, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
       
-      PT_WAIT_UNTIL(pt, (CC1101_GDO0_flag_get())); // GDO low lowel - end transmitt
+      static uint32_t tx_timeout;
+      tx_timeout = HAL_GetTick() + 100;
+
+      PT_WAIT_UNTIL(pt, (CC1101_GDO0_flag_get() || (HAL_GetTick() > tx_timeout))); // GDO low lowel - end transmitt
+      
+      if (!CC1101_GDO0_flag_get())
+      {
+        DEBUG_PRINT("JAM. TX TIMEOUT"CLI_NEW_LINE);
+      }
       CC1101_GDO0_flag_clear();
     }
     else

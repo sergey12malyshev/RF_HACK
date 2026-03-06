@@ -37,8 +37,6 @@
 #define TIMEOUT_SPI_MS          250U
 
 
-
-
 #ifndef CC1101_GDO_EXTI_LINE
 #define CC1101_GDO_EXTI_LINE LL_EXTI_LINE_12
 #endif

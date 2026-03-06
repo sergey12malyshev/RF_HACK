@@ -26,8 +26,6 @@
 
 #define DIFFERENCE_WITH_CARRIER       0.985  // BASE and CARRIER have a shift
 
-
-
 /* CC2500/CC1100 STROBE, CONTROL AND STATUS REGSITER */
 #define CCxxx0_IOCFG2       0x00        // GDO2 output pin configuration
 #define CCxxx0_IOCFG1       0x01        // GDO1 output pin configuration
@@ -129,90 +127,6 @@
 #define TI_CCxxx0_WRITE_BURST  0x40
 #define TI_CCxxx0_READ_SINGLE  0x80
 #define TI_CCxxx0_READ_BURST   0xC0
-
-
-//-------------------------------------------------------------------------------------------------------
-// RF_SETTINGS is a data structure which contains all relevant CCxxx0 registers
-//i didnt use because i used with CC1101_write_settings() in cc1101.c
-/*typedef struct S_RF_SETTINGS{
-    uint8_t FSCTRL1;   // Frequency synthesizer control.
-    uint8_t FSCTRL0;   // Frequency synthesizer control.
-    uint8_t FREQ2;     // Frequency control word, high byte.
-    uint8_t FREQ1;     // Frequency control word, middle byte.
-    uint8_t FREQ0;     // Frequency control word, low byte.
-    uint8_t MDMCFG4;   // Modem configuration.
-    uint8_t MDMCFG3;   // Modem configuration.
-    uint8_t MDMCFG2;   // Modem configuration.
-    uint8_t MDMCFG1;   // Modem configuration.
-    uint8_t MDMCFG0;   // Modem configuration.
-    uint8_t CHANNR;    // Channel number.
-    uint8_t DEVIATN;   // Modem deviation setting (when FSK modulation is enabled).
-    uint8_t FREND1;    // Front end RX configuration.
-    uint8_t FREND0;    // Front end RX configuration.
-    uint8_t MCSM0;     // Main Radio Control State Machine configuration.
-    uint8_t FOCCFG;    // Frequency Offset Compensation Configuration.
-    uint8_t BSCFG;     // Bit synchronization Configuration.
-    uint8_t AGCCTRL2;  // AGC control.
-  	uint8_t AGCCTRL1;  // AGC control.
-    uint8_t AGCCTRL0;  // AGC control.
-    uint8_t FSCAL3;    // Frequency synthesizer calibration.
-    uint8_t FSCAL2;    // Frequency synthesizer calibration.
-    uint8_t FSCAL1;    // Frequency synthesizer calibration.
-    uint8_t FSCAL0;    // Frequency synthesizer calibration.
-    uint8_t FSTEST;    // Frequency synthesizer calibration control
-    uint8_t TEST2;     // Various test settings.
-    uint8_t TEST1;     // Various test settings.
-    uint8_t TEST0;     // Various test settings.
-    uint8_t FIFOTHR;   // RXFIFO and TXFIFO thresholds.
-    uint8_t IOCFG2;    // GDO2 output pin configuration
-    uint8_t IOCFG0;    // GDO0 output pin configuration
-    uint8_t PKTCTRL1;  // Packet automation control.
-    uint8_t PKTCTRL0;  // Packet automation control.
-    uint8_t ADDR;      // Device address.
-    uint8_t PKTLEN;    // Packet length.
-
-} RF_SETTINGS;
-
-RF_SETTINGS TISettings = {
-     0x08,   // FSCTRL1   Frequency synthesizer control.
-     0x00,   // FSCTRL0   Frequency synthesizer control.
-     0x10,   // FREQ2     Frequency control word, high byte.
-     0xB4,   // FREQ1     Frequency control word, middle byte.
-     0x2E,   // FREQ0     Frequency control word, low byte.
-     0xCA,   // MDMCFG4   Modem configuration.
-     0x83,   // MDMCFG3   Modem configuration.
-     0x93,   // MDMCFG2   Modem configuration.
-     0x22,   // MDMCFG1   Modem configuration.
-     0xF8,   // MDMCFG0   Modem configuration.
-     0x00,   // CHANNR    Channel number.
-     0x34,   // DEVIATN   Modem deviation setting (when FSK modulation is enabled).
-     0x56,   // FREND1    Front end RX configuration.
-     0x10,   // FREND0    Front end TX configuration.
-     0x18,   // MCSM0     Main Radio Control State Machine configuration.
-     0x16,   // FOCCFG    Frequency Offset Compensation Configuration.
-     0x6C,   // BSCFG     Bit synchronization Configuration.
-     0x43,   // AGCCTRL2  AGC control.
-     0x40,   // AGCCTRL1  AGC control.
-     0x91,   // AGCCTRL0  AGC control.
-     0xE9,   // FSCAL3    Frequency synthesizer calibration.
-     0x2A,   // FSCAL2    Frequency synthesizer calibration.
-     0x00,   // FSCAL1    Frequency synthesizer calibration.
-     0x1F,   // FSCAL0    Frequency synthesizer calibration.
-     0x59,   // FSTEST    Frequency synthesizer calibration.
-     0x81,   // TEST2     Various test settings.
-     0x35,   // TEST1     Various test settings.
-     0x09,   // TEST0     Various test settings.
-     0x47,   // FIFOTHR   RXFIFO and TXFIFO thresholds.
-     0x29,   // IOCFG2    GDO2 output pin configuration.
-     0x06,   // IOCFG0D   GDO0 output pin configuration.
-     0x04,   // PKTCTRL1  Packet automation control.
-     0x05,   // PKTCTRL0  Packet automation control.
-     0x00,   // ADDR      Device address.
-     0xFF    // PKTLEN    Packet length.
- };
-
-extern RF_SETTINGS code TISettings; //it didnt work
-*/
 
 typedef enum
 {
