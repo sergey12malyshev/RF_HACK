@@ -39,7 +39,6 @@ PT_THREAD(jammer_Thread(struct pt *pt))
   LCD_WriteString(lcd, 0, 0, "Jammer mode", &Font_8x13, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
   LCD_WriteString(lcd, 0, 30, "Push the encoder!", &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
-  CC1101_GDO0_flag_clear();
   CC1101_reinit();
 
   setTime(&timer1);

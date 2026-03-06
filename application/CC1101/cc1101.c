@@ -36,6 +36,17 @@
 
 #define TIMEOUT_SPI_MS          250U
 
+
+
+
+#ifndef CC1101_GDO_EXTI_LINE
+#define CC1101_GDO_EXTI_LINE LL_EXTI_LINE_12
+#endif
+
+#ifndef CC1101_GDO_IRQn
+#define CC1101_GDO_IRQn     EXTI15_10_IRQn
+#endif
+
 static SPI_HandleTypeDef* hal_spi;
 
 typedef struct {
@@ -51,8 +62,8 @@ static volatile bool GDO0_flag;
 
 void CC1101_GDO0_flag_clear(void)
 {
-  LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12); //GDO
-  NVIC_EnableIRQ(EXTI15_10_IRQn); //GDO
+  LL_EXTI_ClearFlag_0_31(CC1101_GDO_EXTI_LINE); //GDO
+  NVIC_EnableIRQ(CC1101_GDO_IRQn); //GDO
   GDO0_flag = false;
 }
 
@@ -575,6 +586,8 @@ bool CC1101_reinit(void)
   {
     return true;
   }
+
+  CC1101_GDO0_flag_clear();
 
   CC1101_strobe(CCxxx0_SFRX); //RX FIFO
   CC1101_strobe(CCxxx0_SFTX); //TX FIFO

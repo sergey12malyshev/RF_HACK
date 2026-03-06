@@ -36,7 +36,6 @@ PT_THREAD(subGHz_TX_Thread(struct pt *pt))
   screen_clear();
   LCD_WriteString(lcd, 0, 0, "TX mode", &Font_8x13, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
-  CC1101_GDO0_flag_clear();
   CC1101_reinit();
 
   setTime(&timer1);

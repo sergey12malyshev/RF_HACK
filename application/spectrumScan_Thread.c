@@ -167,9 +167,6 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
   sprintf(str, "%.3f-%.3f", startFreq + DIFFERENCE_WITH_CARRIER, startFreq + DIFFERENCE_WITH_CARRIER + freqStep * 128);
   LCD_WriteString(lcd, 15, 25, str, &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
-
-  CC1101_GDO0_flag_clear();
-
   CC1101_reinit();
 
   CC1101_strobe(CCxxx0_SFRX); // Flush the buffer

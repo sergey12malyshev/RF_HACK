@@ -201,8 +201,6 @@ static void monitorParser(uint8_t input_char)
       { // enter TX [msg]
         cli_send_ok();
 
-        CC1101_GDO0_flag_clear();
-
         LL_mDelay(1);
         CC1101_reinit();
 

@@ -69,7 +69,6 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
   LCD_WriteString(lcd, 0, 20, "CC1101 Data:", &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
   CC1101_DataScreen();
 
-  CC1101_GDO0_flag_clear();
   CC1101_reinit();
 
   while (1)
