@@ -223,6 +223,10 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
+#if CLI_ENABLE
+  cli_init();
+#endif // CLI_ENABLE
+
   debugPrintf("C++ test: %s"CLI_NEW_LINE, test_cpp_function() ? "true" : "false");
 
   buzzer_init(BUZZER_GPIO_Port, BUZZER_Pin);

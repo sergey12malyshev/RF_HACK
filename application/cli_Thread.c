@@ -112,19 +112,30 @@ static void cli_send_symbolTerm(void)
   debugPrintf(CLI_PROMPT_STR);
 }
 
-static void cli_send_SN_version(void)
+static void cli_send_version(void)
 {
   debugPrintf("Version SW: %d.%d.%d"CLI_NEW_LINE, SOFTWARE_VERSION_MAJOR, SOFTWARE_VERSION_MINOR, SOFTWARE_VERSION_PATCH);
+  debugPrintf("Version HW: %d.%d.%d"CLI_NEW_LINE, 0, 1, 0);
 }
 
 static void cli_send_hello(void)
 {
-  debugPrintf("RF_HACK project started!"CLI_NEW_LINE);
-  cli_send_SN_version();
+  debugPrintf("+------------------------------------------------+"CLI_NEW_LINE);
+  debugPrintf("|                                                |"CLI_NEW_LINE);
+  debugPrintf("|   #####  #####    #   #    ##     ###   #   #  |"CLI_NEW_LINE);
+  debugPrintf("|   #   #  #        #   #   #  #   #      #  #   |"CLI_NEW_LINE);
+  debugPrintf("|   #####  #####    #####   ####   #      ###    |"CLI_NEW_LINE);
+  debugPrintf("|   #  #   #        #   #  #    #  #      #  #   |"CLI_NEW_LINE);
+  debugPrintf("|   #   #  #        #   #  #    #   ###   #   #  |"CLI_NEW_LINE);
+  debugPrintf("|                                                |"CLI_NEW_LINE);
+  debugPrintf("|        Testing wireless transmissions          |"CLI_NEW_LINE);            
+  debugPrintf("|              and radio interface               |"CLI_NEW_LINE);
+  debugPrintf("+------------------------------------------------+"CLI_NEW_LINE);
+
+  cli_send_version();
   DEBUG_PRINT(YEL_CLR"Debug Version"RST_CLR CLI_NEW_LINE);
   debugPrintf("Enter 'HELP' for list of commands...."CLI_NEW_LINE);
   checkResetSourse();
-  cli_send_symbolTerm();
 }
 
 static void cli_clearScreen(void)
@@ -337,6 +348,14 @@ static void monitor_out_test(void)
   }
 }
 
+void cli_init(void)
+{
+  uart_clear_buff();
+  uart_receve_IT();
+  cli_init_queue();
+  cli_resetTest();
+  cli_send_hello();
+}
 /*
  * Protothread CLI_Thread
  *
@@ -347,12 +366,6 @@ PT_THREAD(CLI_Thread(struct pt *pt))
 
   PT_BEGIN(pt);
   
-  uart_clear_buff();
-  uart_receve_IT();
-  cli_init_queue();
-  cli_resetTest();
-  cli_send_hello();
-
   while (1)
   {
     PT_WAIT_UNTIL(pt, timer(&timer1, 50));
