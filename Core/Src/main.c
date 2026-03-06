@@ -120,11 +120,6 @@ void checkResetSourse(void)
   __HAL_RCC_CLEAR_RESET_FLAGS();
 }
 
-bool CC1101_reinit(void)
-{
-  return CC1101_init();
-}
-
 static void stm32_cacheEnable(void)
 {
 #if (INSTRUCTION_CACHE_ENABLE != 0U) /* Enable caching instructions */
@@ -237,25 +232,30 @@ int main(void)
   adc_enable();
 
   debugPrintf("CC1101 init..."CLI_NEW_LINE);
-
   LCD_WriteString(lcd, 5, 25, "CC1101 int...",
             &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
+#if CC1101_CUSTOM_OLD_CONFIG
+  CC1101_setCarrierFreq(CFREQ_433);
+  CC1101_setDevAddress(1); 
+#endif
 
 #define PORT_MISO GPIOB
-#define PIN_MISO LL_GPIO_PIN_14
+#define PIN_MISO  LL_GPIO_PIN_14
 
 #define PORT_GDO GPIOB
-#define PIN_GDO LL_GPIO_PIN_12
+#define PIN_GDO  LL_GPIO_PIN_12
 
-CC1101_initPins(&hspi2, 
+  bool error_state = CC1101_init(&hspi2, 
                 NSS_CS_GPIO_Port, NSS_CS_Pin,      // CS pin
                 PORT_MISO, PIN_MISO,               // MISO pin
                 PORT_GDO, PIN_GDO);                // GDO pin
 
-  bool error_state = CC1101_power_up_reset();
-
-  if (error_state)
+  if (!error_state)
+  {
+    debugPrintf(CLI_OK"CC1101 init pass"CLI_NEW_LINE);
+  }
+  else
   {
     LCD_WriteString(lcd, 5, 55, "CC1101 not found!",
             &Font_8x13, COLOR_WHITE, COLOR_RED, LCD_SYMBOL_PRINT_FAST);
@@ -263,16 +263,6 @@ CC1101_initPins(&hspi2,
     {
       IWDG_reload();
     }
-  }
-
-#if CC1101_CUSTOM_OLD_CONFIG
-  CC1101_setCarrierFreq(CFREQ_433);
-  CC1101_setDevAddress(1); 
-#endif
-  error_state = CC1101_reinit();
-  if (!error_state)
-  {
-    debugPrintf(CLI_OK"CC1101 init pass"CLI_NEW_LINE);
   }
 
   encoder_init();

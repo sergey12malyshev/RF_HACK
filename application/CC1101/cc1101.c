@@ -510,10 +510,29 @@ void CC1101_write_settingsOld(void)
   cc1101_write_reg(CCxxx0_TEST0, 0x09);   //Various Test Settings
 }
 
-
-bool CC1101_init(void)
+bool CC1101_init(SPI_HandleTypeDef* hspi, 
+                    GPIO_TypeDef* cs_port, uint16_t _cs_pin,
+                    GPIO_TypeDef* miso_port, uint16_t _miso_pin,
+                    GPIO_TypeDef* gdo_port, uint16_t _gdo_pin)
 {
+  hal_spi = hspi;
+  
+  cs_pin.port = cs_port;
+  cs_pin.pin = _cs_pin;
+  
+  miso_pin.port = miso_port;
+  miso_pin.pin = _miso_pin;
+  
+  gdo_pin.port = gdo_port;
+  gdo_pin.pin = _gdo_pin;
+
   if ((hal_spi == NULL) || (cs_pin.port == NULL) || (cs_pin.pin == 0))
+  {
+    return true;
+  }
+
+    // Power-up reset
+  if (CC1101_power_up_reset())
   {
     return true;
   }
@@ -550,22 +569,27 @@ bool CC1101_init(void)
   return false;
 }
 
-
-void CC1101_initPins(SPI_HandleTypeDef* hspi, 
-                    GPIO_TypeDef* cs_port, uint16_t _cs_pin,
-                    GPIO_TypeDef* miso_port, uint16_t _miso_pin,
-                    GPIO_TypeDef* gdo_port, uint16_t _gdo_pin)
+bool CC1101_reinit(void)
 {
-  hal_spi = hspi;
-  
-  cs_pin.port = cs_port;
-  cs_pin.pin = _cs_pin;
-  
-  miso_pin.port = miso_port;
-  miso_pin.pin = _miso_pin;
-  
-  gdo_pin.port = gdo_port;
-  gdo_pin.pin = _gdo_pin;
+  if ((hal_spi == NULL) || (cs_pin.port == NULL) || (cs_pin.pin == 0))
+  {
+    return true;
+  }
+
+  CC1101_strobe(CCxxx0_SFRX); //RX FIFO
+  CC1101_strobe(CCxxx0_SFTX); //TX FIFO
+  CC1101_write_settings();
+  cc1101_write_burst_reg(CCxxx0_PATABLE, paTable, 8);
+
+  cc1101_write_reg(CCxxx0_FIFOTHR, 0x07);
+
+  CC1101_strobe(CCxxx0_SIDLE);
+  CC1101_strobe(CCxxx0_SFRX);
+  CC1101_strobe(CCxxx0_SFTX);
+
+  CC1101_strobe(CCxxx0_SIDLE);
+
+  return false;
 }
 
 bool CC1101_power_up_reset(void)

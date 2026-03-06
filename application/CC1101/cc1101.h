@@ -241,12 +241,14 @@ typedef enum _Modulation
   _MSK
 } Modulation_t;
 
-bool CC1101_init(void);
-void CC1101_initPins(SPI_HandleTypeDef* hspi, 
+bool CC1101_init(SPI_HandleTypeDef* hspi, 
                     GPIO_TypeDef* cs_port, uint16_t cs_pin,
                     GPIO_TypeDef* miso_port, uint16_t miso_pin,
                     GPIO_TypeDef* gdo_port, uint16_t gdo_pin);
-                    
+
+bool CC1101_reinit(void);
+bool CC1101_power_up_reset(void);
+
 void CC1101_strobe(uint8_t strobe);
 uint8_t CC1101_read_status(uint8_t addr);
 
@@ -254,7 +256,7 @@ ResiveState_t CC1101_receive_packet(uint8_t * rxBuffer, uint8_t *length);
 uint8_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len);
 
 void CC1101_write_settings();
-bool CC1101_power_up_reset(void);
+
 unsigned char CC1101_get_RSSI(void);
 void CC1101_setMHZ(float mhz);
 
