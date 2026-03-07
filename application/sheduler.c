@@ -53,7 +53,7 @@ static Work_state_t determine_work_mode(void)
   {
     return TX_MODE;
   } 
-  else if (getjammButtonState()) 
+  else if (getJammButtonState()) 
   {
     return JAMMER_MODE;
   } 
