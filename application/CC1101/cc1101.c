@@ -254,7 +254,7 @@ static uint8_t CC1101_send_packet(uint8_t* txBuffer, uint8_t size)
 {
   if (txBuffer == NULL)
   {
-    return 0xFC;
+    return CC1101_TX_STAT_ERROR_NO_MESSAGE;
   }
 
   CC1101_strobe(CCxxx0_SIDLE);
@@ -263,25 +263,83 @@ static uint8_t CC1101_send_packet(uint8_t* txBuffer, uint8_t size)
 
   if (CC1101_read_status(CCxxx0_TXBYTES)  > FIFO_LEN) 
   {
-    return 0xFF;
+    return CC1101_TX_STAT_ERROR_OVERFLOW;
   }
 
   HAL_StatusTypeDef status = cc1101_write_burst_reg(CCxxx0_TXFIFO, txBuffer, size);
 
   if (status != HAL_OK) 
   {
-    return status;
+    return CC1101_TX_STAT_ERROR_SEND;
   }
 
   if (CC1101_read_status(CCxxx0_TXBYTES) > FIFO_LEN)
   {
-    return 0xFD;
+    return CC1101_TX_STAT_ERROR_OVERFLOW;
   }
 
   CC1101_strobe(CCxxx0_STX);
 
-  return status;
+  return HAL_OK;
 }
+
+uint8_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len)
+{
+  assert_param(packet_loc != NULL);
+  assert_param(len > 0);
+  assert_param(len <= 61); // CC1101 FIFO size
+
+  uint8_t version  = CC1101_read_status(CCxxx0_VERSION);
+  
+  if (version != 0x04 && version != 0x14 && version != 0x17)
+  {
+    if (version == 0x00) 
+    {
+      return CC1101_TX_STAT_ERROR_SPI;
+    }
+    
+    return CC1101_TX_STAT_ERROR_VERSION;
+  }
+
+  uint8_t tx_bytes = CC1101_read_status(CCxxx0_TXBYTES);
+
+  if (tx_bytes > 0)
+  {
+    CC1101_strobe(CCxxx0_SFTX); // flush the buffer
+
+    DWT_Delay_us(1);
+  }
+  
+
+  HAL_StatusTypeDef status = CC1101_send_packet((uint8_t *)packet_loc, len);
+
+  if (status > HAL_OK)
+  {
+    return (uint8_t)status;
+  }
+
+    CC1101_GDO0_flag_clear();
+    uint32_t tickstart = HAL_GetTick();
+    while (!CC1101_GDO0_flag_get())
+    {
+      if ((HAL_GetTick() - tickstart) >= TIMEOUT_SPI_MS) // например, 100 мс
+      {
+        CC1101_strobe(CCxxx0_SIDLE); // reset cc1101
+        CC1101_strobe(CCxxx0_SFTX);
+        return 1;
+      }
+    }
+
+  uint8_t status_tx = CC1101_read_status(CCxxx0_TXBYTES);     // it is checking to send the data
+  
+  if (status_tx > 0)
+  {
+    CC1101_strobe(CCxxx0_SFTX);
+  }
+
+  return (uint8_t)status;
+}
+
 
 /*
   FSK is better than GFSK in range
@@ -721,74 +779,6 @@ void CC1101_setMHZ(float mhz)
   cc1101_write_reg(CCxxx0_FREQ1, freq1);
   cc1101_write_reg(CCxxx0_FREQ0, freq0);
 }
-
-
-uint8_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len)
-{
-  assert_param(packet_loc != NULL);
-  assert_param(len > 0);
-  assert_param(len <= 61); // CC1101 FIFO size
-
-  uint8_t version  = CC1101_read_status(CCxxx0_VERSION);
-  
-  if (version != 0x04 && version != 0x14 && version != 0x17)
-  {
-    if (version == 0x00) 
-    {
-      return CC1101_TX_STAT_ERROR_SPI;
-    }
-    
-    return CC1101_TX_STAT_ERROR_VERSION;
-  }
-
-  uint8_t tx_bytes = CC1101_read_status(CCxxx0_TXBYTES);
-
-  if (tx_bytes > 0)
-  {
-    CC1101_strobe(CCxxx0_SFTX); // flush the buffer
-
-    DWT_Delay_us(1);
-  }
-  
-
-  HAL_StatusTypeDef status = CC1101_send_packet((uint8_t *)packet_loc, len);
-
-  if (status > HAL_OK)
-  {
-    return (uint8_t)status;
-  }
-
-  uint32_t tickstart = HAL_GetTick();
-
-  while (!__gdo_pin_isSet()) // start transmitt
-  {
-    if (((HAL_GetTick() - tickstart) >= (uint32_t) TIMEOUT_SPI_MS))
-    {
-      return HAL_TIMEOUT;
-    }
-  }
-
-  tickstart = HAL_GetTick();
-
-  while (__gdo_pin_isSet()) // end transmitt
-  {
-    if (((HAL_GetTick() - tickstart) >= (uint32_t) TIMEOUT_SPI_MS))
-    {
-      return HAL_TIMEOUT;
-    }
-  }
-
-
-  uint8_t status_tx = CC1101_read_status(CCxxx0_TXBYTES);     // it is checking to send the data
-  
-  if (status_tx > 0)
-  {
-    CC1101_strobe(CCxxx0_SFTX);
-  }
-
-  return (uint8_t)status;
-}
-
 
 uint16_t CC1101_autoCalibrate1(void)
 {

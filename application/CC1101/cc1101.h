@@ -157,6 +157,9 @@ typedef enum _Modulation
 
 typedef enum _tx_status
 {
+  CC1101_TX_STAT_ERROR_SEND = 251,
+  CC1101_TX_STAT_ERROR_OVERFLOW = 252,
+  CC1101_TX_STAT_ERROR_NO_MESSAGE = 253,
   CC1101_TX_STAT_ERROR_SPI = 254,
   CC1101_TX_STAT_ERROR_VERSION = 255,
 } x_status_t;
