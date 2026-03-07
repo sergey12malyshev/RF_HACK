@@ -155,6 +155,13 @@ typedef enum _Modulation
   _MSK
 } Modulation_t;
 
+typedef enum _tx_status
+{
+  CC1101_TX_STAT_ERROR_SPI = 254,
+  CC1101_TX_STAT_ERROR_VERSION = 255,
+} x_status_t;
+
+
 bool CC1101_init(SPI_HandleTypeDef* hspi, 
                     GPIO_TypeDef* cs_port, uint16_t cs_pin,
                     GPIO_TypeDef* miso_port, uint16_t miso_pin,

@@ -727,13 +727,29 @@ uint8_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len)
 {
   assert_param(packet_loc != NULL);
   assert_param(len > 0);
+  assert_param(len <= 61); // CC1101 FIFO size
 
-  __attribute__((unused)) uint8_t version  = CC1101_read_status(CCxxx0_VERSION);       // it is for checking only (it must be 0x14)
-  __attribute__((unused)) uint8_t tx_bytes = CC1101_read_status(CCxxx0_TXBYTES);       // it is too
+  uint8_t version  = CC1101_read_status(CCxxx0_VERSION);
   
-  CC1101_strobe(CCxxx0_SFTX);                                  // flush the buffer
+  if (version != 0x04 && version != 0x14 && version != 0x17)
+  {
+    if (version == 0x00) 
+    {
+      return CC1101_TX_STAT_ERROR_SPI;
+    }
+    
+    return CC1101_TX_STAT_ERROR_VERSION;
+  }
 
-  __ASM volatile ("NOP");
+  uint8_t tx_bytes = CC1101_read_status(CCxxx0_TXBYTES);
+
+  if (tx_bytes > 0)
+  {
+    CC1101_strobe(CCxxx0_SFTX); // flush the buffer
+
+    DWT_Delay_us(1);
+  }
+  
 
   HAL_StatusTypeDef status = CC1101_send_packet((uint8_t *)packet_loc, len);
 
@@ -745,8 +761,6 @@ uint8_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len)
   uint32_t tickstart = HAL_GetTick();
   while (__gdo_pin_isSet()) // start transmitt
   {
-    __ASM volatile ("NOP");
-
     if (((HAL_GetTick() - tickstart) >= (uint32_t) TIMEOUT_SPI_MS))
     {
       return HAL_TIMEOUT;
@@ -756,15 +770,18 @@ uint8_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len)
   tickstart = HAL_GetTick();
   while (!__gdo_pin_isSet()) // end transmitt
   {
-    __ASM volatile ("NOP");
-
     if (((HAL_GetTick() - tickstart) >= (uint32_t) TIMEOUT_SPI_MS))
     {
       return HAL_TIMEOUT;
     }
   }
 
-  __attribute__((unused)) uint8_t status_tx = CC1101_read_status(CCxxx0_TXBYTES);     // it is checking to send the data
+  uint8_t status_tx = CC1101_read_status(CCxxx0_TXBYTES);     // it is checking to send the data
+  
+  if (status_tx > 0)
+  {
+    CC1101_strobe(CCxxx0_SFTX);
+  }
 
   return (uint8_t)status;
 }
