@@ -204,7 +204,7 @@ unsigned char CC1101_get_RSSI(void)
   return rssi;
 }
 
-ResiveState_t CC1101_receive_packet(uint8_t* rxBuffer, uint8_t *length)
+ReceiveState_t CC1101_receive_packet(uint8_t* rxBuffer, uint8_t *length)
 {
   uint8_t status[2] = {0};
   uint8_t packet_len = 0;
@@ -289,18 +289,6 @@ CC1101_Status_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len)
   assert_param(packet_loc != NULL);
   assert_param(len > 0);
   assert_param(len <= 61); // CC1101 FIFO size
-
-  uint8_t version = CC1101_read_status(CCxxx0_VERSION);
-  
-  if (version != 0x04 && version != 0x14 && version != 0x17)
-  {
-    if (version == 0x00) 
-    {
-      return CC1101_ERROR;
-    }
-    
-    return CC1101_ERROR_VERSION;
-  }
 
   uint8_t tx_bytes = CC1101_read_status(CCxxx0_TXBYTES);
 
@@ -613,17 +601,25 @@ CC1101_Status_t CC1101_init(SPI_HandleTypeDef* hspi,
     return CC1101_ERROR;
   }
 
-  uint8_t status;
-
+    // check version
   for(int i = 0; i < 20; i++)
   {
-    status = CC1101_read_status(CCxxx0_VERSION);
-    if (status == 0x14)
+    uint8_t version = CC1101_read_status(CCxxx0_VERSION);
+  
+    if (version != 0x04 && version != 0x14 && version != 0x17)
+    {
+      if (version == 0x00) 
+      {
+        return CC1101_ERROR;
+      }
+      return CC1101_ERROR_VERSION;
+    }
+    else
     {
       break;
     }
 
-    if (i == 18)
+    if (i == 19)
     {
       return CC1101_ERROR;
     }

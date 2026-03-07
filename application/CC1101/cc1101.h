@@ -132,7 +132,7 @@ typedef enum
 {
   RX_ERR_LENGHT,
   RX_ERR_RX
-} ResiveState_t;
+} ReceiveState_t;
 
 /**
  * Carrier frequencies
@@ -180,7 +180,7 @@ void CC1101_IRQHandler(void);
 void CC1101_strobe(uint8_t strobe);
 uint8_t CC1101_read_status(uint8_t addr);
 
-ResiveState_t CC1101_receive_packet(uint8_t* rxBuffer, uint8_t* length);
+ReceiveState_t CC1101_receive_packet(uint8_t* rxBuffer, uint8_t* length);
 CC1101_Status_t CC1101_transmitt_packet(const char* packet_loc, uint8_t len);
 
 void CC1101_write_settings();
