@@ -185,7 +185,7 @@ CC1101_Status_t CC1101_transmitt_packet(const char* packet_loc, uint8_t len);
 
 void CC1101_write_settings();
 
-unsigned char CC1101_get_RSSI(void);
+uint8_t CC1101_get_RSSI(void);
 void CC1101_setMHZ(float mhz);
 
 uint8_t CC1101_getRssiRaw(void);

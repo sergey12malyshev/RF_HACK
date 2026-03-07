@@ -199,7 +199,7 @@ static void cc1101_read_burst_reg(uint8_t addr, uint8_t* buffer, uint8_t count)
 
 static uint8_t rssi = 0;
 
-unsigned char CC1101_get_RSSI(void)
+uint8_t CC1101_get_RSSI(void)
 {
   return rssi;
 }
@@ -719,7 +719,7 @@ uint8_t CC1101_getRssiRaw(void)
   return rssi_raw;
 }
 
-int CC1101_RSSIconvert(char raw_rssi)
+int16_t CC1101_RSSIconvert(char raw_rssi)
 {
   const uint8_t rssi_offset = 74;
 
@@ -727,11 +727,11 @@ int CC1101_RSSIconvert(char raw_rssi)
 
   if (rssi_dec >= 128)
   {
-    return ((int)(rssi_dec - 256) / 2) - rssi_offset;
+    return ((int16_t)(rssi_dec - 256) / 2) - rssi_offset;
   }
   else
   {
-    return (rssi_dec / 2) - rssi_offset;
+    return (int16_t)(rssi_dec / 2) - rssi_offset;
   }
 }
 
