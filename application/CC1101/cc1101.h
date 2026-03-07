@@ -180,6 +180,8 @@ void CC1101_IRQHandler(void);
 void CC1101_strobe(uint8_t strobe);
 uint8_t CC1101_read_status(uint8_t addr);
 
+CC1101_Status_t CC1101_enter_rx_mode(void);
+
 ReceiveState_t CC1101_receive_packet(uint8_t* rxBuffer, uint8_t* length);
 CC1101_Status_t CC1101_transmitt_packet(const char* packet_loc, uint8_t len);
 
@@ -189,7 +191,7 @@ uint8_t CC1101_get_RSSI(void);
 void CC1101_setMHZ(float mhz);
 
 uint8_t CC1101_getRssiRaw(void);
-int CC1101_RSSIconvert(char raw_rssi);
+int16_t CC1101_RSSIconvert(char raw_rssi);
 uint16_t CC1101_autoCalibrate1(void);
 uint8_t CC1101_getLqi(void);
 

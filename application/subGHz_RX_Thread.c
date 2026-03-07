@@ -73,8 +73,7 @@ PT_THREAD(subGHz_RX_Thread(struct pt *pt))
 
   while (1)
   {
-    CC1101_strobe(CCxxx0_SFRX); // Flush the buffer
-    CC1101_strobe(CCxxx0_SRX);  // Set RX Mode
+    CC1101_enter_rx_mode();
 
     PT_WAIT_UNTIL(pt, CC1101_GDO0_flag_get()); // 0 - highLevel
 

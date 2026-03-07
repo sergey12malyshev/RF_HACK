@@ -329,6 +329,19 @@ CC1101_Status_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len)
   return CC1101_OK;
 }
 
+/**
+* @brief Puts CC1101 into receiving mode and prepares it for receiving the packet.
+* @retval CC1101_OK always (in the current implementation), checks can be added if necessary.
+*/
+CC1101_Status_t CC1101_enter_rx_mode(void)
+{
+  CC1101_strobe(CCxxx0_SIDLE);
+  CC1101_strobe(CCxxx0_SFRX);
+  CC1101_GDO0_flag_clear();
+  CC1101_strobe(CCxxx0_SRX);
+
+  return CC1101_OK;
+}
 
 /*
   FSK is better than GFSK in range
