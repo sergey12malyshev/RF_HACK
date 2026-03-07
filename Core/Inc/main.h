@@ -67,7 +67,6 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-bool CC1101_reinit(void);
 
 void checkResetSourse(void);
 /* USER CODE END EFP */

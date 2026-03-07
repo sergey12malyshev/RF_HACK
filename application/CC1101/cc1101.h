@@ -155,23 +155,26 @@ typedef enum _Modulation
   _MSK
 } Modulation_t;
 
-typedef enum _tx_status
+typedef enum _CC1101_Status_t
 {
-  CC1101_TX_STAT_ERROR_SEND = 251,
-  CC1101_TX_STAT_ERROR_OVERFLOW = 252,
-  CC1101_TX_STAT_ERROR_NO_MESSAGE = 253,
-  CC1101_TX_STAT_ERROR_SPI = 254,
-  CC1101_TX_STAT_ERROR_VERSION = 255,
-} x_status_t;
+  CC1101_OK = 0,
+  CC1101_ERROR,
+  CC1101_TIMEOUT,
+  CC1101_ERROR_SPI,
+  CC1101_ERROR_VERSION,
+  CC1101_ERROR_OVERFLOW,
+  CC1101_ERROR_NO_MESSAGE,
+  CC1101_ERROR_CONFIG,
+} CC1101_Status_t;
 
 
-bool CC1101_init(SPI_HandleTypeDef* hspi, 
+CC1101_Status_t CC1101_init(SPI_HandleTypeDef* hspi, 
                     GPIO_TypeDef* cs_port, uint16_t cs_pin,
                     GPIO_TypeDef* miso_port, uint16_t miso_pin,
                     GPIO_TypeDef* gdo_port, uint16_t gdo_pin);
 
-bool CC1101_reinit(void);
-bool CC1101_power_up_reset(void);
+CC1101_Status_t CC1101_reinit(void);
+CC1101_Status_t CC1101_power_up_reset(void);
 void CC1101_IRQHandler(void);
 
 void CC1101_strobe(uint8_t strobe);

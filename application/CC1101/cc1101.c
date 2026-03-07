@@ -254,7 +254,7 @@ static uint8_t CC1101_send_packet(uint8_t* txBuffer, uint8_t size)
 {
   if (txBuffer == NULL)
   {
-    return CC1101_TX_STAT_ERROR_NO_MESSAGE;
+    return CC1101_ERROR_NO_MESSAGE;
   }
 
   CC1101_strobe(CCxxx0_SIDLE);
@@ -263,19 +263,19 @@ static uint8_t CC1101_send_packet(uint8_t* txBuffer, uint8_t size)
 
   if (CC1101_read_status(CCxxx0_TXBYTES)  > FIFO_LEN) 
   {
-    return CC1101_TX_STAT_ERROR_OVERFLOW;
+    return CC1101_ERROR_OVERFLOW;
   }
 
   HAL_StatusTypeDef status = cc1101_write_burst_reg(CCxxx0_TXFIFO, txBuffer, size);
 
   if (status != HAL_OK) 
   {
-    return CC1101_TX_STAT_ERROR_SEND;
+    return CC1101_ERROR_SPI;
   }
 
   if (CC1101_read_status(CCxxx0_TXBYTES) > FIFO_LEN)
   {
-    return CC1101_TX_STAT_ERROR_OVERFLOW;
+    return CC1101_ERROR_OVERFLOW;
   }
 
   CC1101_strobe(CCxxx0_STX);
@@ -295,10 +295,10 @@ uint8_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len)
   {
     if (version == 0x00) 
     {
-      return CC1101_TX_STAT_ERROR_SPI;
+      return CC1101_ERROR;
     }
     
-    return CC1101_TX_STAT_ERROR_VERSION;
+    return CC1101_ERROR_VERSION;
   }
 
   uint8_t tx_bytes = CC1101_read_status(CCxxx0_TXBYTES);
@@ -585,7 +585,7 @@ void CC1101_write_settingsOld(void)
   cc1101_write_reg(CCxxx0_TEST0, 0x09);   //Various Test Settings
 }
 
-bool CC1101_init(SPI_HandleTypeDef* hspi, 
+CC1101_Status_t CC1101_init(SPI_HandleTypeDef* hspi, 
                     GPIO_TypeDef* cs_port, uint16_t _cs_pin,
                     GPIO_TypeDef* miso_port, uint16_t _miso_pin,
                     GPIO_TypeDef* gdo_port, uint16_t _gdo_pin)
@@ -603,13 +603,13 @@ bool CC1101_init(SPI_HandleTypeDef* hspi,
 
   if ((hal_spi == NULL) || (cs_pin.port == NULL) || (cs_pin.pin == 0))
   {
-    return true;
+    return CC1101_ERROR_CONFIG;
   }
 
     // Power-up reset
   if (CC1101_power_up_reset())
   {
-    return true;
+    return CC1101_ERROR;
   }
 
   uint8_t status;
@@ -624,7 +624,7 @@ bool CC1101_init(SPI_HandleTypeDef* hspi,
 
     if (i == 18)
     {
-      return true;
+      return CC1101_ERROR;
     }
   }
 
@@ -641,14 +641,14 @@ bool CC1101_init(SPI_HandleTypeDef* hspi,
 
   CC1101_strobe(CCxxx0_SIDLE);
 
-  return false;
+  return CC1101_OK;
 }
 
-bool CC1101_reinit(void)
+CC1101_Status_t CC1101_reinit(void)
 {
   if ((hal_spi == NULL) || (cs_pin.port == NULL) || (cs_pin.pin == 0))
   {
-    return true;
+    return CC1101_ERROR_CONFIG;
   }
 
   CC1101_GDO0_flag_clear();
@@ -666,16 +666,16 @@ bool CC1101_reinit(void)
 
   CC1101_strobe(CCxxx0_SIDLE);
 
-  return false;
+  return CC1101_OK;
 }
 
-bool CC1101_power_up_reset(void)
+CC1101_Status_t CC1101_power_up_reset(void)
 {
   const uint32_t waiting = 450;
 
   if ((hal_spi == NULL) || (cs_pin.port == NULL) || (cs_pin.pin == 0))
   {
-    return true;
+    return CC1101_ERROR_CONFIG;
   }
 
   DWT_Delay_Init();
@@ -694,14 +694,14 @@ bool CC1101_power_up_reset(void)
   {
     if (HAL_GetTick() - timeStamp > waiting)
     {
-      return true;
+      return CC1101_TIMEOUT;
     }
   }
 
   CC1101_strobe(CCxxx0_SRES);
   __spi_cs_set();
 
-  return false;
+  return CC1101_OK;
 }
 
 void CC1101_goSleep(void)
