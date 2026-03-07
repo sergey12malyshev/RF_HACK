@@ -239,18 +239,19 @@ ResiveState_t CC1101_receive_packet(uint8_t* rxBuffer, uint8_t *length)
 
       // Flush RX FIFO
       CC1101_strobe(CCxxx0_SFRX);
-      return(RX_ERR_LENGHT);
+
+      return RX_ERR_LENGHT;
     }
   }
   else
   {
-    return(RX_ERR_RX);
+    return RX_ERR_RX;
   } 
 }
 
 #define FIFO_LEN                64U
 
-static uint8_t CC1101_send_packet(uint8_t* txBuffer, uint8_t size)
+static CC1101_Status_t CC1101_send_packet(uint8_t* txBuffer, uint8_t size)
 {
   if (txBuffer == NULL)
   {
@@ -261,7 +262,7 @@ static uint8_t CC1101_send_packet(uint8_t* txBuffer, uint8_t size)
 
   cc1101_write_reg(CCxxx0_TXFIFO, size);
 
-  if (CC1101_read_status(CCxxx0_TXBYTES)  > FIFO_LEN) 
+  if (CC1101_read_status(CCxxx0_TXBYTES) > FIFO_LEN) 
   {
     return CC1101_ERROR_OVERFLOW;
   }
@@ -280,16 +281,16 @@ static uint8_t CC1101_send_packet(uint8_t* txBuffer, uint8_t size)
 
   CC1101_strobe(CCxxx0_STX);
 
-  return HAL_OK;
+  return CC1101_OK;
 }
 
-uint8_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len)
+CC1101_Status_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len)
 {
   assert_param(packet_loc != NULL);
   assert_param(len > 0);
   assert_param(len <= 61); // CC1101 FIFO size
 
-  uint8_t version  = CC1101_read_status(CCxxx0_VERSION);
+  uint8_t version = CC1101_read_status(CCxxx0_VERSION);
   
   if (version != 0x04 && version != 0x14 && version != 0x17)
   {
@@ -310,12 +311,11 @@ uint8_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len)
     DWT_Delay_us(1);
   }
   
+  CC1101_Status_t status = CC1101_send_packet((uint8_t *)packet_loc, len);
 
-  HAL_StatusTypeDef status = CC1101_send_packet((uint8_t *)packet_loc, len);
-
-  if (status > HAL_OK)
+  if (status > CC1101_OK)
   {
-    return (uint8_t)status;
+    return status;
   }
 
     CC1101_GDO0_flag_clear();
@@ -326,7 +326,8 @@ uint8_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len)
       {
         CC1101_strobe(CCxxx0_SIDLE); // reset cc1101
         CC1101_strobe(CCxxx0_SFTX);
-        return 1;
+
+        return CC1101_TIMEOUT;
       }
     }
 
@@ -337,7 +338,7 @@ uint8_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len)
     CC1101_strobe(CCxxx0_SFTX);
   }
 
-  return (uint8_t)status;
+  return CC1101_OK;
 }
 
 
