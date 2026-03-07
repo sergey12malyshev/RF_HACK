@@ -759,7 +759,8 @@ uint8_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len)
   }
 
   uint32_t tickstart = HAL_GetTick();
-  while (__gdo_pin_isSet()) // start transmitt
+
+  while (!__gdo_pin_isSet()) // start transmitt
   {
     if (((HAL_GetTick() - tickstart) >= (uint32_t) TIMEOUT_SPI_MS))
     {
@@ -768,13 +769,15 @@ uint8_t CC1101_transmitt_packet(const char *packet_loc, uint8_t len)
   }
 
   tickstart = HAL_GetTick();
-  while (!__gdo_pin_isSet()) // end transmitt
+
+  while (__gdo_pin_isSet()) // end transmitt
   {
     if (((HAL_GetTick() - tickstart) >= (uint32_t) TIMEOUT_SPI_MS))
     {
       return HAL_TIMEOUT;
     }
   }
+
 
   uint8_t status_tx = CC1101_read_status(CCxxx0_TXBYTES);     // it is checking to send the data
   
