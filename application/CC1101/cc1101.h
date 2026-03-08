@@ -189,6 +189,7 @@ void CC1101_write_settings();
 
 uint8_t CC1101_get_RSSI(void);
 void CC1101_setMHZ(float mhz);
+CC1101_Status_t CC1101_set_deviation(uint32_t freq_dev_hz);
 
 uint8_t CC1101_getRssiRaw(void);
 int16_t CC1101_RSSIconvert(char raw_rssi);

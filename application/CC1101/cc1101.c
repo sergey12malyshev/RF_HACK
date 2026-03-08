@@ -748,6 +748,33 @@ int16_t CC1101_RSSIconvert(char raw_rssi)
   }
 }
 
+uint16_t CC1101_autoCalibrate1(void)
+{
+  static uint16_t accumulatedOffset = 0;
+
+  uint16_t offset = CC1101_read_status(CCxxx0_FREQEST);
+  if (offset != 0)
+  {
+    accumulatedOffset += offset;
+    cc1101_write_reg(CCxxx0_FSCTRL0, accumulatedOffset);
+  }
+
+  return accumulatedOffset;
+}
+
+uint16_t CC1101_autoCalibrate0(void)
+{
+  uint16_t offset = CC1101_read_status(CCxxx0_FREQEST);
+
+  if (offset != 0)
+  {
+    cc1101_write_reg(CCxxx0_FSCTRL0, offset);
+  }
+
+  return offset;
+}
+
+
 /*
 Frequency Calculator
 */
@@ -790,37 +817,9 @@ void CC1101_setMHZ(float mhz)
   cc1101_write_reg(CCxxx0_FREQ0, freq0);
 }
 
-uint16_t CC1101_autoCalibrate1(void)
-{
-  static uint16_t accumulatedOffset = 0;
-
-  uint16_t offset = CC1101_read_status(CCxxx0_FREQEST);
-  if (offset != 0)
-  {
-    accumulatedOffset += offset;
-    cc1101_write_reg(CCxxx0_FSCTRL0, accumulatedOffset);
-  }
-
-  return accumulatedOffset;
-}
-
-uint16_t CC1101_autoCalibrate0(void)
-{
-  uint16_t offset = CC1101_read_status(CCxxx0_FREQEST);
-
-  if (offset != 0)
-  {
-    cc1101_write_reg(CCxxx0_FSCTRL0, offset);
-  }
-
-  return offset;
-}
-
-
 /*
 * PA Power set for 378 - 464 mhz!
 */
-
 static uint8_t _PA_TABLE[8] = {0x00, 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 bool CC1101_setPower(int pa, float MHz, Modulation_t modulation)
@@ -864,4 +863,77 @@ bool CC1101_setPower(int pa, float MHz, Modulation_t modulation)
   cc1101_write_burst_reg(CCxxx0_PATABLE, _PA_TABLE, 8);
   
   return false;
+}
+
+
+/**
+* @brief Sets the frequency deviation for (G)FSK modes.
+* @param freq_dev_hz is the desired deviation in Hz (a positive number).
+* @return CC1101_Status_t - CC1101_OK on success, CC1101_ERROR_PARAM if the value exceeds acceptable limits.
+*
+* @note The function calculates the values for a 26 MHz quartz resonator.
+* @warning When changing the deviation, it is also necessary to adjust the bandwidth
+* of the receiver (RX Filter Bandwidth) so that it is at least
+* is equal to (DataRate + 2 * Deviation) [citation:2][citation:9].
+*/
+CC1101_Status_t CC1101_set_deviation(uint32_t freq_dev_hz) 
+{
+// Constants to calculate (for XTAL = 26 MHz)
+  const uint32_t XTAL_FREQ = 26000000UL;
+  const uint32_t DIVISOR = 131072; // 2^17
+
+  // Minimum and maximum achievable deviation (theoretical)
+  // Min: M=0, E=0 -> (8+0)*1 = 8 -> (26e6/131072)*8 ≈ 1587 Hz
+  // Max: M=7, E=7 -> (8+7)*128 = 1920 -> (26e6/131072)*1920 ≈ 380,859 Hz
+  if (freq_dev_hz < 1500 || freq_dev_hz > 381000) 
+  {
+    return CC1101_ERROR_CONFIG;
+  }
+
+  uint8_t best_m = 0;
+  uint8_t best_e = 0;
+  uint32_t best_diff = 0xFFFFFFFF;
+
+// Iterating through all combinations of M (0-7) and E (0-7) to find the nearest one
+  for (uint8_t e = 0; e <= 7; e++) 
+  {
+    for (uint8_t m = 0; m <=7; m++) 
+    {
+// Formula: (26e6 / 131072) * (8 + m) * (2^e)
+// First multiply to avoid loss of precision in integer division
+// For accuracy, it is better to do calculations in 64-bit arithmetic.
+      uint64_t dev_x128 = (uint64_t)XTAL_FREQ * (8 + m) * (1UL << e);
+      uint32_t dev = (uint32_t)(dev_x128 / DIVISOR);
+
+      uint32_t diff;
+      if (dev > freq_dev_hz)
+      {
+        diff = dev - freq_dev_hz;
+      } 
+      else
+      {
+        diff = freq_dev_hz - dev;
+      }
+
+      if (diff < best_diff) 
+      {
+        best_diff = diff;
+        best_m = m;
+        best_e = e;
+      }
+    }
+  }
+
+  // Forming the value of the DEVIATN register:
+  // Bits 7 and 3 are reserved (must be 0)
+  uint8_t deviatn_value = (best_e << 4) | (best_m << 0);
+  // Note: In the documentation, bits 7 and 3 are specified as reserved [citation:3][citation:4]
+
+    // Writing to the register
+  cc1101_write_reg(CCxxx0_DEVIATN, deviatn_value);
+
+  // For debugging, you can save or output the reached value
+  // printf("Deviation set to %ld Hz (M=%d, E=%d)\r\n", calculated_dev, best_m, best_e);
+
+  return CC1101_OK;
 }
