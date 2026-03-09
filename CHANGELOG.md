@@ -1,6 +1,12 @@
 History of changes
 ====
 
+# 0.4.0
+- Add j-link programm script
+- Refactoring CC1101 driver
+- New sound control algorithm
+- Update CLI-Driver
+
 # 0.3.2
 - Updating the FIFO queue library
 - Refactoring the CLI module  
@@ -14,6 +20,7 @@ History of changes
 - Refactoring the project, without changing the functionality
 - Add Vscode tasks
 - Revision of the software release archive generation script
+
 # 0.2.0
 
 # 0.1.0 
