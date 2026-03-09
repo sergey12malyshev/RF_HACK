@@ -26,8 +26,6 @@
 #include "gps.h"
 #include "time.h"
 
-extern RF_t CC1101;
-
 static bool bootingScreenMode = true;
 
 bool getBootingScreenMode(void)

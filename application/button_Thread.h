@@ -4,7 +4,7 @@
 
 bool getTxButtonState(void);
 bool getScanButtonState(void);
-bool getjammButtonState(void);
+bool getJammButtonState(void);
 bool getBootButtonState(void);
 bool getGpsButtonState(void);
 

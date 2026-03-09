@@ -3,10 +3,14 @@
  *
  *  Created on: Mar 11, 2020
  *      Author: suleyman.eskil
+ * 
+ *  Updated 2024 Malyshev Sergey
+ *      https://github.com/sergey12malyshev
  */
 #pragma once
-#ifndef INC_CC1101_H_
-#define INC_CC1101_H_
+
+#ifndef CC1101_H
+#define CC1101_H
 
 #include <string.h>
 #include <stdlib.h>
@@ -20,22 +24,9 @@
 #endif
 
 
-// Data
-typedef unsigned char       BYTE;
-typedef unsigned short      WORD;
-typedef unsigned long       DWORD;
+#define DIFFERENCE_WITH_CARRIER       0.985  // BASE and CARRIER have a shift
 
-// Unsigned numbers
-typedef unsigned char       UINT8;
-typedef unsigned short      UINT16;
-typedef unsigned long       UINT32;
-
-// Signed numbers
-typedef signed char         INT8;
-typedef signed short        INT16;
-typedef signed long         INT32;
-
-// CC2500/CC1100 STROBE, CONTROL AND STATUS REGSITER
+/* CC2500/CC1100 STROBE, CONTROL AND STATUS REGSITER */
 #define CCxxx0_IOCFG2       0x00        // GDO2 output pin configuration
 #define CCxxx0_IOCFG1       0x01        // GDO1 output pin configuration
 #define CCxxx0_IOCFG0       0x02        // GDO0 output pin configuration
@@ -137,128 +128,11 @@ typedef signed long         INT32;
 #define TI_CCxxx0_READ_SINGLE  0x80
 #define TI_CCxxx0_READ_BURST   0xC0
 
-
-
-
-//-------------------------------------------------------------------------------------------------------
-// RF_SETTINGS is a data structure which contains all relevant CCxxx0 registers
-//i didnt use because i used with TI_write_settings() in cc1101.c
-/*typedef struct S_RF_SETTINGS{
-    uint8_t FSCTRL1;   // Frequency synthesizer control.
-    uint8_t FSCTRL0;   // Frequency synthesizer control.
-    uint8_t FREQ2;     // Frequency control word, high byte.
-    uint8_t FREQ1;     // Frequency control word, middle byte.
-    uint8_t FREQ0;     // Frequency control word, low byte.
-    uint8_t MDMCFG4;   // Modem configuration.
-    uint8_t MDMCFG3;   // Modem configuration.
-    uint8_t MDMCFG2;   // Modem configuration.
-    uint8_t MDMCFG1;   // Modem configuration.
-    uint8_t MDMCFG0;   // Modem configuration.
-    uint8_t CHANNR;    // Channel number.
-    uint8_t DEVIATN;   // Modem deviation setting (when FSK modulation is enabled).
-    uint8_t FREND1;    // Front end RX configuration.
-    uint8_t FREND0;    // Front end RX configuration.
-    uint8_t MCSM0;     // Main Radio Control State Machine configuration.
-    uint8_t FOCCFG;    // Frequency Offset Compensation Configuration.
-    uint8_t BSCFG;     // Bit synchronization Configuration.
-    uint8_t AGCCTRL2;  // AGC control.
-  	uint8_t AGCCTRL1;  // AGC control.
-    uint8_t AGCCTRL0;  // AGC control.
-    uint8_t FSCAL3;    // Frequency synthesizer calibration.
-    uint8_t FSCAL2;    // Frequency synthesizer calibration.
-    uint8_t FSCAL1;    // Frequency synthesizer calibration.
-    uint8_t FSCAL0;    // Frequency synthesizer calibration.
-    uint8_t FSTEST;    // Frequency synthesizer calibration control
-    uint8_t TEST2;     // Various test settings.
-    uint8_t TEST1;     // Various test settings.
-    uint8_t TEST0;     // Various test settings.
-    uint8_t FIFOTHR;   // RXFIFO and TXFIFO thresholds.
-    uint8_t IOCFG2;    // GDO2 output pin configuration
-    uint8_t IOCFG0;    // GDO0 output pin configuration
-    uint8_t PKTCTRL1;  // Packet automation control.
-    uint8_t PKTCTRL0;  // Packet automation control.
-    uint8_t ADDR;      // Device address.
-    uint8_t PKTLEN;    // Packet length.
-
-} RF_SETTINGS;
-
-RF_SETTINGS TISettings = {
-     0x08,   // FSCTRL1   Frequency synthesizer control.
-     0x00,   // FSCTRL0   Frequency synthesizer control.
-     0x10,   // FREQ2     Frequency control word, high byte.
-     0xB4,   // FREQ1     Frequency control word, middle byte.
-     0x2E,   // FREQ0     Frequency control word, low byte.
-     0xCA,   // MDMCFG4   Modem configuration.
-     0x83,   // MDMCFG3   Modem configuration.
-     0x93,   // MDMCFG2   Modem configuration.
-     0x22,   // MDMCFG1   Modem configuration.
-     0xF8,   // MDMCFG0   Modem configuration.
-     0x00,   // CHANNR    Channel number.
-     0x34,   // DEVIATN   Modem deviation setting (when FSK modulation is enabled).
-     0x56,   // FREND1    Front end RX configuration.
-     0x10,   // FREND0    Front end TX configuration.
-     0x18,   // MCSM0     Main Radio Control State Machine configuration.
-     0x16,   // FOCCFG    Frequency Offset Compensation Configuration.
-     0x6C,   // BSCFG     Bit synchronization Configuration.
-     0x43,   // AGCCTRL2  AGC control.
-     0x40,   // AGCCTRL1  AGC control.
-     0x91,   // AGCCTRL0  AGC control.
-     0xE9,   // FSCAL3    Frequency synthesizer calibration.
-     0x2A,   // FSCAL2    Frequency synthesizer calibration.
-     0x00,   // FSCAL1    Frequency synthesizer calibration.
-     0x1F,   // FSCAL0    Frequency synthesizer calibration.
-     0x59,   // FSTEST    Frequency synthesizer calibration.
-     0x81,   // TEST2     Various test settings.
-     0x35,   // TEST1     Various test settings.
-     0x09,   // TEST0     Various test settings.
-     0x47,   // FIFOTHR   RXFIFO and TXFIFO thresholds.
-     0x29,   // IOCFG2    GDO2 output pin configuration.
-     0x06,   // IOCFG0D   GDO0 output pin configuration.
-     0x04,   // PKTCTRL1  Packet automation control.
-     0x05,   // PKTCTRL0  Packet automation control.
-     0x00,   // ADDR      Device address.
-     0xFF    // PKTLEN    Packet length.
- };
-
-extern RF_SETTINGS code TISettings; //it didnt work
-*/
-
 typedef enum
 {
   RX_ERR_LENGHT,
   RX_ERR_RX
-}ResiveSt;
-
-
-HAL_StatusTypeDef __spi_write(uint8_t* addr, uint8_t *pData, uint16_t size);
-HAL_StatusTypeDef __spi_read(uint8_t* addr, uint8_t *pData, uint16_t size);
-
-bool TI_init(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint32_t cs_pin);
-
-void init_serial(UART_HandleTypeDef* huart);
-
-void TI_write_reg(UINT8 addr, UINT8 value);
-void TI_write_burst_reg(uint8_t addr, uint8_t * buffer, uint8_t count);
-void TI_write_burst_reg_c(uint8_t addr, uint8_t * buffer, uint8_t count);
-void TI_strobe(uint8_t strobe);
-uint8_t TI_read_reg(uint8_t addr);
-uint8_t TI_read_status(uint8_t addr);
-void TI_read_burst_reg(uint8_t addr, uint8_t * buffer, uint8_t count);
-ResiveSt TI_receive_packet(uint8_t * rxBuffer, UINT8 *length);
-void TI_send_packet(uint8_t * txBuffer, UINT8 size);
-void TI_write_settings();
-UINT8 get_random_byte(void);
-bool CC1101_power_up_reset(void);
-
-// nev:
-unsigned char get_RSSI(void);
-void CC1101_setMHZ(float mhz);
-void CC1101_customSetCSpin(SPI_HandleTypeDef* hspi, GPIO_TypeDef* cs_port, uint16_t cs_pin);
-uint8_t CC1101_transmittRF(const char *packet_loc, uint8_t len);
-uint8_t CC1101_getRssiRaw(void);
-int CC1101_RSSIconvert(char raw_rssi);
-uint16_t CC1101_autoCalibrate1(void);
-uint8_t CC1101_getLqi(void);
+} ReceiveState_t;
 
 /**
  * Carrier frequencies
@@ -274,20 +148,59 @@ enum CFREQ
 
 typedef enum _Modulation
 {
-  _2_FSK = 0
- ,_GFSK
- ,_ASK
- ,_4_FSK
- ,_MSK
-}Modulation;
+  _2_FSK = 0,
+  _GFSK,
+  _ASK,
+  _4_FSK,
+  _MSK
+} Modulation_t;
+
+typedef enum _CC1101_Status_t
+{
+  CC1101_OK = 0,
+  CC1101_ERROR,
+  CC1101_TIMEOUT,
+  CC1101_ERROR_SPI,
+  CC1101_ERROR_VERSION,
+  CC1101_ERROR_OVERFLOW,
+  CC1101_ERROR_NO_MESSAGE,
+  CC1101_ERROR_CONFIG,
+} CC1101_Status_t;
+
+
+CC1101_Status_t CC1101_init(SPI_HandleTypeDef* hspi, 
+                    GPIO_TypeDef* cs_port, uint16_t cs_pin,
+                    GPIO_TypeDef* miso_port, uint16_t miso_pin,
+                    GPIO_TypeDef* gdo_port, uint16_t gdo_pin);
+
+CC1101_Status_t CC1101_reinit(void);
+CC1101_Status_t CC1101_power_up_reset(void);
+void CC1101_IRQHandler(void);
+
+void CC1101_strobe(uint8_t strobe);
+uint8_t CC1101_read_status(uint8_t addr);
+
+CC1101_Status_t CC1101_enter_rx_mode(void);
+
+ReceiveState_t CC1101_receive_packet(uint8_t* rxBuffer, uint8_t* length);
+CC1101_Status_t CC1101_transmitt_packet(const char* packet_loc, uint8_t len);
+
+void CC1101_write_settings();
+
+uint8_t CC1101_get_RSSI(void);
+void CC1101_setMHZ(float mhz);
+CC1101_Status_t CC1101_set_deviation(uint32_t freq_dev_hz);
+
+uint8_t CC1101_getRssiRaw(void);
+int16_t CC1101_RSSIconvert(char raw_rssi);
+uint16_t CC1101_autoCalibrate1(void);
+uint8_t CC1101_getLqi(void);
 
 void CC1101_GDO0_flag_clear(void);
 bool CC1101_GDO0_flag_get(void);
 void CC1101_GDO0_flag_set(void);
 
-void TI_setCarrierFreq(uint8_t f);
-void TI_setDevAddress(uint8_t a);
+void CC1101_setCarrierFreq(uint8_t f);
+void CC1101_setDevAddress(uint8_t a);
 
-#define DIFFERENCE_WITH_CARRIER 0.985  // BASE и CARRIER имеют сдвиг
-
-#endif /* INC_CC1101_H_ */
+#endif /* CC1101_H */

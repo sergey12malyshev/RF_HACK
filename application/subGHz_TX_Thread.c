@@ -28,9 +28,7 @@ static char packet[7] = "QWERTY";; // Reserve one character for a null terminato
 PT_THREAD(subGHz_TX_Thread(struct pt *pt))
 {
   static uint32_t timer1;
-  __UNUSED uint8_t s;
-
-
+  
   PT_BEGIN(pt);
 
   PT_DELAY_MS(pt, &timer1, 250);
@@ -38,7 +36,6 @@ PT_THREAD(subGHz_TX_Thread(struct pt *pt))
   screen_clear();
   LCD_WriteString(lcd, 0, 0, "TX mode", &Font_8x13, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
-  CC1101_GDO0_flag_clear();
   CC1101_reinit();
 
   setTime(&timer1);
@@ -50,17 +47,29 @@ PT_THREAD(subGHz_TX_Thread(struct pt *pt))
 
     static uint8_t count_tx = 0;
 
-    if(count_tx >= 99)
+    if (count_tx >= 99)
     {
       count_tx = 0;
     }
     sprintf(packet, "TST %02d", count_tx++);
 
-    s = CC1101_transmittRF(packet, sizeof(packet)); // the function is sending the data
-    
+    uint8_t result = CC1101_transmitt_packet(packet, sizeof(packet)); // the function is sending the data
+
+    if (result > 0)
+    {
+      DEBUG_PRINT("TX ERROR: %d"CLI_NEW_LINE, result);
+    }
+
     LCD_WriteString(lcd, 15, 40, packet, &Font_12x20, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
-    PT_WAIT_UNTIL(pt, (CC1101_GDO0_flag_get())); // TODO: уточнить работу GDO (low lowel - end transmitt)
+    static uint32_t tx_timeout;
+    tx_timeout = HAL_GetTick() + 100;
+
+    PT_WAIT_UNTIL(pt, (CC1101_GDO0_flag_get() || (HAL_GetTick() > tx_timeout))); // (low lowel - end transmitt)
+    if (!CC1101_GDO0_flag_get())
+    {
+      DEBUG_PRINT("TX TIMEOUT"CLI_NEW_LINE);
+    }
     CC1101_GDO0_flag_clear();
 
     PT_YIELD(pt);

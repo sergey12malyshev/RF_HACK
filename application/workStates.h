@@ -10,10 +10,10 @@ typedef enum
   JAMMER_MODE,
   GPS_MODE,
   NUMBER_STATE
-}Work_state_t;
+} Work_state_t;
 
 
-void setWorkSate(const Work_state_t s);
+void setWorkState(const Work_state_t s);
 Work_state_t getWorkState(void);
 bool isWorkStateSet(Work_state_t s);
 

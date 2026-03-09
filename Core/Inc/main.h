@@ -67,7 +67,6 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-bool CC1101_reinit(void);
 
 void checkResetSourse(void);
 /* USER CODE END EFP */
@@ -107,8 +106,8 @@ void checkResetSourse(void);
 /* USER CODE BEGIN Private defines */
 
 #define SOFTWARE_VERSION_MAJOR  0
-#define SOFTWARE_VERSION_MINOR  3
-#define SOFTWARE_VERSION_PATCH  2
+#define SOFTWARE_VERSION_MINOR  4
+#define SOFTWARE_VERSION_PATCH  0
 
 
 #define quoting(a) prequoting(a)

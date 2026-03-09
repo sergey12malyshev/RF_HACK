@@ -28,7 +28,6 @@
 PT_THREAD(jammer_Thread(struct pt *pt))
 {
   static uint32_t timer1;
-  __UNUSED uint8_t s;
   char str[25] = {0};
 
 
@@ -40,7 +39,6 @@ PT_THREAD(jammer_Thread(struct pt *pt))
   LCD_WriteString(lcd, 0, 0, "Jammer mode", &Font_8x13, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
   LCD_WriteString(lcd, 0, 30, "Push the encoder!", &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
-  CC1101_GDO0_flag_clear();
   CC1101_reinit();
 
   setTime(&timer1);
@@ -52,8 +50,10 @@ PT_THREAD(jammer_Thread(struct pt *pt))
 
   while (1)
   {
-      /*You can connect only GDO0, if you are using asynchronous serial mode. 
-      The pin will switch automatically from INPUT to OUTPUT when you call setTX() and vice versa.*/
+      /*
+      You can connect only GDO0, if you are using asynchronous serial mode. 
+      The pin will switch automatically from INPUT to OUTPUT when you call setTX() and vice versa.
+      */
     static bool runJamm;
     bool stateSwitch = encoder_getStateSwitch();
 
@@ -86,10 +86,23 @@ PT_THREAD(jammer_Thread(struct pt *pt))
 #if 0
       debugPrintf("%s %d"CLI_NEW_LINE, packet, packet[i]);
 #endif
-      s = CC1101_transmittRF(packet, sizeof(packet)); // sending the data
+      uint8_t result = CC1101_transmitt_packet(packet, sizeof(packet)); // sending the data
+      
+      if (result > 0)
+      {
+        DEBUG_PRINT("JAMMER ERROR: %d"CLI_NEW_LINE, result);
+      }
       LCD_WriteString(lcd, 15, 65, packet, &Font_12x20, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
       
-      PT_WAIT_UNTIL(pt, (CC1101_GDO0_flag_get())); // GDO low lowel - end transmitt
+      static uint32_t tx_timeout;
+      tx_timeout = HAL_GetTick() + 100;
+
+      PT_WAIT_UNTIL(pt, (CC1101_GDO0_flag_get() || (HAL_GetTick() > tx_timeout))); // GDO low lowel - end transmitt
+      
+      if (!CC1101_GDO0_flag_get())
+      {
+        DEBUG_PRINT("JAM. TX TIMEOUT"CLI_NEW_LINE);
+      }
       CC1101_GDO0_flag_clear();
     }
     else
