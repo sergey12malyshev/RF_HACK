@@ -244,16 +244,11 @@ int main(void)
   CC1101_setDevAddress(1); 
 #endif
 
-#define PORT_MISO GPIOB
-#define PIN_MISO  LL_GPIO_PIN_14
-
-#define PORT_GDO GPIOB
-#define PIN_GDO  LL_GPIO_PIN_12
 
   bool error_state = CC1101_init(&hspi2, 
                 NSS_CS_GPIO_Port, NSS_CS_Pin,      // CS pin
-                PORT_MISO, PIN_MISO,               // MISO pin
-                PORT_GDO, PIN_GDO);                // GDO pin
+                GPIOB, LL_GPIO_PIN_14,             // MISO pin
+                GPIOB, LL_GPIO_PIN_12);            // GDO pin
 
   if (!error_state)
   {
