@@ -25,7 +25,6 @@
 */
 
 #define LOCAL_ECHO_EN  true
-#define MON_STRCMP(ptr, cmd) (!strcmp(ptr, cmd))
 
 extern UART_HandleTypeDef huart1, huart6;
 
@@ -304,7 +303,7 @@ static bool execute_command(char *cmd_line)
   /* Lookup in command table */
   for (const cli_command_t *cmd = commands; cmd->name != NULL; cmd++)
   {
-    if (MON_STRCMP(cmd_name, cmd->name))
+    if (!strcmp(cmd_name, cmd->name))
     {
       cmd->handler(arg);
       return true;
@@ -380,9 +379,22 @@ static void monitorParser(uint8_t input_char)
 }
 
 /* Asynchronous test output (unchanged) */
-static void GPSTest(void)
+static void test_adc(void)
 {
-  debugPrintf("UTC time:%f"CLI_NEW_LINE, GPS.utc_time);
+  debugPrintf(CLI_CLEAR_LINE"%ld"CLI_TAB, getAdcVDDA());
+  debugPrintf("%d"CLI_TAB, getVoltageVDDA());
+  debugPrintf("%d", getVoltageVDDA_Av());
+}
+
+static void test_gps(void)
+{
+  debugPrintf("UTC time: %f"CLI_NEW_LINE, GPS.utc_time);
+}
+
+static void test_test(void)
+{
+  debugPrintf("Test OK");
+  cli_resetTest();
 }
 
 static void monitor_out_test(void)
@@ -391,26 +403,23 @@ static void monitor_out_test(void)
   {
     case ADC_T:
     {
-      debugPrintf(CLI_CLEAR_LINE"%ld"CLI_TAB, getAdcVDDA());
-      debugPrintf("%d"CLI_TAB, getVoltageVDDA());
-      debugPrintf("%d", getVoltageVDDA_Av());
+      test_adc();
       break;
     }
     case GPS_C:
     {
-      GPSTest();
+      test_gps();
       break;
     }
     case TEST:
     {
-      debugPrintf("Test OK");
-      cli_resetTest();
+      test_test();
       break;
     }
+
     default:
-    {
       break;
-    }
+
   }
 }
 
@@ -440,6 +449,7 @@ PT_THREAD(CLI_Thread(struct pt *pt))
     {
       monitorParser(queueOutMsg);
     }
+    
     monitor_out_test();
 
     PT_YIELD(pt);
