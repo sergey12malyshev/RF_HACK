@@ -23,7 +23,7 @@ public:
 // Global oject
 static SimpleTest simpleTest;
 
-// Реализация C-функций
+// Implementation of C functions
 extern "C" {
     
 bool test_cpp_function(void) 
