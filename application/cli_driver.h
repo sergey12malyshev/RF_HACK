@@ -2,15 +2,19 @@
 #ifndef __CLI_DRIVER_H
 #define __CLI_DRIVER_H
 
-#define DEBUG_MASSAGE   true
-#define DEBUG_PRINT(...) do { if (DEBUG_MASSAGE) debugPrintf(__VA_ARGS__); } while (0)  
-
+/* 
+  Simple CLI Driver
+  Version: 1.1.0
+  Autor: sergey12malyshev (mse)
+*/
 
 /* Config CLI: */
-#define CLI_SHELL_MAX_LENGTH     350U      // Shell out max command line size
+#define CLI_SHELL_MAX_LENGTH     350U     // Shell out max command line size
 
 #define CLI_INPUT_BUFF_LENGTH    12U      // CLI input max line size
-////
+
+#define DEBUG_MASSAGE   true              // Enable debugging messages
+
 
 #define CLI_PROMPT_STR  "rf> "
 
@@ -38,11 +42,8 @@
 #define CLI_SHOW_CURSOR()      debugPrintf("\033[?25h")
 
 
+#define DEBUG_PRINT(...) do { if (DEBUG_MASSAGE) debugPrintf(__VA_ARGS__); } while (0)  
+
 int debugPrintf(const char *serial_data, ...);
-
-#define LC_INCLUDE "lc-addrlabels.h"
-#include "pt.h"
-
-PT_THREAD(Application_Thread(struct pt *pt));
 
 #endif /* __CLI_DRIVER_H  */
