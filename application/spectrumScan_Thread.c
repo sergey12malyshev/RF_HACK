@@ -25,7 +25,6 @@
 extern RF_t CC1101;
 extern LCD_Handler *lcd;
 
-// === Исходные переменные сканера ===
 static int8_t scanDat[128][1];
 static uint8_t j;
 static uint16_t interferenceLevel;
@@ -33,30 +32,29 @@ static float freqStep = 0.025;
 static float startFreq = LPD1 - DIFFERENCE_WITH_CARRIER;
 static uint16_t cursor_x;
 
-// === Переменные автоматического режима ===
+// Automatic mode variables 
 static bool autoModeEnabled = false;
 static bool isJamming = false;
-static bool waitingForSignal = false;
 static uint32_t jamStartTime = 0;
 static float targetFreq = 0;
 static uint8_t targetChannel = 0;
 static int16_t targetRSSI = 0;
 
-// === Усреднение RSSI ===
-#define AVG_SCANS_COUNT  5
+// RSSI averaging 
+#define AVG_SCANS_COUNT 5
 static int32_t rssiSum[128];
 static uint8_t avgCounter = 0;
 static int16_t avgRSSI[128];
 
-// === Настройки ===
-#define AUTO_JAM_DURATION_MS   3000
-#define RSSI_THRESHOLD         -75
+// Settings 
+#define AUTO_JAM_DURATION_MS 3000
+#define RSSI_THRESHOLD -75
 
-// === Переменные для передачи пакетов (джемминг) ===
+// Variables for packet transmission (jamming) 
 static char txPacket[7] = "JAM";
 static uint8_t txPacketIndex = 3;
 
-// === Генератор случайного символа ===
+// Random character generator 
 static char generateRandomChar(void)
 {
   static char randomChars[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -65,13 +63,16 @@ static char generateRandomChar(void)
   return randomChars[rand() % (sizeof(randomChars) - 1)];
 }
 
-// === Оригинальные функции сканирования ===
+// Original scanning functions 
 static void scanRSSI(float freqSet)
 {
   for (uint8_t i = 0; i < 128; i++)
   {
     CC1101_setMHZ(freqSet);
-    for (uint16_t d = 0; d < 100; d++) __ASM volatile ("NOP");
+    for (uint16_t d = 0; d < 100; d++)
+    {
+      __ASM volatile("NOP");
+    }
     scanDat[i][j] = CC1101_RSSIconvert(CC1101_getRssiRaw());
     freqSet += freqStep;
   }
@@ -89,23 +90,36 @@ static void drawCursor(uint16_t cursor_x)
 static void cursorProcess(void)
 {
   cursor_x = encoder_getRotaryNum();
-  if (cursor_x < offset_x) { cursor_x = offset_x; encoder_setRotaryNum(cursor_x); }
-  if (cursor_x > offset_x + 128) { cursor_x = offset_x + 127; encoder_setRotaryNum(cursor_x); }
+  if (cursor_x < offset_x)
+  {
+    cursor_x = offset_x;
+    encoder_setRotaryNum(cursor_x);
+  }
+  if (cursor_x > offset_x + 128)
+  {
+    cursor_x = offset_x + 127;
+    encoder_setRotaryNum(cursor_x);
+  }
   drawCursor(cursor_x);
 }
 
-// === Отрисовка живого спектра по scanDat (ручной режим) ===
+// Draw live spectrum from scanDat (manual mode) 
 static void drawLiveSpectrum(void)
 {
   const int16_t min_RSSI = 138;
   uint32_t summLevel = 0;
   for (uint8_t i = 0; i < 128; i++)
+  {
     LCD_DrawLine(lcd, offset_x + i, end_y, offset_x + i, start_y, COLOR_BLACK);
+  }
   cursorProcess();
   for (uint8_t i = 0; i < 128; i++)
   {
     uint16_t y2 = start_y - (min_RSSI + scanDat[i][j]);
-    if (y2 < end_y) y2 = end_y;
+    if (y2 < end_y)
+    {
+      y2 = end_y;
+    }
     summLevel += y2;
     uint32_t color = (y2 > interferenceLevel - 10) ? COLOR_BLUE : COLOR_PURPLE;
     LCD_DrawLine(lcd, offset_x + i, y2, offset_x + i, start_y, color);
@@ -114,18 +128,23 @@ static void drawLiveSpectrum(void)
   CC1101.RSSI_main = ((int32_t)start_y - interferenceLevel) - min_RSSI;
 }
 
-// === Отрисовка усреднённого спектра по avgRSSI (авторежим, в т.ч. джемминг) ===
+// Draw averaged spectrum from avgRSSI (auto mode, including jamming) 
 static void drawAvgSpectrum(void)
 {
   const int16_t min_RSSI = 138;
   uint32_t summLevel = 0;
   for (uint8_t i = 0; i < 128; i++)
+  {
     LCD_DrawLine(lcd, offset_x + i, end_y, offset_x + i, start_y, COLOR_BLACK);
+  }
   cursorProcess();
   for (uint8_t i = 0; i < 128; i++)
   {
     uint16_t y2 = start_y - (min_RSSI + avgRSSI[i]);
-    if (y2 < end_y) y2 = end_y;
+    if (y2 < end_y)
+    {
+      y2 = end_y;
+    }
     summLevel += y2;
     uint32_t color = (y2 > interferenceLevel - 10) ? COLOR_BLUE : COLOR_PURPLE;
     LCD_DrawLine(lcd, offset_x + i, y2, offset_x + i, start_y, color);
@@ -134,7 +153,7 @@ static void drawAvgSpectrum(void)
   CC1101.RSSI_main = ((int32_t)start_y - interferenceLevel) - min_RSSI;
 }
 
-// === Поиск максимума по усреднённому массиву ===
+// Find maximum from averaged array 
 static void findMaxFromAvg(float *freq, uint8_t *channel, int16_t *rssi)
 {
   int16_t maxVal = -120;
@@ -147,10 +166,17 @@ static void findMaxFromAvg(float *freq, uint8_t *channel, int16_t *rssi)
       maxVal = avgRSSI[i];
       bestFreq = LPD1 + i * freqStep;
       bestChan = 0;
-      for (uint8_t ch = 0; ch < (sizeof(freqLpdList)/sizeof(float)); ch++)
-        if (fabs(freqLpdList[ch] - bestFreq) < 0.0125) { bestChan = ch+1; break; }
+      for (uint8_t ch = 0; ch < (sizeof(freqLpdList) / sizeof(float)); ch++)
+      {
+        if (fabs(freqLpdList[ch] - bestFreq) < 0.0125)
+        {
+          bestChan = ch + 1;
+          break;
+        }
+      }
     }
   }
+
   *freq = bestFreq;
   *channel = bestChan;
   *rssi = maxVal;
@@ -159,10 +185,12 @@ static void findMaxFromAvg(float *freq, uint8_t *channel, int16_t *rssi)
 static void LCD_ClearRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t color)
 {
   for (uint16_t i = 0; i < w; i++)
+  {
     LCD_DrawLine(lcd, x + i, y, x + i, y + h, color);
+  }
 }
 
-// === Главный протопоток ===
+// Main protothread 
 PT_THREAD(spectrumScan_Thread(struct pt *pt))
 {
   static uint32_t scanDelayTimer;
@@ -192,15 +220,21 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
   {
     if (!isJamming)
     {
-      // ======== РЕЖИМ ОЖИДАНИЯ/СКАНИРОВАНИЯ ========
+      // WAIT/SCAN MODE
       PT_WAIT_UNTIL(pt, timer(&scanDelayTimer, 100));
 
       scanRSSI(startFreq);
 
       float freqCursor = LPD1 + (cursor_x - offset_x) * freqStep;
       uint8_t cursorLpdChannel = 0;
-      for (uint8_t ch = 0; ch < (sizeof(freqLpdList)/sizeof(float)); ch++)
-        if (fabs(freqLpdList[ch] - freqCursor) < 0.0125) { cursorLpdChannel = ch+1; break; }
+      for (uint8_t ch = 0; ch < (sizeof(freqLpdList) / sizeof(float)); ch++)
+      {
+        if (fabs(freqLpdList[ch] - freqCursor) < 0.0125)
+        {
+          cursorLpdChannel = ch + 1;
+          break;
+        }
+      }
 
       static float lastFreqCursor = 0;
       if (freqCursor != lastFreqCursor)
@@ -225,7 +259,8 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
         else
         {
           LCD_ClearRect(0, 200, 100, 20, COLOR_BLACK);
-          if (isJamming) {
+          if (isJamming)
+          {
             isJamming = false;
             CC1101_enter_rx_mode();
           }
@@ -240,20 +275,26 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
       else
       {
         for (uint8_t i = 0; i < 128; i++)
+        {
           rssiSum[i] += scanDat[i][j];
+        }
         avgCounter++;
 
         char prog[16];
         sprintf(prog, "Avg: %d/5", avgCounter);
-        LCD_WriteString(lcd, 200, 0, prog, &Font_8x13, COLOR_GREEN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+        LCD_WriteString(lcd, 0, 0, prog, &Font_8x13, COLOR_GREEN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
         if (avgCounter >= AVG_SCANS_COUNT)
         {
           for (uint8_t i = 0; i < 128; i++)
+          {
             avgRSSI[i] = rssiSum[i] / AVG_SCANS_COUNT;
+          }
           drawAvgSpectrum();
 
-          float bestFreq = 0; uint8_t bestChan = 0; int16_t bestRSSI = 0;
+          float bestFreq = 0;
+          uint8_t bestChan = 0;
+          int16_t bestRSSI = 0;
           findMaxFromAvg(&bestFreq, &bestChan, &bestRSSI);
 
           if (bestChan > 0 && bestRSSI > RSSI_THRESHOLD && !isJamming)
@@ -269,7 +310,7 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
             char jamMsg[40];
             sprintf(jamMsg, "JAM ON LPD%02d %.3f", targetChannel, targetFreq);
             LCD_WriteString(lcd, 0, 200, jamMsg, &Font_8x13, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
-            DEBUG_PRINT("[AUTO] Jamming %s LPD%02d %.3f (RSSI=%d)\n", "on", targetChannel, targetFreq, targetRSSI);
+            DEBUG_PRINT("[AUTO] Jamming %s LPD%02d %.3f (RSSI=%d)"CLI_NEW_LINE, "on", targetChannel, targetFreq, targetRSSI);
           }
 
           memset(rssiSum, 0, sizeof(rssiSum));
@@ -278,7 +319,9 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
         else
         {
           if (avgRSSI[0] != 0)
+          {
             drawAvgSpectrum();
+          }
         }
       }
 
@@ -289,7 +332,7 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
     }
     else
     {
-      // ======== РЕЖИМ ДЖЕММИНГА ========
+      // JAMMING MODE
       uint32_t currentTime = HAL_GetTick();
       if (currentTime - jamStartTime >= AUTO_JAM_DURATION_MS)
       {
@@ -298,7 +341,7 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
         LCD_ClearRect(0, 200, 320, 60, COLOR_BLACK);
         memset(rssiSum, 0, sizeof(rssiSum));
         avgCounter = 0;
-        DEBUG_PRINT("[AUTO] Jam finished\n");
+        DEBUG_PRINT("[AUTO] Jam finished"CLI_NEW_LINE);
       }
       else
       {
@@ -316,15 +359,26 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
         }
 
         txPacket[txPacketIndex++] = generateRandomChar();
-        if (txPacketIndex >= 6) txPacketIndex = 3;
+        if (txPacketIndex >= 6)
+        {
+          txPacketIndex = 3;
+        }
+
         uint8_t result = CC1101_transmitt_packet(txPacket, sizeof(txPacket));
-        if (result) DEBUG_PRINT("JAM ERR: %d\n", result);
+        if (result)
+        {
+          DEBUG_PRINT("JAM ERR: %d"CLI_NEW_LINE, result);
+        }
         LCD_WriteString(lcd, 15, 65, txPacket, &Font_12x20, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
         static uint32_t tx_timeout;
         tx_timeout = HAL_GetTick() + 100;
+
         PT_WAIT_UNTIL(pt, (CC1101_GDO0_flag_get() || (HAL_GetTick() > tx_timeout)));
-        if (!CC1101_GDO0_flag_get()) DEBUG_PRINT("TX TIMEOUT\n");
+        if (!CC1101_GDO0_flag_get())
+        {
+          DEBUG_PRINT("TX TIMEOUT"CLI_NEW_LINE);
+        }
         CC1101_GDO0_flag_clear();
 
         PT_WAIT_UNTIL(pt, timer(&jamPacketTimer, 10));
