@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 #define LC_INCLUDE "lc-addrlabels.h"
 #include "pt.h"
@@ -22,30 +23,55 @@
 #include "frequencyChannelsTable.h"
 
 extern RF_t CC1101;
+extern LCD_Handler *lcd;
 
-
+// === Исходные переменные сканера ===
 static int8_t scanDat[128][1];
 static uint8_t j;
-
-
 static uint16_t interferenceLevel;
-
 static float freqStep = 0.025;
-static float startFreq = LPD1 - DIFFERENCE_WITH_CARRIER; // LPD 1 start - BASE и CARRIER имеют сдвиг
-
+static float startFreq = LPD1 - DIFFERENCE_WITH_CARRIER;
 static uint16_t cursor_x;
 
+// === Переменные автоматического режима ===
+static bool autoModeEnabled = false;
+static bool isJamming = false;
+static bool waitingForSignal = false;
+static uint32_t jamStartTime = 0;
+static float targetFreq = 0;
+static uint8_t targetChannel = 0;
+static int16_t targetRSSI = 0;
+
+// === Усреднение RSSI ===
+#define AVG_SCANS_COUNT  5
+static int32_t rssiSum[128];
+static uint8_t avgCounter = 0;
+static int16_t avgRSSI[128];
+
+// === Настройки ===
+#define AUTO_JAM_DURATION_MS   3000
+#define RSSI_THRESHOLD         -75
+
+// === Переменные для передачи пакетов (джемминг) ===
+static char txPacket[7] = "JAM";
+static uint8_t txPacketIndex = 3;
+
+// === Генератор случайного символа ===
+static char generateRandomChar(void)
+{
+  static char randomChars[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  static uint8_t idx = 0;
+  idx = (idx + 1) % (sizeof(randomChars) - 1);
+  return randomChars[rand() % (sizeof(randomChars) - 1)];
+}
+
+// === Оригинальные функции сканирования ===
 static void scanRSSI(float freqSet)
 {
   for (uint8_t i = 0; i < 128; i++)
   {
     CC1101_setMHZ(freqSet);
-    
-    for (uint8_t i = 0; i < 5; i++)
-    {
-      __ASM volatile ("NOP");
-    }
-
+    for (uint16_t d = 0; d < 100; d++) __ASM volatile ("NOP");
     scanDat[i][j] = CC1101_RSSIconvert(CC1101_getRssiRaw());
     freqSet += freqStep;
   }
@@ -63,153 +89,247 @@ static void drawCursor(uint16_t cursor_x)
 static void cursorProcess(void)
 {
   cursor_x = encoder_getRotaryNum();
-
-  if (cursor_x < offset_x)
-  {
-    cursor_x = offset_x;
-    encoder_setRotaryNum(cursor_x);
-  }
-  if (cursor_x > offset_x + 128)
-  {
-    cursor_x = offset_x + 127;
-    encoder_setRotaryNum(cursor_x);
-  }
-
+  if (cursor_x < offset_x) { cursor_x = offset_x; encoder_setRotaryNum(cursor_x); }
+  if (cursor_x > offset_x + 128) { cursor_x = offset_x + 127; encoder_setRotaryNum(cursor_x); }
   drawCursor(cursor_x);
 }
 
-static void spectumDraw(void)
+// === Отрисовка живого спектра по scanDat (ручной режим) ===
+static void drawLiveSpectrum(void)
 {
   const int16_t min_RSSI = 138;
-
   uint32_t summLevel = 0;
-
-  for (uint8_t i = 0; i < 128; i++) // clear
-  {
+  for (uint8_t i = 0; i < 128; i++)
     LCD_DrawLine(lcd, offset_x + i, end_y, offset_x + i, start_y, COLOR_BLACK);
-  }
-
   cursorProcess();
-
   for (uint8_t i = 0; i < 128; i++)
   {
-
     uint16_t y2 = start_y - (min_RSSI + scanDat[i][j]);
-    if (y2 < end_y)
-    {
-      y2 = end_y;
-    }
-
+    if (y2 < end_y) y2 = end_y;
     summLevel += y2;
-
-    if (y2 > interferenceLevel - 10)
-    {
-      LCD_DrawLine(lcd, offset_x + i, y2, offset_x + i, start_y, COLOR_BLUE);
-    }
-    else
-    {
-      LCD_DrawLine(lcd, offset_x + i, y2, offset_x + i, start_y, COLOR_PURPLE);
-    }
+    uint32_t color = (y2 > interferenceLevel - 10) ? COLOR_BLUE : COLOR_PURPLE;
+    LCD_DrawLine(lcd, offset_x + i, y2, offset_x + i, start_y, color);
   }
-
   interferenceLevel = summLevel / 128;
-  CC1101.RSSI_main = ((int32_t) start_y - interferenceLevel) - min_RSSI;
+  CC1101.RSSI_main = ((int32_t)start_y - interferenceLevel) - min_RSSI;
 }
 
-__UNUSED static void waterfallDraw(void)
+// === Отрисовка усреднённого спектра по avgRSSI (авторежим, в т.ч. джемминг) ===
+static void drawAvgSpectrum(void)
 {
-  const uint16_t start_y = 155;
-  const uint16_t offset_x = 15;
-
-  uint32_t color = COLOR_BLUE;
-
-  
-  for(uint8_t j = 0; j < 10; j++) // clear
+  const int16_t min_RSSI = 138;
+  uint32_t summLevel = 0;
+  for (uint8_t i = 0; i < 128; i++)
+    LCD_DrawLine(lcd, offset_x + i, end_y, offset_x + i, start_y, COLOR_BLACK);
+  cursorProcess();
+  for (uint8_t i = 0; i < 128; i++)
   {
-    for (uint8_t i = 0; i < 128; i++)
+    uint16_t y2 = start_y - (min_RSSI + avgRSSI[i]);
+    if (y2 < end_y) y2 = end_y;
+    summLevel += y2;
+    uint32_t color = (y2 > interferenceLevel - 10) ? COLOR_BLUE : COLOR_PURPLE;
+    LCD_DrawLine(lcd, offset_x + i, y2, offset_x + i, start_y, color);
+  }
+  interferenceLevel = summLevel / 128;
+  CC1101.RSSI_main = ((int32_t)start_y - interferenceLevel) - min_RSSI;
+}
+
+// === Поиск максимума по усреднённому массиву ===
+static void findMaxFromAvg(float *freq, uint8_t *channel, int16_t *rssi)
+{
+  int16_t maxVal = -120;
+  float bestFreq = 0;
+  uint8_t bestChan = 0;
+  for (uint8_t i = 0; i < 128; i++)
+  {
+    if (avgRSSI[i] > maxVal)
     {
-      const int16_t min_RSSI = 138;
-
-      uint16_t y2 = 150 - (min_RSSI + scanDat[i][j]);
-      
-      if (y2 < 50)
-      {
-        y2 = 50;
-      }
-
-      if(y2 < interferenceLevel - 10)
-      {
-        color = COLOR_PURPLE;
-      }
-      LCD_DrawPixel(lcd, offset_x + i, start_y + j, color);
+      maxVal = avgRSSI[i];
+      bestFreq = LPD1 + i * freqStep;
+      bestChan = 0;
+      for (uint8_t ch = 0; ch < (sizeof(freqLpdList)/sizeof(float)); ch++)
+        if (fabs(freqLpdList[ch] - bestFreq) < 0.0125) { bestChan = ch+1; break; }
     }
   }
+  *freq = bestFreq;
+  *channel = bestChan;
+  *rssi = maxVal;
 }
 
+static void LCD_ClearRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint32_t color)
+{
+  for (uint16_t i = 0; i < w; i++)
+    LCD_DrawLine(lcd, x + i, y, x + i, y + h, color);
+}
 
-/*
- * Protothread spectrumScan_Thread
- *
- * implementation of the spectrum analyzer mode
- */
+// === Главный протопоток ===
 PT_THREAD(spectrumScan_Thread(struct pt *pt))
 {
-  static uint32_t timer1;
+  static uint32_t scanDelayTimer;
+  static bool lastEncoderPress = false;
+  static uint32_t jamPacketTimer;
+  static uint32_t lastDisplayUpdate;
 
   PT_BEGIN(pt);
 
-  PT_DELAY_MS(pt, &timer1, 250);
+  PT_DELAY_MS(pt, &scanDelayTimer, 250);
 
   screen_clear();
   LCD_WriteString(lcd, 0, 0, "SCAN mode", &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
-
-  char str[25] = {0};
-  sprintf(str, "%.3f-%.3f", startFreq + DIFFERENCE_WITH_CARRIER, startFreq + DIFFERENCE_WITH_CARRIER + freqStep * 128);
+  char str[30];
+  sprintf(str, "%.3f-%.3f", startFreq + DIFFERENCE_WITH_CARRIER,
+          startFreq + DIFFERENCE_WITH_CARRIER + freqStep * 128);
   LCD_WriteString(lcd, 15, 25, str, &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
   CC1101_reinit();
   CC1101_enter_rx_mode();
-  
   encoder_setRotaryNum(offset_x + 68);
+
+  memset(rssiSum, 0, sizeof(rssiSum));
+  avgCounter = 0;
 
   while (1)
   {
-    PT_WAIT_UNTIL(pt, timer(&timer1, 275));
-    
-    scanRSSI(startFreq);
-
-    spectumDraw();
-
-    float freqCursor = LPD1 + (cursor_x - offset_x) * freqStep;
-
-    uint8_t LPD_channel;
-    for(LPD_channel = 0; LPD_channel < (sizeof(freqLpdList) / sizeof(float)); LPD_channel++)
+    if (!isJamming)
     {
-      if(freqLpdList[LPD_channel] == freqCursor)
+      // ======== РЕЖИМ ОЖИДАНИЯ/СКАНИРОВАНИЯ ========
+      PT_WAIT_UNTIL(pt, timer(&scanDelayTimer, 100));
+
+      scanRSSI(startFreq);
+
+      float freqCursor = LPD1 + (cursor_x - offset_x) * freqStep;
+      uint8_t cursorLpdChannel = 0;
+      for (uint8_t ch = 0; ch < (sizeof(freqLpdList)/sizeof(float)); ch++)
+        if (fabs(freqLpdList[ch] - freqCursor) < 0.0125) { cursorLpdChannel = ch+1; break; }
+
+      static float lastFreqCursor = 0;
+      if (freqCursor != lastFreqCursor)
       {
-        LPD_channel += 1;
-        break;
+        lastFreqCursor = freqCursor;
+        sprintf(str, "%.3f", freqCursor);
+        LCD_WriteString(lcd, 55, 165, str, &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+        sprintf(str, "LPD %02d", cursorLpdChannel);
+        LCD_WriteString(lcd, 55, 185, str, &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+      }
+
+      bool currentEncoderPress = encoder_getStateSwitch();
+      if (currentEncoderPress && !lastEncoderPress)
+      {
+        autoModeEnabled = !autoModeEnabled;
+        if (autoModeEnabled)
+        {
+          memset(rssiSum, 0, sizeof(rssiSum));
+          avgCounter = 0;
+          LCD_WriteString(lcd, 0, 200, "AUTO ON", &Font_8x13, COLOR_GREEN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+        }
+        else
+        {
+          LCD_ClearRect(0, 200, 100, 20, COLOR_BLACK);
+          if (isJamming) {
+            isJamming = false;
+            CC1101_enter_rx_mode();
+          }
+        }
+      }
+      lastEncoderPress = currentEncoderPress;
+
+      if (!autoModeEnabled)
+      {
+        drawLiveSpectrum();
+      }
+      else
+      {
+        for (uint8_t i = 0; i < 128; i++)
+          rssiSum[i] += scanDat[i][j];
+        avgCounter++;
+
+        char prog[16];
+        sprintf(prog, "Avg: %d/5", avgCounter);
+        LCD_WriteString(lcd, 200, 0, prog, &Font_8x13, COLOR_GREEN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
+        if (avgCounter >= AVG_SCANS_COUNT)
+        {
+          for (uint8_t i = 0; i < 128; i++)
+            avgRSSI[i] = rssiSum[i] / AVG_SCANS_COUNT;
+          drawAvgSpectrum();
+
+          float bestFreq = 0; uint8_t bestChan = 0; int16_t bestRSSI = 0;
+          findMaxFromAvg(&bestFreq, &bestChan, &bestRSSI);
+
+          if (bestChan > 0 && bestRSSI > RSSI_THRESHOLD && !isJamming)
+          {
+            isJamming = true;
+            targetFreq = bestFreq;
+            targetChannel = bestChan;
+            targetRSSI = bestRSSI;
+            jamStartTime = HAL_GetTick();
+
+            CC1101_setMHZ(targetFreq - DIFFERENCE_WITH_CARRIER);
+
+            char jamMsg[40];
+            sprintf(jamMsg, "JAM ON LPD%02d %.3f", targetChannel, targetFreq);
+            LCD_WriteString(lcd, 0, 200, jamMsg, &Font_8x13, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+            DEBUG_PRINT("[AUTO] Jamming %s LPD%02d %.3f (RSSI=%d)\n", "on", targetChannel, targetFreq, targetRSSI);
+          }
+
+          memset(rssiSum, 0, sizeof(rssiSum));
+          avgCounter = 0;
+        }
+        else
+        {
+          if (avgRSSI[0] != 0)
+            drawAvgSpectrum();
+        }
+      }
+
+      sprintf(str, "Noise: %ld dBm", CC1101.RSSI_main);
+      LCD_WriteString(lcd, 15, 240, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
+      CC1101_enter_rx_mode();
+    }
+    else
+    {
+      // ======== РЕЖИМ ДЖЕММИНГА ========
+      uint32_t currentTime = HAL_GetTick();
+      if (currentTime - jamStartTime >= AUTO_JAM_DURATION_MS)
+      {
+        isJamming = false;
+        CC1101_enter_rx_mode();
+        LCD_ClearRect(0, 200, 320, 60, COLOR_BLACK);
+        memset(rssiSum, 0, sizeof(rssiSum));
+        avgCounter = 0;
+        DEBUG_PRINT("[AUTO] Jam finished\n");
+      }
+      else
+      {
+        char info[30];
+        uint32_t remaining = (AUTO_JAM_DURATION_MS - (currentTime - jamStartTime)) / 1000;
+        sprintf(info, "JAM: %lu s left", remaining);
+        LCD_WriteString(lcd, 10, 200, info, &Font_8x13, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+        sprintf(info, "Target: LPD%02d %.3f", targetChannel, targetFreq);
+        LCD_WriteString(lcd, 10, 215, info, &Font_8x13, COLOR_YELLOW, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
+        if (currentTime - lastDisplayUpdate > 200)
+        {
+          drawAvgSpectrum();
+          lastDisplayUpdate = currentTime;
+        }
+
+        txPacket[txPacketIndex++] = generateRandomChar();
+        if (txPacketIndex >= 6) txPacketIndex = 3;
+        uint8_t result = CC1101_transmitt_packet(txPacket, sizeof(txPacket));
+        if (result) DEBUG_PRINT("JAM ERR: %d\n", result);
+        LCD_WriteString(lcd, 15, 65, txPacket, &Font_12x20, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+
+        static uint32_t tx_timeout;
+        tx_timeout = HAL_GetTick() + 100;
+        PT_WAIT_UNTIL(pt, (CC1101_GDO0_flag_get() || (HAL_GetTick() > tx_timeout)));
+        if (!CC1101_GDO0_flag_get()) DEBUG_PRINT("TX TIMEOUT\n");
+        CC1101_GDO0_flag_clear();
+
+        PT_WAIT_UNTIL(pt, timer(&jamPacketTimer, 10));
       }
     }
-    
-    static float freqCursorTmp;
-    if (freqCursor != freqCursorTmp)
-    {
-      freqCursorTmp = freqCursor;
-      sprintf(str, "%.3f", freqCursor);
-      LCD_WriteString(lcd, 55, 165, str, &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
-
-      sprintf(str, "LPD %02d", LPD_channel);
-      LCD_WriteString(lcd, 55, 185, str, &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
-    }
-
-
-    sprintf(str, "Noise: %ld dBm", CC1101.RSSI_main);
-    LCD_WriteString(lcd, 15, 240, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
-
-
-    CC1101_enter_rx_mode();
-
 
     PT_YIELD(pt);
   }
