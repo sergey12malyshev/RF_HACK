@@ -54,6 +54,12 @@ static int16_t avgRSSI[128];
 static char txPacket[7] = "JAM";
 static uint8_t txPacketIndex = 3;
 
+// Message area coordinates for "Press encoder for auto jammer"
+#define MSG_AREA_X 0
+#define MSG_AREA_Y 260
+#define MSG_AREA_W 200
+#define MSG_AREA_H 16
+
 // Random character generator 
 static char generateRandomChar(void)
 {
@@ -254,7 +260,7 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
         {
           memset(rssiSum, 0, sizeof(rssiSum));
           avgCounter = 0;
-          LCD_WriteString(lcd, 0, 200, "AUTO ON", &Font_8x13, COLOR_GREEN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+          LCD_WriteString(lcd, 10, 200, "AUTO ON", &Font_8x13, COLOR_GREEN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
         }
         else
         {
@@ -282,7 +288,7 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
 
         char prog[16];
         sprintf(prog, "Avg: %d/5", avgCounter);
-        LCD_WriteString(lcd, 0, 0, prog, &Font_8x13, COLOR_GREEN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+        LCD_WriteString(lcd, 0, 300, prog, &Font_8x13, COLOR_GREEN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
         if (avgCounter >= AVG_SCANS_COUNT)
         {
@@ -306,10 +312,6 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
             jamStartTime = HAL_GetTick();
 
             CC1101_setMHZ(targetFreq - DIFFERENCE_WITH_CARRIER);
-
-            char jamMsg[40];
-            sprintf(jamMsg, "JAM ON LPD%02d %.3f", targetChannel, targetFreq);
-            LCD_WriteString(lcd, 0, 200, jamMsg, &Font_8x13, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
             DEBUG_PRINT("[AUTO] Jamming %s LPD%02d %.3f (RSSI=%d)"CLI_NEW_LINE, "on", targetChannel, targetFreq, targetRSSI);
           }
 
@@ -325,8 +327,19 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
         }
       }
 
+      // Display hint for manual mode: press encoder to enable auto jammer (two lines)
+      if (!autoModeEnabled && !isJamming)
+      {
+        LCD_WriteString(lcd, 0, 260, "Press encoder", &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+        LCD_WriteString(lcd, 0, 275, "for auto jammer", &Font_8x13, COLOR_WHITE, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+      }
+      else
+      {
+        LCD_ClearRect(0, 260, 150, 28, COLOR_BLACK);
+      }
+
       sprintf(str, "Noise: %ld dBm", CC1101.RSSI_main);
-      LCD_WriteString(lcd, 15, 240, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+      LCD_WriteString(lcd, 10, 240, str, &Font_8x13, COLOR_CYAN, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
       CC1101_enter_rx_mode();
     }
@@ -338,19 +351,19 @@ PT_THREAD(spectrumScan_Thread(struct pt *pt))
       {
         isJamming = false;
         CC1101_enter_rx_mode();
-        LCD_ClearRect(0, 200, 320, 60, COLOR_BLACK);
+        LCD_ClearRect(0, 200, 180, 60, COLOR_BLACK);
         memset(rssiSum, 0, sizeof(rssiSum));
         avgCounter = 0;
         DEBUG_PRINT("[AUTO] Jam finished"CLI_NEW_LINE);
       }
       else
       {
-        char info[30];
+        char info[30] = {0};
         uint32_t remaining = (AUTO_JAM_DURATION_MS - (currentTime - jamStartTime)) / 1000;
-        sprintf(info, "JAM: %lu s left", remaining);
+        sprintf(info, "JAM: %lu s ", remaining);
         LCD_WriteString(lcd, 10, 200, info, &Font_8x13, COLOR_RED, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
-        sprintf(info, "Target: LPD%02d %.3f", targetChannel, targetFreq);
-        LCD_WriteString(lcd, 10, 215, info, &Font_8x13, COLOR_YELLOW, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
+        sprintf(info, "Target:LPD%02d %.3f", targetChannel, targetFreq);
+        LCD_WriteString(lcd, 10, 220, info, &Font_8x13, COLOR_YELLOW, COLOR_BLACK, LCD_SYMBOL_PRINT_FAST);
 
         if (currentTime - lastDisplayUpdate > 200)
         {
